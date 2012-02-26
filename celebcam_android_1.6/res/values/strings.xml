@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="app_name">CelebCam</string>
+    <string name="yourName">Enter your name</string>
+    <string name="titleName">Name</string>
+    <string name="titleFBUsername">Facebook UserID</string>
+    <string name="titleFBPassword">Facebook Password</string>
+    <string name="titleTwitterUsername">Twitter UserID</string>
+    <string name="titleTwitterPassword">Twitter Password</string>
+    <string name="facebookUsername">Enter your facebook username</string>
+    <string name="facebookPassword">Enter your facebook password</string>
+    <string name="twitterUsername">Enter you twitter username</string>
+    <string name="twitterPassword">Enter you twitter password</string>
+<<<<<<< HEAD
+    <string name="email_subject">Photo via Celebcam</string>
+    <string name="email_message">Link to image goes here</string>
+    <string name="title_email">Share</string>
+    <string name="button_email">Email</string>
+	<string name="button_OAuth">Authenticate Twitter</string>
+=======
+    <string name="email_subject">Celebcam</string>
+   	<string name="email_message">Link to image goes here</string>
+    <string name="title_email">Share</string>
+	<string name="button_email">Email</string>
+	<string name="button_OAuth">Authenticate Twitter</string>
+
+    
+    
+>>>>>>> 6d39bb0caf33f8d7b3bd9e45efce21bf9818e062
+</resources>
