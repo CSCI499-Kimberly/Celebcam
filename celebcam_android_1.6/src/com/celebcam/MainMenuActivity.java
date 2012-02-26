@@ -50,7 +50,6 @@ public class MainMenuActivity extends Activity {
 		findCelebButton.setOnClickListener( new View.OnClickListener() {
 			public void onClick( View view )
 			{
-<<<<<<< HEAD
 				startActivity( new Intent( view.getContext(), CelebcamApiActivity.class ) );
 			}
 		});
@@ -61,9 +60,6 @@ public class MainMenuActivity extends Activity {
 			public void onClick( View view )
 			{
 				startActivity( new Intent( view.getContext(),  PersistOptionsActivity.class ) );
-=======
-				startActivity( new Intent( view.getContext(), CelebCamEmailActivity.class ) );
->>>>>>> 6d39bb0caf33f8d7b3bd9e45efce21bf9818e062
 			}
 		});
 		

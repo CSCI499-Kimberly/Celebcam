@@ -40,11 +40,4 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>celebcamapi</name>
-			<type>2</type>
-			<location>/Users/fahim/Sites/CelebcamApi/src/com/celebcam/celebcamapi</location>
-		</link>
-	</linkedResources>
 </projectDescription>

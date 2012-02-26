@@ -4,12 +4,7 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-<<<<<<< HEAD
 	<classpathentry kind="lib" path="/home/leonard/workspace/celebcam_android_1.6/lib/signpost-commonshttp4-1.2.1.1.jar"/>
 	<classpathentry kind="lib" path="/home/leonard/workspace/celebcam_android_1.6/lib/signpost-core-1.2.1.1.jar"/>
-=======
-	<classpathentry kind="lib" path="signpost-commonshttp4-1.2.1.1.jar"/>
-	<classpathentry kind="lib" path="signpost-core-1.2.1.1.jar"/>
->>>>>>> 6d39bb0caf33f8d7b3bd9e45efce21bf9818e062
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -5,7 +5,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
-<<<<<<< HEAD
 
 <TextView
 android:layout_width="fill_parent"
@@ -33,32 +32,3 @@ android:onClick="authent">
 </Button>
 
 </LinearLayout>
-=======
-		
-	<TextView
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-		android:gravity="center"
-		android:textSize="30sp"
-		android:layout_margin="10dp"
-	    android:text="@string/title_email"
-	 />
-				
-	<Button 
-	    android:id="@+id/Button_Email"
-		android:text="@string/button_email" 
-	    android:layout_height="wrap_content" 
-		android:layout_width="fill_parent"
-		android:onClick="sendEmail">
-	</Button>
-	
-		<Button 
-	    android:id="@+id/Button_OAuth"
-		android:text="@string/button_OAuth" 
-	    android:layout_height="wrap_content" 
-		android:layout_width="fill_parent"
-		android:onClick="authent">
-	</Button>
-	
-</LinearLayout>
->>>>>>> 6d39bb0caf33f8d7b3bd9e45efce21bf9818e062

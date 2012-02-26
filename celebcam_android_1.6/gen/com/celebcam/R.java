@@ -74,7 +74,6 @@ public final class R {
         public static final int zoom_snap_button=0x7f02003c;
     }
     public static final class id {
-<<<<<<< HEAD
         public static final int Button_Email=0x7f06001d;
         public static final int Button_OAuth=0x7f06001a;
         public static final int blue_controller=0x7f06000a;
@@ -110,20 +109,6 @@ public final class R {
         public static final int start_celeb_cam_button=0x7f06001e;
         public static final int text_surface=0x7f060002;
         public static final int text_to_add=0x7f06000f;
-=======
-        public static final int Button_Email=0x7f060006;
-        public static final int Button_OAuth=0x7f060007;
-        public static final int browse_photos_button=0x7f060009;
-        public static final int camera_surface=0x7f060000;
-        public static final int celeb_surface=0x7f060001;
-        public static final int drawer=0x7f060002;
-        public static final int effects_palette=0x7f060004;
-        public static final int find_celebrity_button=0x7f06000a;
-        public static final int gallery=0x7f06000c;
-        public static final int handle=0x7f060003;
-        public static final int settings_button=0x7f06000b;
-        public static final int start_celeb_cam_button=0x7f060008;
->>>>>>> 6d39bb0caf33f8d7b3bd9e45efce21bf9818e062
         public static final int zoom_snap_button=0x7f060005;
     }
     public static final class layout {
