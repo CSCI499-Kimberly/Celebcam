@@ -1,0 +1,15 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Image link:</b>
+  <%= @photo.image_link %>
+</p>
+
+<p>
+  <b>Cutout:</b>
+  <%= @photo.cutout_id %>
+</p>
+
+
+<%= link_to 'Edit', edit_photo_path(@photo) %> |
+<%= link_to 'Back', photos_path %>

@@ -1,4 +1,20 @@
 Celebcam::Application.routes.draw do
+  resources :products
+
+  ActiveAdmin.routes(self)
+
+  devise_for :admin_users, ActiveAdmin::Devise.config
+
+  resources :photos
+  resources :cutouts
+
+	namespace :api do
+		resources :cutouts, :defaults => { :format => 'json' }
+	  resources :photos, :defaults => { :format => 'json' }
+	end
+
+
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
@@ -48,7 +64,7 @@ Celebcam::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  # root :to => 'welcome#index'
+  # root :to => 'api'
 
   # See how all your routes lay out with "rake routes"
 

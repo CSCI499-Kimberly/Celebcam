@@ -4,4 +4,4 @@
 # If you change this key, all old signed cookies will become invalid!
 # Make sure the secret is at least 30 characters and all random,
 # no regular words or you'll be exposed to dictionary attacks.
-Celebcam::Application.config.secret_token = '11d2848602d0a25b77dd5eb5b4ca718de1eefed150f68e3f1291257fa0e83e52a70829eada17d862ce7b93a66b587644a90b86d2d2e881d3bfebeca831866ce2'
+Celebcam::Application.config.secret_token = 'f2450373e1040175f715793be073f2a442202cde3e2c734418293d55314cdad156f83ac1d657b5606c0b212e9ab67010b742c6f422df26c56229c55b2be48ae8'

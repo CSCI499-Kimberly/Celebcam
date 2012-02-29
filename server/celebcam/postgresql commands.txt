@@ -1,0 +1,21 @@
+/opt/local/lib/postgresql84/bin/createdb 
+
+/opt/local/lib/postgresql84/bin/createdb 
+createuser --superuser <admin_username> -U postgres
+
+/opt/local/lib/postgresql84/bin/createuser --superuser fahim -U postgres
+/opt/local/lib/postgresql84/bin/createdb temp
+
+/opt/local/lib/postgresql84/bin/psql
+
+
+
+sudo port install postgresql91 postgresql91-server
+
+
+/opt/local/lib/postgresql91/bin/psql -h localhost -U postgres
+
+gem install pg -- --with-pg-config=/opt/local/lib/postgresql91/bin/pg_config
+
+
+env ARCHFLAGS="-arch x86_64" gem install pg -- --with-pg-config=/opt/local/lib/postgresql91/bin/pg_config
