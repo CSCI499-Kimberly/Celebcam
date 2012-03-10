@@ -79,6 +79,7 @@ public final class R {
         public static final int blue_controller=0x7f06000a;
         public static final int border_view=0x7f060004;
         public static final int browse_photos_button=0x7f06001f;
+        public static final int buttonUpdate=0x7f060024;
         public static final int camera_surface=0x7f060000;
         public static final int celeb_surface=0x7f060001;
         public static final int debug_button=0x7f06001b;
@@ -96,7 +97,7 @@ public final class R {
         public static final int effects_palette_scroll=0x7f06000d;
         public static final int email_button=0x7f060019;
         public static final int find_celebrity_button=0x7f060020;
-        public static final int gallery=0x7f060023;
+        public static final int gallery=0x7f060025;
         public static final int green_controller=0x7f060009;
         public static final int handle=0x7f06000c;
         public static final int red_controller=0x7f060008;
@@ -109,6 +110,7 @@ public final class R {
         public static final int start_celeb_cam_button=0x7f06001e;
         public static final int text_surface=0x7f060002;
         public static final int text_to_add=0x7f06000f;
+        public static final int theTextField=0x7f060023;
         public static final int zoom_snap_button=0x7f060005;
     }
     public static final class layout {
@@ -122,8 +124,8 @@ public final class R {
     }
     public static final class string {
         public static final int app_name=0x7f050000;
-        public static final int button_OAuth=0x7f05000f;
         public static final int button_email=0x7f05000e;
+        public static final int button_twitter=0x7f05000f;
         public static final int email_message=0x7f05000c;
         public static final int email_subject=0x7f05000b;
         public static final int facebookPassword=0x7f050008;

@@ -1,9 +1,11 @@
 package com.celebcam;
 
 import java.io.File;
-import oauth.signpost.OAuthProvider;
-import oauth.signpost.basic.DefaultOAuthProvider;
-import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.auth.AccessToken;
+import twitter4j.auth.RequestToken;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.os.Environment;
 import android.view.View;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.Toast;
 
 
@@ -20,20 +23,142 @@ import com.celebcam.R;
 
 public class PersistOptionsActivity extends Activity{
 	
-	  private String CALLBACKURL = "app://twitter";
-	  private String consumerKey = "CwHVcw1ALd2wPnNEuZoMpA";
-	  private String consumerSecret = "kkDFN1nPM9wLmsM8wVH6FJMeHTenLNJID3YfZE7zXw";
-	 
-	  private OAuthProvider httpOauthprovider = new DefaultOAuthProvider("https://api.twitter.com/oauth/request_token", "https://api.twitter.com/oauth/access_token", "https://api.twitter.com/oauth/authorize");
-	  private CommonsHttpOAuthConsumer httpOauthConsumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
-	  
+	private static final String TAG = "PersistOptions";
+
+	private static final String callbackURL = "app://twitter";
+	private static final String consumerKEY = "8JlWrU08QfMLG3SwVUU4LQ";
+	private static final String consumerSECRET = "NrHaVm2My0t2wf2nUaMt2Vno98mPHzg8YOgHBxlt1M";
+	
+	private static final String userAccessTOKEN = "accessToken";
+	private static final String userAccessTokenSECRET = "accessTokenSecret";
+	
+	
+	private Twitter twitter;
+	private RequestToken reqTOKEN;
+	
+	EditText textField;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.email);
+		setContentView(R.layout.persist_options);
+		
+        Log.i(TAG, "STARTED - onCreate() ");
+
+        //Create new twitter item using 4jtwitter
+      		twitter = new TwitterFactory().getInstance();
+      		Log.i(TAG, "Got Twitter4j");
+      		
+      		// Tell twitter4j that we want to use it with our app
+      		// Use twitter4j to authenticate
+      		twitter.setOAuthConsumer(consumerKEY, consumerSECRET);
+      		Log.i(TAG, "Inflated Twitter4j");
+		
 	}
 
+	
+    public void pressTweet(View button) {
+    	textField = (EditText)findViewById(R.id.theTextField);
+        String fieldContents = textField.getText().toString();
+        
+		if ( textField.getText().toString().equals("") ){
+			Toast.makeText(this, "type something", Toast.LENGTH_SHORT).show();
+		}
+		else{
+			//Toast.makeText(this, fieldContents, Toast.LENGTH_SHORT).show();
+			Log.i(TAG, "New User");
+			authent();
+			Log.i(TAG, "New User authentication");
+			
+		}
+
+    }
+	
+	
+	private void authent(){
+		Log.i(TAG, "STARTED - quthent()");
+		try {
+			reqTOKEN = twitter.getOAuthRequestToken(callbackURL);
+			
+			Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(reqTOKEN.getAuthenticationURL()));
+			// Start new intent on Web browser
+			startActivity(intent);
+			Log.i(TAG, "Starting Oauth from web"); 
+		   } catch (Exception e) {
+			   Log.w("oauth fail", e);
+			// Toast.makeText(button.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+		   }
+	   }
+	
+	
+	private void sendTweet(){ 
+		//Testing sending tweets after authenticated
+		try {
+			twitter.updateStatus( textField.getText().toString() );
+
+			Toast.makeText(this, "Tweet Successful!", Toast.LENGTH_SHORT).show();
+			Log.i(TAG, "Post Sent");
+
+		} catch (TwitterException e) {
+			Toast.makeText(this, "Tweet error, try again later", Toast.LENGTH_SHORT).show();
+			Log.i(TAG, "Post NOT Sent");
+			Log.e(TAG, "Post NOT Sent", e);
+
+
+		}
+		
+	}
+	
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		Log.i(TAG, "STARTED - onNewIntent");
+		Uri uri = intent.getData();
+		Log.i(TAG, "Returned to Program"); 
+
+		if (uri !=null && uri.toString().startsWith(callbackURL)){
+			String oauthVerifier = uri.getQueryParameter("oauth_verifier");
+			Log.i(TAG, "string verifier created"); 
+			try {
+				Log.i(TAG, "trying access token"); 
+				AccessToken at = twitter.getOAuthAccessToken(reqTOKEN, oauthVerifier);
+				Log.i(TAG, "trying to set token"); 
+				twitter.setOAuthAccessToken(at);
+				Log.e("Login", "Twitter Initialised");
+
+		//		saveAccessToken(at);
+				Log.i(TAG, "Access token saved");
+				
+				// Set the content view back after we changed from browser 
+				setContentView(R.layout.persist_options);
+					
+				
+				sendTweet();
+				Log.i(TAG, "New User tweet sent");
+				
+
+				} catch (Exception e) {
+					Log.e(TAG, "OAuth - Access Token Retrieval Error", e);
+					
+				}
+			
+
+		}
+		else{
+			Log.i(TAG, "Intent from something other that twitter website");
+		}
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		Log.i(TAG, "STARTED - onResume()");
+	}
+	
+	
+	
 	public void sendEmail (View button) {
 
 		Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
@@ -52,52 +177,6 @@ public class PersistOptionsActivity extends Activity{
 
 	}
 	
-	public void authent(View button){
-		   
-		   try {
-			   String authUrl = httpOauthprovider.retrieveRequestToken(httpOauthConsumer, CALLBACKURL);
-			   Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl));
-			   button.getContext().startActivity(intent);
-		   } catch (Exception e) {
-			   Log.w("oauth fail", e);
-			   Toast.makeText(button.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-		   }
-	   }
-	   
-	  @Override
-	  protected void onNewIntent(Intent intent) {
-	      super.onNewIntent(intent);
-
-	      Uri uri = intent.getData();
-
-	      //Check if you got NewIntent event due to Twitter Call back only
-
-	      if (uri != null && uri.toString().startsWith(CALLBACKURL)) {
-
-	          String verifier = uri.getQueryParameter(oauth.signpost.OAuth.OAUTH_VERIFIER);
-
-	          try {
-	              // this will populate token and token_secret in consumer
-
-	              httpOauthprovider.retrieveAccessToken(httpOauthConsumer, verifier);
-	              String userKey = httpOauthConsumer.getToken();
-	              String userSecret = httpOauthConsumer.getTokenSecret();
-
-	              // Save user_key and user_secret in user preferences and return
-
-	              SharedPreferences settings = getBaseContext().getSharedPreferences("your_app_prefs", 0);
-	              SharedPreferences.Editor editor = settings.edit();
-	              editor.putString("user_key", userKey);
-	              editor.putString("user_secret", userSecret);
-	              editor.commit();
-
-	          } catch(Exception e){
-
-	          }
-	      } else {
-	          // Do something if the callback comes from elsewhere
-	      }
-
-	  }
+	
 	
 }
