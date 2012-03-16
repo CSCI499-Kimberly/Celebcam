@@ -1,0 +1,16 @@
+common: &common
+  adapter: postgresql
+  username: celebcam
+  password: celebcam
+
+development:
+  <<: *common
+  database: celebcam
+
+test:
+  <<: *common
+  database: celebcam
+
+production:
+  <<: *common
+  database: celebcam

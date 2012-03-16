@@ -1,0 +1,24 @@
+<h1>Listing cutouts</h1>
+
+<table>
+  <tr>
+    <th>Image link</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @cutouts.each do |cutout| %>
+  <tr>
+    <td><img src="<%= cutout.image_link %>"></td>
+    
+    <td><%= link_to 'Show', cutout %></td>
+    <td><%= link_to 'Edit', edit_cutout_path(cutout) %></td>
+    <td><%= link_to 'Destroy', cutout, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Cutout', new_cutout_path %>
