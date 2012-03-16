@@ -1,11 +1,43 @@
 package com.celebcam;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+
 import android.util.AttributeSet;
 import android.util.Log;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Matrix.ScaleToFit;
+import android.graphics.RectF;
 import android.view.MotionEvent;
+import android.view.View;
 import android.graphics.Matrix;
+
+class CelebCamText
+{
+	String text;
+	float  scale;
+	float  rotation;
+	String fontName;
+	
+	public CelebCamText()
+	{
+		
+	}
+	
+	public CelebCamText(String text)
+	{
+		this.text = text;
+	}
+	
+	public CelebCamText(String text, float scale, String fontName)
+	{
+		this.text     = text;
+		this.scale    = scale;
+		this.fontName = fontName;
+	}
+}
 
 public class CelebCamTextView extends CelebCamOverlaidView implements CCMemoryWatcher {
 
@@ -22,14 +54,24 @@ public class CelebCamTextView extends CelebCamOverlaidView implements CCMemoryWa
 	
 	private String mText;
 	
+	private ArrayList<CelebCamText> mTextList;
+	private CelebCamText       current;
+	
 	public CelebCamTextView( Context context, AttributeSet attributeSet )
 	{
 		super(context, attributeSet, INCLUDE_TRANSPARENCY);
 		
 		CCDebug.registerMemoryWatcher( this );
 		
+		mTextList = new ArrayList<CelebCamText>();
+		
 	}
 
+	public void addText( CelebCamText text )
+	{
+		mTextList.add(text);
+	}
+	
 	public void setText( String text )
 	{
 		mText = text;
@@ -83,6 +125,13 @@ public class CelebCamTextView extends CelebCamOverlaidView implements CCMemoryWa
 			
 		return tmp;
 	}
+	
+	public void scale( float factor)
+	{
+		super.scale(factor);
+		
+		CelebCamFont.currentFont.adjustSpacing( factor );
+	}
 	public void onDraw( Canvas canvas )
 	{
 		super.onDraw(canvas);
@@ -105,14 +154,37 @@ public class CelebCamTextView extends CelebCamOverlaidView implements CCMemoryWa
 		}
 	}
 	
-	public void publish( Canvas canvas )
+	public void onDraw2( Canvas canvas )
+	{
+		super.onDraw(canvas);
+		
+		ListIterator<CelebCamText> it = (ListIterator<CelebCamText>) mTextList.iterator();
+		
+		while( it.hasNext())
+		{
+			CelebCamFont.paint(canvas, it.next());
+		}
+		
+		if( mControllerLock )
+		{
+			canvas.drawLines( mCollider, paint );
+		}
+	}
+	
+	public void publish( Canvas canvas, Size publishSize, Size previewSize )
 	{
 		
-		if( mText != null )
+		if(( getVisibility() == View.VISIBLE ) && mText != null )
 		{
-			Matrix tmp = new Matrix( mTransformationMatrix );
-			tmp.postScale( mPublishSize.width/getWidth(), mPublishSize.height/getHeight());
-			CelebCamFont.paint(canvas, mText,  tmp);
+//			Matrix m = new Matrix(publishSize.width/previewSize.width,0,0,
+//								0,publishSize.width/previewSize.width,0,
+//								0,0,publishSize.width/previewSize.width);
+			
+			Matrix m = new Matrix();
+			m.setRectToRect(new RectF(0,0,previewSize.width, previewSize.height), new RectF(0,0,publishSize.width, publishSize.height), ScaleToFit.CENTER);
+			m.preConcat(mTransformationMatrix);
+			
+			CelebCamFont.publish(canvas, mText,  m, CelebCamEffectsLibrary.mPublishSize);
 		}
 		
 	}

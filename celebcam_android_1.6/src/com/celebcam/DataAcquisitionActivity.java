@@ -4,24 +4,34 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
 import android.hardware.Camera.Size;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore.Images;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.Toast;
+import android.widget.TextView;
 import com.celebcam.R;
 import android.widget.Button;
 import android.view.KeyEvent;
@@ -29,19 +39,26 @@ import android.view.View.OnKeyListener;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 
-import java.io.File;
-import oauth.signpost.OAuthProvider;
-import oauth.signpost.basic.DefaultOAuthProvider;
-import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.Calendar;
 
-public class DataAcquisitionActivity extends Activity implements SurfaceHolder.Callback, TextWatcher, CCMemoryWatcher {
+import twitter4j.Status;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.auth.AccessToken;
+import twitter4j.auth.RequestToken;
+import twitter4j.conf.ConfigurationBuilder;
+
+public class DataAcquisitionActivity extends Activity implements SurfaceHolder.Callback, TextWatcher,OnSharedPreferenceChangeListener,
+ CCMemoryWatcher {
 
 	public int getSizeInBytes() {
 		int m = 0;
-		
-		if( tempdata != null )
-			m= tempdata.length;
 		
 		if( mPublishBitmap != null )
 			m += mPublishBitmap.getHeight()*mPublishBitmap.getWidth()*4;
@@ -64,12 +81,10 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	private String TAG = "DataAcquisitionActivity";
 	
     private Camera        mCamera;
-    private Size 		  mPictureSize;
     private SurfaceHolder mSurfaceHolder;
     private SurfaceView   mSurfaceView;
     
     private Button 		  mAddText;
-    private Button	      mAddBorder;
     private Button	      mAddSparkles;
     private Button	      mSparklesBrush;
     private Button        mBlackAndWhite;
@@ -77,12 +92,11 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
     private Button        mEdit;
     private Button        mSave;
     private Button        mEmail;
+    private Button        mGallery;
     
     private Button        mDebug;
 	
     private View 		  mSliders;
-    
-	private byte[] tempdata;
 	
 	private Bitmap mPublishBitmap;
 	private Bitmap mPreviewBitmap;
@@ -107,19 +121,35 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	
 	private Context  mContext;
 	
-	private static int id = 0;
+	private boolean mPreviewRunning;
 	
+	private String TAKEN_PHOTO   = "tp1";
+	
+	private String PREVIEW_PHOTO = "pp";
+
+	private CelebCamApplication mApp;
+	SharedPreferences prefs;
 	SQLiteDatabase   mDatabase;
 	CelebCamDbHelper mDbHelper;
 	
-	  private String CALLBACKURL = "app://twitter";
-	  private String consumerKey = "CwHVcw1ALd2wPnNEuZoMpA";
-	  private String consumerSecret = "kkDFN1nPM9wLmsM8wVH6FJMeHTenLNJID3YfZE7zXw";
-	 
-	  private OAuthProvider httpOauthprovider = new DefaultOAuthProvider("https://api.twitter.com/oauth/request_token", "https://api.twitter.com/oauth/access_token", "https://api.twitter.com/oauth/authorize");
-	  private CommonsHttpOAuthConsumer httpOauthConsumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
-	  
+	private static final String callbackURL = "oob";
+	private static final String consumerKEY = "8JlWrU08QfMLG3SwVUU4LQ";
+	private static final String consumerSECRET = "NrHaVm2My0t2wf2nUaMt2Vno98mPHzg8YOgHBxlt1M";
+
+	private static final String userAccessTOKEN = "accessToken";
+	private static final String userAccessTokenSECRET = "accessTokenSecret";
 	
+	private Twitter twitter;
+	private RequestToken reqTOKEN;
+
+
+	EditText textField;
+
+	private CelebCamEnum mLaunch;
+	
+	static byte NONE		  = 0;
+	static final byte SETTINGS_PREF = 1;
+
 	public int getPreivewWidth()
 	{
 		int width = 10;
@@ -134,19 +164,79 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 		return height;
 	}
 	
+	ShutterCallback mShutterCallback = new ShutterCallback(){
+		public void onShutter() { Log.d(TAG,"shutter");}
+	};
+	
+	PictureCallback mPictureCallback = new PictureCallback() {
+		public void onPictureTaken(byte[] data, Camera c) {}
+	};
+	
+	PictureCallback mjpeg = new PictureCallback() {
+		public void onPictureTaken(byte[] data, Camera camera) {
+			
+			if( data != null ) {
+				
+				Log.d(TAG,"length of camera data : " + Integer.toString(data.length));
+
+				mApp.storeInCache(data, TAKEN_PHOTO);
+				
+				Bitmap b = BitmapFactory.decodeByteArray( data, 0, data.length);
+				data = null;
+				
+				System.gc();
+				
+				mCelebView.release(mApp);
+				
+				
+				startEditor(b);
+			}
+		}
+	};
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.data_acquisition);
         
         Log.d(TAG, "onCreate Called");
+        
+        setContentView(R.layout.data_acquisition);
+        
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, 
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        
+                Log.i(TAG, "STARTED - onCreate() ");
+
+        //Create new twitter item using 4jtwitter
+      		//twitter = new TwitterFactory().getInstance();
+      		Log.i(TAG, "Got Twitter4j");
+      		
+      		// Tell twitter4j that we want to use it with our app
+      		// Use twitter4j to authenticate
+      		//twitter.setOAuthConsumer(consumerKEY, consumerSECRET);
+      		Log.i(TAG, "Inflated Twitter4j");
+      		
+      		ConfigurationBuilder cb = new ConfigurationBuilder();
+      		cb.setDebugEnabled(true)
+      		  .setOAuthConsumerKey(consumerKEY)
+      		  .setOAuthConsumerSecret(consumerSECRET);
+      		  //.setOAuthAccessToken("516977033-GRn9ZDdnH0FOTDgIXRDqm812LC12ZBr5U8RyUEFk")
+      		  //.setOAuthAccessTokenSecret("	wyGEClY1BJZddvVxAvajzLDKcY4keUzkegoKLQGTA");
+      		TwitterFactory tf = new TwitterFactory(cb.build());
+      		twitter = tf.getInstance();
+      		
+      		
+        prefs = PreferenceManager.getDefaultSharedPreferences(this); //
+        prefs.registerOnSharedPreferenceChangeListener(this);
+
         CCDebug.registerMemoryWatcher(this);
         
-        mContext = this;
+        mContext  = this;
         
         mDbHelper = new CelebCamDbHelper(this);
 
         // View that camera preview is render on
-        mSurfaceView = (SurfaceView) findViewById(R.id.camera_surface);
+        mSurfaceView   = (SurfaceView) findViewById(R.id.camera_surface);
         mSurfaceHolder = mSurfaceView.getHolder();
         mSurfaceHolder.addCallback(this);
         mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -161,9 +251,20 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
         		public void onClick(View view )
         		{
         			if( mZoomAndSnapButton.isDefault() )
-        				mCamera.takePicture(mShutterCallback, mPictureCallback, mjpeg);
+        			{
+        				Log.d(TAG, "taking picture...");
+    					
+    					CelebCamEffectsLibrary.release();
+    					mEditView.release();
+    					System.gc();
+    					mCelebView.restore(mApp);
+        				mCamera.takePicture(null, null ,mjpeg);
+        				
+        			}
         			else
+        			{
         				mZoomAndSnapButton.unlockCurrentView();
+        			}
         		}
         });
         
@@ -184,15 +285,15 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
         mEditText.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 // If the event is a key-down event on the "enter" button
-            	mText.setText( mEditText.getText().toString());
-            	Log.d(TAG, "key pressed in textview");
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) ) {
+                
+            	if ((event.getAction() == KeyEvent.ACTION_DOWN) && keyCode == KeyEvent.KEYCODE_ENTER ) {
                   // Perform action on key press
                 	mText.setText( mEditText.getText().toString());
                 	
                   return true;
                 }
-                return true;
+            	
+            	return false;
             }
 
         });
@@ -210,18 +311,29 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 			}
 		});
         
-        mAddBorder = (Button) findViewById( R.id.effect_add_border );
-        mAddBorder.setOnClickListener( new View.OnClickListener() {
-			
-			public void onClick(View v) {
-				
-				if( mBorder.getVisibility() == View.VISIBLE)
-					mBorder.setVisibility(View.GONE);
-				else
-					mBorder.setVisibility(View.VISIBLE);
-				
-			}
-		});
+        
+        String[] borders = getResources().getStringArray(R.array.borders_array);
+        
+//        ListView lv = (ListView) findViewById(R.id.border_list);
+//        
+//        lv.setAdapter(new ArrayAdapter<String>(this, R.layout.list_item, borders));
+//
+//        
+//        lv.setTextFilterEnabled(true);
+//
+//        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//          public void onItemClick(AdapterView<?> parent, View view,
+//              int position, long id) {
+//            // When clicked, show a toast with the TextView text
+//            Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
+//                Toast.LENGTH_SHORT).show();
+//            
+//            mBorder.selectBorderByName(((TextView) view).getText().toString());
+//        	mBorder.setVisibility(View.VISIBLE);New UserNew User
+//          }
+//        });
+
+        
         
         mAddSparkles = (Button) findViewById( R.id.effect_add_sparkles );
         mAddSparkles.setOnClickListener( new View.OnClickListener() {
@@ -280,9 +392,17 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 				{
 					mEditView.setVisibility(View.GONE);
 					mCamera.startPreview();
+					
+					CelebCamEffectsLibrary.release();
+					mEditView.release();
+					System.gc();
+					mCelebView.restore(mApp);
 				}
 				else
 				{
+					mCelebView.release(mApp);
+					mEditView.setBitmap( ((CelebCamApplication)getApplication()).loadFromCache(TAKEN_PHOTO));
+					
 					mEditView.setVisibility(View.VISIBLE);
 					mEditView.invalidate();
 				}
@@ -290,11 +410,30 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 			}
 		});
 
+        
         mSave = (Button) findViewById( R.id.save_button );
         mSave.setOnClickListener( new View.OnClickListener() {
 			
 			public void onClick(View v) {
-				done();
+				mCelebView.release(mApp);
+				mEditView.release();
+				
+				System.gc();
+				
+				Bitmap bitmap = ((CelebCamApplication)getApplication()).loadFromCache(TAKEN_PHOTO);
+				save(finalProcess( bitmap ));
+
+				bitmap.recycle();
+				bitmap = null;
+				System.gc();
+			}
+		});
+        
+        mGallery = (Button) findViewById( R.id.gallery_button );
+        mGallery.setOnClickListener( new View.OnClickListener() {
+			
+			public void onClick(View v) {
+				startActivity( new Intent(mContext, PhotoBrowserActivity.class));
 			}
 		});
         
@@ -333,29 +472,33 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
         mGreenSlider.setEditView(mEditView);
         mBlueSlider.setEditView(mEditView);
         
+        mApp = (CelebCamApplication) getApplication();
+        
+        //System.gc();
+        
+  		
+        prefs = PreferenceManager.getDefaultSharedPreferences(this); //
+        prefs.registerOnSharedPreferenceChangeListener(this);
+
+        mLaunch = CelebCamEnum.NONE;
+        
+        if( prefs.getString("twitter_pin", "NOT_SET").equals("NOT_SET"))
+        	mLaunch = CelebCamEnum.TWITTER_PREF;
     }
     
     
     public void surfaceCreated(SurfaceHolder holder) {
-        // The Surface has been created, now tell the camera where to draw the preview.
-        
+
     	Log.d(TAG, "surfaceCreated called");
     	
         mCamera = Camera.open();
-        //mSurfaceView.layout(0, 0, 200, 200);
+        //mZoomAndSnapButton.setCamera( mCamera );
         if( mCamera == null )
         	return;
         
-        mPictureSize = mCamera.getParameters().getPictureSize();
-        
-        mText.setPublishSize(     mPictureSize );
-        mSparkles.setPublishSize( mPictureSize );
-        mBorder.setPublishSize(   mPictureSize );
-        
-        Log.d(TAG, "cam width" + Integer.toString(mPictureSize.width) + " cam height: " + Integer.toString( mPictureSize.height));
-        
-        if( mPublishBitmap == null )
-        	mPublishBitmap = Bitmap.createBitmap( mPictureSize.width, mPictureSize.height, Bitmap.Config.ARGB_8888  );
+        Parameters p = mCamera.getParameters();
+
+        Size mPictureSize = mCamera.getParameters().getPictureSize();
         
         int height = 0;
         int width  = 0;
@@ -369,19 +512,14 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
         {
         	Log.d(TAG, "width greater than height");
        	 	height = mEditView.getHeight();
-       	    width = (mPictureSize.width*height)/mPictureSize.height;
+       	    width = ((mPictureSize.width*height)/mPictureSize.height);
         }
-        
-        if( mPreviewBitmap == null )
-        	mPreviewBitmap = Bitmap.createBitmap( width, height, Bitmap.Config.ARGB_8888);
 
         CelebCamEffectsLibrary.setPublishSize( mPictureSize.width, mPictureSize.height );
         CelebCamEffectsLibrary.setPreviewSize( width, height );
         
-        CelebCamEffectsLibrary.setPreviewBitmap(mPreviewBitmap);
-        CelebCamEffectsLibrary.setPublishBitmap(mPublishBitmap);
+        //mSurfaceView.layout(0, 0, width, height);
         
-        mZoomAndSnapButton.setCamera( mCamera );
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
@@ -389,6 +527,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
     	
     	Log.d(TAG, "surfaceDestroyed called");
         mCamera.stopPreview();
+        mPreviewRunning = false;
         mCamera.release();
         mCamera = null;
     }
@@ -405,31 +544,27 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 
         // stop preview before making changes
         try {
+        	if(mPreviewRunning) {
             mCamera.stopPreview();
-        } catch (Exception e){
-          // ignore: tried to stop a non-existent preview
-        }
+            mPreviewRunning = false;
+        	}
 
-        // set preview size and make any resize, rotate or
-        // reformatting changes here
-
-        // start preview with new settings
-        try {
         Camera.Parameters p = mCamera.getParameters();
         p.setPreviewSize(w, h);
-        //mSurfaceView.layout(0, 0, 200, 200);
-
+        Log.d(TAG, "width: " + Integer.toString(w) + " height: " + Integer.toString(h));
+        p.setPictureSize(w, h);
         mCamera.setParameters(p);
-            mCamera.setPreviewDisplay(holder);
-            mCamera.startPreview();
+        mCamera.setPreviewDisplay(holder);
+        mCamera.startPreview();
             
-
+        mPreviewRunning = true;
         } catch (Exception e){
         
-        Log.d("ERROR", "Error starting camera preview: " + e.getMessage());
+        Log.d(TAG, "Error starting camera preview: " + e.getMessage());
         }
     }
     
+ 
 	public static Camera getCameraInstance(){
 	    Camera c = null;
 	    try {
@@ -441,104 +576,92 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	    return c; // returns null if camera is unavailable
 	}
 
-	ShutterCallback mShutterCallback = new ShutterCallback(){
-		public void onShutter() {}
-	};
-	
-	PictureCallback mPictureCallback = new PictureCallback() {
-		public void onPictureTaken(byte[] data, Camera c) {}
-	};
-	
-	PictureCallback mjpeg = new PictureCallback() {
-		public void onPictureTaken(byte[] data, Camera camera) {
-			if( data != null ) {
-				tempdata = data;
-				startEditor();
-			}
-		}
-	};
-
-	void startEditor()
+	void startEditor(Bitmap bitmap)
 	{
-		mCameraBitmap = BitmapFactory.decodeByteArray( tempdata, 0, tempdata.length);
-
-		CelebCamEffectsLibrary.setState( CelebCamEffectsLibrary.PREVIEW );	
 		
-		CelebCamEffectsLibrary.composeImage( mCameraBitmap, null, CelebCamOverlaidView.current.getBitmap(), CelebCamOverlaidView.current.getMatrix() );
+		String strFunction = " ";
+		try{
+			if( bitmap == null)
+				Log.d(TAG, "Editor was passed a null pointer.");
+			
+			strFunction = "setPreviewBitmap";
+			
+			CelebCamEffectsLibrary.setPreviewBitmap(bitmap);
+			
+			strFunction = "setState";
+			
+			CelebCamEffectsLibrary.setState2( CelebCamEffectsLibrary.PREVIEW );	
+			
+			strFunction = "restore";
+			
+			mCelebView.restore(mApp);
+			
+			strFunction = "addImage";
+			
+			CelebCamEffectsLibrary.addImage( mCelebView.getBitmap(), mCelebView.getMatrix() );
+			
+			strFunction = "addText";
+			
+			CelebCamEffectsLibrary.addText(mText);
+			
+			strFunction = "addSparkles";
+			
+			CelebCamEffectsLibrary.addSparkles( mSparkles );
+			
+			strFunction = "addBorder";
+			
+			CelebCamEffectsLibrary.addBorder(mBorder);
+	
+			//CelebCamEffectsLibrary.slipChannels();
+			
+			strFunction = "mEditView.setBitmap";
+			
+			mEditView.setBitmap(CelebCamEffectsLibrary.getCurrentBitmap2());
+			
+			strFunction = "save";
+			
+			save(CelebCamEffectsLibrary.getCurrentBitmap2());
+			
+			strFunction = "setVisibility";
+			mEditView.setVisibility(View.VISIBLE);
 		
-		CelebCamEffectsLibrary.addText(mText);
-		
-		CelebCamEffectsLibrary.addSparkles( mSparkles );
-		
-		CelebCamEffectsLibrary.addBorder(mBorder);
-		
-		CelebCamEffectsLibrary.slipChannels();
-
-		mEditView.setBitmap(mPreviewBitmap);
-		mEditView.setVisibility(View.VISIBLE);
+		}
+		catch(Exception e)
+		{
+			Log.d(TAG, "startEditor encountered a problem at " + strFunction);
+			Toast.makeText(this, "Error: Cannot start editor.", 10);
+			
+			e.printStackTrace();
+		}
 		
 	}
 	
-	void done() {
 
-		if( tempdata == null )
+	Bitmap finalProcess(Bitmap bitmap) {
+
+		if(bitmap == null )
 		{
 			Toast.makeText( mContext, "No photo to save", 10).show();
-			return;
+			return null;
 		}
 		
-		mCameraBitmap = BitmapFactory.decodeByteArray( tempdata, 0, tempdata.length);
+		CelebCamEffectsLibrary.setPublishBitmap( bitmap );
 		
-		CelebCamEffectsLibrary.setState( CelebCamEffectsLibrary.PUBLISH);
+		CelebCamEffectsLibrary.setState( CelebCamEffectsLibrary.PUBLISH );
 		
-		CelebCamEffectsLibrary.composeImage( mCameraBitmap, null, CelebCamOverlaidView.current.getBitmap(), CelebCamOverlaidView.current.getMatrix() );
+		mCelebView.restore(mApp);
+		CelebCamEffectsLibrary.addImage( mCelebView.getBitmap(), mCelebView.getMatrix() );
 		
 		CelebCamEffectsLibrary.addText(mText);
 		
 		CelebCamEffectsLibrary.addSparkles( mSparkles );
 		
 		CelebCamEffectsLibrary.addBorder(mBorder);
-		
-		String url = Images.Media.insertImage( getContentResolver(), CelebCamEffectsLibrary.getCurrentBitmap(), "celebcam_photo","Taken with celebcam" );
-	
-		((CelebCamApplication) getApplication() ).setMostRecentURL( url );
-		
-		mCameraBitmap.recycle();
-		
-		Bundle bundle = new Bundle();
-
-		mDatabase = mDbHelper.getWritableDatabase();
-		ContentValues values = new ContentValues(); //
-
-		id++;
-		values.put(CelebCamDbHelper.C_ID, id);
-		values.put(CelebCamDbHelper.C_CREATED_AT, 1);
-		//values.put(CelebCamDbHelper.C_SOURCE, "Hello");
-		values.put(CelebCamDbHelper.C_TEXT, "CelebCam Photo");
-		values.put(CelebCamDbHelper.C_USER, "CelebCam");
-
-		try {
-			mDatabase.insertOrThrow(CelebCamDbHelper.TABLE, null, values); //
-
-			} catch (SQLException e) { //
-			// Ignore exception
-			}
-			
-			mDatabase.close();
-		if( url != null ) {
-			bundle.putString("url", url);
-			
-			Intent mIntent = new Intent();
-			mIntent.putExtras(bundle);
-			setResult(RESULT_OK, mIntent);
-			
-	
-
-		}else{
-			Toast.makeText( this, "Picture can not be saved", Toast.LENGTH_SHORT).show();
-		}
-		
+				
 		mCamera.startPreview();
+		
+		return CelebCamEffectsLibrary.getCurrentBitmap();
+		
 	}
 	
 	public void afterTextChanged( Editable text )
@@ -556,53 +679,188 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 		
 	}
 	
-	public void authent(View button){
-		   
-		   try {
-			   String authUrl = httpOauthprovider.retrieveRequestToken(httpOauthConsumer, CALLBACKURL);
-			   Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl));
-			   button.getContext().startActivity(intent);
+	public void save(Bitmap bitmap)
+	{
+		Calendar calendar = Calendar.getInstance();
+		
+		String url = Long.toString(calendar.getTimeInMillis());
+		
+		String createdAt = 
+			Integer.toString(calendar.get(Calendar.DATE))  + "-" +
+			Integer.toString(calendar.get(Calendar.MONTH)) + "-" +
+			Integer.toString(calendar.get(Calendar.YEAR));
+		
+		//((CelebCamApplication) getApplication() ).writeImageToDisk( url, CelebCamEffectsLibrary.applyColorNotes(CelebCamEffectsLibrary.getCurrentBitmap()) );
+		((CelebCamApplication) getApplication() ).writeImageToDisk( url, bitmap );	
+		((CelebCamApplication) getApplication() ).setMostRecentURL( url );
+		
+		if( url != null ) {
+			
+			Bundle bundle = new Bundle();
+
+			mDatabase = mDbHelper.getWritableDatabase();
+			ContentValues values = new ContentValues(); 
+
+
+			values.put(CelebCamDbHelper.C_CREATED_AT, createdAt );
+			values.put(CelebCamDbHelper.C_SOURCE, ((CelebCamApplication) getApplication() ).mostRecentFile());
+			values.put(CelebCamDbHelper.C_TEXT, "CelebCam Photo");
+			values.put(CelebCamDbHelper.C_USER, "CelebCam");
+
+			try {
+				mDatabase.insertOrThrow(CelebCamDbHelper.TABLE, null, values); //
+
+			} catch (SQLException e) { //
+			// Ignore exception
+				Log.d(TAG, e.getMessage());
+			}
+			finally
+			{
+				mDatabase.close();
+			}
+				
+			bundle.putString("url", url);
+			
+			Intent mIntent = new Intent();
+			mIntent.putExtras(bundle);
+			setResult(RESULT_OK, mIntent);
+			
+		}
+	}
+	
+
+	public void onSharedPreferenceChanged(SharedPreferences arg0, String arg1) {
+
+		
+	}
+
+	public void startPreferenceActivity( View v )
+	{
+		startActivity( new Intent( this, SettingsPrefActivity.class));
+	}
+	
+
+ 
+
+	protected void onResume() {
+		super.onResume();
+		Log.i(TAG, "STARTED - onResume()");
+
+		ConfigurationBuilder cb;
+		switch( mLaunch )
+		{
+		case NONE:
+			cb = new ConfigurationBuilder();
+	  		cb.setDebugEnabled(true)
+			  .setOAuthConsumerKey(consumerKEY)
+			  .setOAuthConsumerSecret(consumerSECRET)
+			  .setOAuthAccessToken(prefs.getString("oauth_access_token", ""))
+			  .setOAuthAccessTokenSecret(prefs.getString("oauth_access_secret", ""));
+			
+			twitter = new TwitterFactory(cb.build()).getInstance();
+			break;
+		case TWITTER_PREF:
+			cb = new ConfigurationBuilder();
+			
+	  		cb.setDebugEnabled(true)
+			  .setOAuthConsumerKey(consumerKEY)
+			  .setOAuthConsumerSecret(consumerSECRET);
+	  		
+	  		twitter = new TwitterFactory(cb.build()).getInstance();
+			authenticate_pre_pin();
+			break;
+		default:
+			authenticate_post_pin(prefs.getString("twitter_pin", ""));
+			break;
+		}
+		
+		mLaunch = CelebCamEnum.PERSIST_OPTIONS;
+  		
+
+	}
+
+    public void postTweet(View button) {
+    	
+    	textField = (EditText)findViewById(R.id.twitter_text_field);
+    	
+        String fieldContents = textField.getText().toString();
+        
+		if ( prefs.getString("twitter_pin","NOT_SET").equals("NOT_SET") ){
+			
+			Toast.makeText(this, "After you recieved your pin, you will have to enter it in the settings menus.", Toast.LENGTH_LONG).show();
+			authenticate_pre_pin();
+			mLaunch = CelebCamEnum.SETTINGS_PREF;
+		}
+		else if( fieldContents.length() <= 0 ){
+			Toast.makeText(this, "No text entered.", Toast.LENGTH_SHORT).show();
+		}
+		else
+		{
+			sendTweet( fieldContents );
+		}
+
+    }
+
+	private void authenticate_pre_pin(){
+
+		try {
+			reqTOKEN = twitter.getOAuthRequestToken(callbackURL);
+
+			Intent intent = new Intent(this, TwitterPrefActivity.class);
+			
+			intent.putExtra("request_token", reqTOKEN.getAuthenticationURL());
+			
+			startActivityForResult(intent, RESULT_OK);
+
 		   } catch (Exception e) {
-			   Log.w("oauth fail", e);
-			   Toast.makeText(button.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+			   Log.d(TAG, "Authentication failed.");
 		   }
 	   }
-	   
-	  @Override
-	  protected void onNewIntent(Intent intent) {
-	      super.onNewIntent(intent);
-
-	      Uri uri = intent.getData();
-
-	      //Check if you got NewIntent event due to Twitter Call back only
-
-	      if (uri != null && uri.toString().startsWith(CALLBACKURL)) {
-
-	          String verifier = uri.getQueryParameter(oauth.signpost.OAuth.OAUTH_VERIFIER);
-
-	          try {
-	              // this will populate token and token_secret in consumer
-
-	              httpOauthprovider.retrieveAccessToken(httpOauthConsumer, verifier);
-	              String userKey = httpOauthConsumer.getToken();
-	              String userSecret = httpOauthConsumer.getTokenSecret();
-
-	              // Save user_key and user_secret in user preferences and return
-
-	              SharedPreferences settings = getBaseContext().getSharedPreferences("your_app_prefs", 0);
-	              SharedPreferences.Editor editor = settings.edit();
-	              editor.putString("user_key", userKey);
-	              editor.putString("user_secret", userSecret);
-	              editor.commit();
-
-	          } catch(Exception e){
-
-	          }
-	      } else {
-	          // Do something if the callback comes from elsewhere
-	      }
-
-	  }
 	
-	
+	private void authenticate_post_pin( String oauthVerifier ){
+
+		try {
+			
+			Log.i(TAG, "trying access token"); 
+			Log.d(TAG, "twitter pin" + prefs.getString("twitter_pin", "NOT_SET"));
+			
+			AccessToken at = twitter.getOAuthAccessToken(reqTOKEN, oauthVerifier);
+			
+			Log.d(TAG, "AccessToken : " + at.toString());
+			
+			Editor edit = prefs.edit();
+			edit.putString("oauth_access_token", at.getToken());
+			edit.putString("oauth_access_secret", at.getTokenSecret());
+			edit.commit();
+			
+			twitter.setOAuthAccessToken(at);
+			
+
+		   } catch (Exception e) {
+			   Log.d(TAG, "Authentication failed.");
+		   }
+	   }
+
+
+	private void sendTweet(String fieldContents){ 
+
+		try {
+
+			Log.e("Login", "Twitter Initialised");
+			twitter.updateStatus( fieldContents );
+
+			Toast.makeText(this, "Tweet Successful!", Toast.LENGTH_SHORT).show();
+			Log.i(TAG, "Post Sent");
+
+		} catch (TwitterException e) {
+			Toast.makeText(this, "Tweet error, try again later", Toast.LENGTH_SHORT).show();
+			Log.i(TAG, "Post NOT Sent");
+			Log.e(TAG, "Post NOT Sent", e);
+
+
+		}
+
+	}
+
+
 }

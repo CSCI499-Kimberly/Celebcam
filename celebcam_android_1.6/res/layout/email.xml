@@ -23,12 +23,5 @@ android:layout_width="fill_parent"
 android:onClick="sendEmail">
 </Button>
 
-<Button
-android:id="@+id/Button_OAuth"
-android:text="@string/button_OAuth"
-android:layout_height="wrap_content"
-android:layout_width="fill_parent"
-android:onClick="authent">
-</Button>
 
 </LinearLayout>

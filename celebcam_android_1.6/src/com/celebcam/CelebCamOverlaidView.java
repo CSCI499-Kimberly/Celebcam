@@ -57,6 +57,9 @@ public class CelebCamOverlaidView extends View implements CCMemoryWatcher {
 		static byte MOVE = 1;
 		static byte DOWN = 2;
 		
+		static byte RESTORE = 0;
+		static byte RELEASE = 1;
+		
 		protected boolean mClicked;
 		
 	    protected Bitmap  mBitmap;
@@ -64,12 +67,20 @@ public class CelebCamOverlaidView extends View implements CCMemoryWatcher {
 	    protected byte mActiveFlag;
 	    
 	    protected byte mState;
+	    
+	    protected byte mMemoryState;
+	    
 	    protected boolean mActive;
 	    protected int     mCurrentX;
 	    protected int     mCurrentY;
 		protected float[] mCenter;
 
 	    protected Matrix  mTransformationMatrix;
+	    
+	    protected Matrix  mTranslateMatrix;
+	    protected Matrix  mRotateMatrix;
+	    protected Matrix  mScaleMatrix;
+	    
 	    protected byte    mTransformType;
 	    
 	    protected float[] mCollider;
@@ -91,7 +102,16 @@ public class CelebCamOverlaidView extends View implements CCMemoryWatcher {
 			current = this;
 			mContext = context;
 			
-			mBitmap         = BitmapFactory.decodeResource( getContext().getResources(), R.drawable.rihanna );
+			mBitmap         = 
+				//Bitmap.createScaledBitmap(
+						BitmapFactory.decodeResource( getContext().getResources(), R.drawable.rihanna )
+						//, 100, 100, false)
+						;
+
+//			mBitmap         = 
+//				        Bitmap.createScaledBitmap(
+//						mBitmap
+//						,300,300, false);
 			
 			mScaledRectF    = new RectF(0, 0, mBitmap.getWidth(), mBitmap.getHeight());
 			
@@ -131,6 +151,14 @@ public class CelebCamOverlaidView extends View implements CCMemoryWatcher {
 			paint.setColor(0xffff3300);
 			
 			CCDebug.register( this );
+		}
+		
+		public void toggleVisibility()
+		{
+			if( getVisibility() == View.VISIBLE )
+				setVisibility(View.INVISIBLE);
+			else
+				setVisibility(View.VISIBLE);
 		}
 		
 		public void setBitmap( Bitmap bitmap )
@@ -372,6 +400,31 @@ public class CelebCamOverlaidView extends View implements CCMemoryWatcher {
 		}
 
 
+		public void release( CelebCamApplication app)
+		{
+			if( mBitmap != null )
+			{
+				app.storeInCache(mBitmap, "OVERLAY");
+				mBitmap.recycle();
+				mBitmap = null;
+
+				mMemoryState = RELEASE;
+				
+				invalidate();
+			}
+		}
+		
+		public void restore( CelebCamApplication app)
+		{
+			if( mMemoryState == RELEASE )
+			{
+				mBitmap = app.loadFromCache("OVERLAY");
+				mState = RESTORE;
+				
+				invalidate();
+			}
+		}
+		
 		public void onDraw(Canvas canvas )
 		{
 

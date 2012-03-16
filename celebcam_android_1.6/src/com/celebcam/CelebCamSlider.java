@@ -186,9 +186,11 @@ public class CelebCamSlider extends View implements CCMemoryWatcher {
 	private void setup()
 	{
 		
-		mDefaultBackground = BitmapFactory.decodeResource( getContext().getResources(), R.drawable.color_level_controls_track );
-		mCurrentTop        = BitmapFactory.decodeResource( getContext().getResources(), R.drawable.color_level_controls_slider );
+		//mDefaultBackground = BitmapFactory.decodeResource( getContext().getResources(), R.drawable.color_level_controls_track );
+		//mCurrentTop        = BitmapFactory.decodeResource( getContext().getResources(), R.drawable.color_level_controls_slider );
 
+		mDefaultBackground = mCurrentTop = Bitmap.createBitmap(1,1,Bitmap.Config.ALPHA_8);
+		
 		mHeight = mDefaultBackground.getHeight();
 		mWidth =  mDefaultBackground.getWidth();
 

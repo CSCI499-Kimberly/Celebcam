@@ -19,7 +19,7 @@ class Ratio
 	
 	Ratio( float width, float height )
 	{
-		this.width = width;
+		this.width  = width;
 		this.height = height;
 	}
 }
@@ -47,6 +47,13 @@ class CelebCamBitmap implements CCMemoryWatcher {
 		return 0;
 	}
 	
+	boolean del;
+	
+	public boolean delete()
+	{
+		return del;
+	}
+	
 	int width;
 	int height;
 	
@@ -54,6 +61,8 @@ class CelebCamBitmap implements CCMemoryWatcher {
     short[] red;
 	short[] green;
 	short[] blue;
+	
+	float[] colorNotes = new float[]{1,1,1,1};
 	
 	Bitmap mMergedBitmap;
 	
@@ -63,6 +72,25 @@ class CelebCamBitmap implements CCMemoryWatcher {
 		red	  = new short[size];
 		green = new short[size];
 		blue  = new short[size];
+		
+		colorNotes = new float[3];
+		
+		CCDebug.registerMemoryWatcher( this );
+	}
+	
+	public CelebCamBitmap(int width, int height )
+	{
+		this.width  = width;
+		this.height = height;
+		
+		int size = width*height;
+		
+		alpha = new byte[size];
+		red	  = new short[size];
+		green = new short[size];
+		blue  = new short[size];
+		
+		colorNotes = new float[3];
 		
 		CCDebug.registerMemoryWatcher( this );
 	}
@@ -89,6 +117,29 @@ class CelebCamBitmap implements CCMemoryWatcher {
 		}
 		
 		CCDebug.registerMemoryWatcher( this );
+	}
+	
+	public void release()
+	{
+		width = 0;
+		height = 0;
+		alpha = null;
+		red   = null;
+		green = null;
+		blue  = null;
+		
+		if( mMergedBitmap != null )
+		{
+			mMergedBitmap.recycle();
+			mMergedBitmap = null;
+		}
+
+		CCDebug.unRegister( this );
+	}
+	
+	public float[] getColorNotes()
+	{
+		return colorNotes;
 	}
 	
 	public Bitmap toAndroidBitmap()
@@ -206,6 +257,8 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 	static byte PREVIEW  = 0;
 	static byte PUBLISH  = 1;
 	
+	static float[] mColorNotes = new float[]{1,1,1,1};
+	
 	private static boolean[] EFFECTS = new boolean[6];
 	
 	static void process()
@@ -248,6 +301,13 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 	static void setState( byte state )
 	{
 		mState = state;
+
+	}
+	
+	
+	static void setState2( byte state )
+	{
+		mState = state;
 		
 		if( mState == PREVIEW )
 		{
@@ -260,14 +320,21 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 			mCurrentSize   = mPublishSize;
 		}
 		
+		mCanvas = new Canvas();
 		mCanvas.setBitmap(mCurrentBitmap);
+
 	}
 	
 	static void turnOn( byte effect )
 	{
+		
 		EFFECTS[ effect ] = true;
 	}
 	
+//	static Bitmap getCurrentBitmap()
+//	{
+//		return mCurrentBitmap;
+//	}
 	static void turnOff( byte effect )
 	{
 		EFFECTS[ effect ] = false;
@@ -280,7 +347,12 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 	
 	static void setPreviewBitmap( Bitmap bitmap )
 	{
-		mPreviewBitmap = bitmap;
+		if( mPreviewSize == null )
+			Log.d("DataAcquisitionActivity", "mPreviewSize null ");
+		
+		mPreviewBitmap = Bitmap.createScaledBitmap(bitmap, mPreviewSize.width, mPreviewSize.height, false);
+		
+		//mPreviewBitmap = bitmap;
 		
 		if( mCanvas == null )
 			mCanvas = new Canvas();
@@ -288,19 +360,77 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 		mCanvas.setBitmap(mPreviewBitmap);
 	}
 	
+	
+	
 	static void setPublishBitmap( Bitmap bitmap )
 	{
 		mPublishBitmap = bitmap;
-		
-		if( mPublishCanvas == null )
-			mPublishCanvas = new Canvas();
-		
-		mPublishCanvas.setBitmap(mPublishBitmap);
 	}
 	
 	static CelebCamBitmap getCCBitmap()
 	{
 		return mCCBitmap;
+	}
+
+	static CelebCamBitmap convertToCCBitmap( Bitmap bitmap)
+	{
+		Log.d("DataAcquisitionActivity", " : slip started");
+		
+
+		CelebCamBitmap ccBitmap = new CelebCamBitmap( bitmap.getWidth()*bitmap.getHeight());
+		
+		int width = bitmap.getWidth();
+		int height= bitmap.getHeight();
+		
+		int pixel;
+		
+		for( int i = 0; i < width; i++ )
+		{
+			for( int j = 0; j < height; j++ )
+			{
+				pixel = bitmap.getPixel(i, j);
+				ccBitmap.alpha[(i*height) + j] = (byte) ((pixel & 0xff000000) >> 24);
+				ccBitmap.red[(i*height) + j]   = (short) ((pixel & 0x00ff0000) >> 16);
+				ccBitmap.green[(i*height) + j] = (short) ((pixel & 0x0000ff00) >> 8);
+				ccBitmap.blue[(i*height) + j]  = (short) ((pixel & 0x000000ff));
+			}
+		}
+		
+		Log.d("DataAcquisitionActivity", "slip finished");
+		
+		return ccBitmap;
+	}
+	
+	static void release()
+	{
+		if( mCCBitmap != null )
+		{
+		
+			//CelebCamApplication.getApplication().store(mCCBitmap.alpha, "ALPHA");
+			//CelebCamApplication.getApplication().store(mCCBitmap.red, "RED");
+			//CelebCamApplication.getApplication().store(mCCBitmap.green, "GREEN");
+			//CelebCamApplication.getApplication().store(mCCBitmap.blue, "BLUE");
+			
+			mCCBitmap.release();
+			
+			mCCBitmap = null;
+		}
+
+		mCanvas = null;
+		
+		if( mPreviewBitmap != null )
+		{
+		//	mPreviewBitmap.recycle();
+			mPreviewBitmap = null;
+		}
+		
+		if( mCurrentBitmap != null )
+		{
+//			mCurrentBitmap.recycle();
+			mCurrentBitmap = null;
+		}
+		
+		Runtime.getRuntime().gc();
 	}
 	
 	static void slipChannels()
@@ -308,7 +438,7 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 		Log.d("DataAcquisitionActivity", " : slip started");
 		
 		if( mCCBitmap == null )
-			mCCBitmap = new CelebCamBitmap( mCurrentBitmap.getWidth()*mCurrentBitmap.getHeight());
+			mCCBitmap = new CelebCamBitmap( mCurrentBitmap.getWidth(),mCurrentBitmap.getHeight());
 		
 		int width = mCurrentBitmap.getWidth();
 		int height= mCurrentBitmap.getHeight();
@@ -326,6 +456,14 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 				mCCBitmap.blue[(i*height) + j]  = (short) ((pixel & 0x000000ff));
 			}
 		}
+		
+		mCurrentBitmap.recycle();
+		mPreviewBitmap.recycle();
+		
+		mCurrentBitmap = null;
+		mPreviewBitmap = null;
+		
+		Runtime.getRuntime().gc();
 		
 		Log.d("DataAcquisitionActivity", "slip finished");
 	}
@@ -418,7 +556,7 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 		}
 		else if( mState == PUBLISH )
 		{
-			text.publish( mCanvas );
+			text.publish( mCanvas, mPublishSize, mPreviewSize );
 		}
 		
 		return ReturnType.SUCCEEDED;
@@ -432,7 +570,7 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 		}
 		else if( mState == PUBLISH )
 		{
-			border.publish(mCanvas);
+			border.publish(mCanvas, mPublishSize, mPreviewSize );
 		}
 		
 		return ReturnType.PARTIAL_IMPLEMENTATION;
@@ -440,7 +578,14 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 	
 	static ReturnType addSparkles( CelebCamSparklesView sparkles  )
 	{
-		sparkles.publish(mCanvas);
+		if( mState == PREVIEW )
+		{
+			sparkles.onDraw(mCanvas);
+		}
+		else if( mState == PUBLISH )
+		{
+			sparkles.publish(mCanvas);
+		}
 		
 		return ReturnType.PARTIAL_IMPLEMENTATION;
 	}
@@ -474,8 +619,24 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 
 	}
 	
-	static public void negative( Bitmap bitmap )
+	static public void addImage( Bitmap bitmap, Matrix upperBitmapMatrix)
 	{
+		
+		if( upperBitmapMatrix == null )
+			upperBitmapMatrix = new Matrix();
+
+		if( mState == PUBLISH )
+		{
+			upperBitmapMatrix.postScale((float)mPublishSize.width/mPreviewSize.width, (float)mPublishSize.height/mPreviewSize.height );
+		}
+
+		mCanvas.drawBitmap( bitmap, upperBitmapMatrix, null );
+	}
+	
+	static public Bitmap negative( CelebCamBitmap ccBitmap )
+	{
+		Bitmap bitmap = ccBitmap.toAndroidBitmap();
+		
 		for( int i = 0; i < bitmap.getWidth(); i++ )
 		{
 			for(int j = 0; j < bitmap.getHeight(); j++ )
@@ -483,6 +644,8 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 				bitmap.setPixel(i, j, 0xffffffff & (1 - ( 0x00ffffff & bitmap.getPixel(i, j) )));
 			}
 		}
+		
+		return bitmap;
 	}
 	
 	static public void negative()
@@ -547,12 +710,20 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 	
 	static public Bitmap getCurrentBitmap()
 	{
+		return mCCBitmap.toAndroidBitmap();
+	}
+	
+		static public Bitmap getCurrentBitmap2()
+	{
 		return mCurrentBitmap;
 	}
 
 	static Bitmap adjustChannels( float...amounts )
 	{
 		Log.d("DataAcquisitionActivity", "adjust starting");
+		
+		mColorNotes = amounts;
+		
 		if( mCCBitmap == null )
 		{
 			return mCurrentBitmap;
@@ -617,6 +788,70 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 		}	
 		
 		return mMergedBitmap;
+	}
+	
+	static Bitmap applyColorNotes( Bitmap bitmap )
+	{
+		Log.d("DataAcquisitionActivity", "adjust starting");
+		
+
+		CelebCamBitmap ccBitmap = convertToCCBitmap( bitmap );
+		
+		int width = bitmap.getWidth();
+		int height= bitmap.getHeight();
+		
+		int pixel;
+		
+		float[] exclusion = new float[] {1,1,1,1};
+		
+		for( int i = 0; i < mColorNotes.length && i < exclusion.length; i++ )
+		{
+			exclusion[i] = mColorNotes[i];
+		}
+
+		int a,r,g,b;
+		
+		for( int i = 0; i < width; i++ )
+		{
+			for( int j = 0; j < height; j++ )
+			{
+					a = ( ((int)ccBitmap.alpha[(i*height) + j]) << 24);
+					
+					if ( exclusion[0] * ccBitmap.red[(i*height) + j]  > 0xFF )
+					{
+						r = 0x00FF0000;
+					}
+					else
+					{
+						r = ((int)(   (exclusion[0] * ccBitmap.red[(i*height) + j]  ) )  << 16);
+					}
+					
+					if( exclusion[1] * ccBitmap.green[(i*height) + j] > 0xFF ) 
+					{
+						g = 0x0000FF00;
+					}
+					else
+					{
+						g = ((int)(   (exclusion[1] * ccBitmap.green[(i*height) + j]) )  << 8);
+					}
+				     
+					if( exclusion[2] * ccBitmap.blue[(i*height) + j] > 0xFF )
+					{
+						b = 0x000000FF;
+					}
+					else
+					{
+						b = (int)(    exclusion[2] * ccBitmap.blue[(i*height) + j]);
+					}
+				
+					pixel = a | r | g | b ;
+					
+				bitmap.setPixel(i, j, pixel);
+			}
+			
+		}	
+		
+		return bitmap;
 	}
 	
 	static Bitmap adjustChannel( int channel, float amount )
@@ -870,5 +1105,6 @@ class CelebCamEffectsProcessor extends AsyncTask<CelebCamBitmap, Integer, Bitmap
 			mEditView.setBitmap( bitmap );			
 			
 		}
+		
 	}
 }

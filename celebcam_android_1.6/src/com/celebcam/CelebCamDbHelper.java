@@ -41,7 +41,7 @@ public class CelebCamDbHelper extends SQLiteOpenHelper implements CCMemoryWatche
 
 	public void onCreate(SQLiteDatabase db) {
 		String sql = "create table " + TABLE + " (" + C_ID + " int primary key, "
-		+ C_CREATED_AT + " int, " + C_USER + " text, " + C_TEXT + " text)";
+		+ C_CREATED_AT + " int, " + C_SOURCE + " text, " + C_USER + " text, " + C_TEXT + " text)";
 
 		db.execSQL( sql );
 

@@ -248,6 +248,12 @@ class SparklesEmitter implements CCMemoryWatcher {
 		this.mViewHeight	   = height;
 		this.mCircle		   = new Circle();
 		
+		if( this.mViewHeight <= 0 )
+			this.mViewHeight = 1;
+		
+		if( this.mViewWidth <= 0 )
+			this.mViewWidth = 1;
+		
 		this.mNumberOfBitmaps  = 5;
 		this.mSparkle		   = BitmapFactory.decodeResource( mContext.getResources(), R.drawable.sparkle );
 		
@@ -470,6 +476,26 @@ class SparklesEmitter implements CCMemoryWatcher {
 			tmp = tmp.next;
 		}
 	}
+	
+	public void publish( Canvas canvas )
+	{
+		Node tmp = mFirstNode;
+		
+		Matrix matrix  = new Matrix();
+		
+		Ratio ratio = CelebCamEffectsLibrary.publishToPreviewRatio();
+		
+		while( tmp != null )
+		{
+			matrix.setScale(tmp.model.scaleFactor*ratio.width, tmp.model.scaleFactor*ratio.height);
+			matrix.postTranslate( (tmp.model.mPosition[0] - ((tmp.model.scaleFactor*mSparkle.getWidth() )/2)) *ratio.width
+			                    , (tmp.model.mPosition[1] - ((tmp.model.scaleFactor*mSparkle.getHeight())/2)) *ratio.height);
+
+			canvas.drawBitmap(mBitmaps[ tmp.model.bitmapIndex ].toAndroidBitmap(), matrix, null);
+			
+			tmp = tmp.next;
+		}
+	}
 }
 
 public class CelebCamSparklesView extends View implements CCMemoryWatcher {
@@ -510,18 +536,13 @@ public class CelebCamSparklesView extends View implements CCMemoryWatcher {
 	
 	private int   mTime;
 	
-	private Bitmap mBrushLeft;
-	private Bitmap mBrushRight;
-	
+
 	public CelebCamSparklesView( Context context, AttributeSet attributeSet )
 	{
 		super( context, attributeSet );
 		
 		mContext = context;
-		
-		mBrushLeft  = BitmapFactory.decodeResource(context.getResources(), R.drawable.brush_left);
-		mBrushRight = BitmapFactory.decodeResource(context.getResources(), R.drawable.brush_right);
-		
+
 		mCircleRadius = 50;
 		
 		CCDebug.registerMemoryWatcher( this );
@@ -604,6 +625,9 @@ public class CelebCamSparklesView extends View implements CCMemoryWatcher {
 	{
 		super.onDraw(canvas);
 		
+		if(getVisibility() != View.VISIBLE)
+			return;
+		
 		if( mEmitter == null )
 			mEmitter = new SparklesEmitter(mContext, 100, 0xfff45A82, (float)0.2, getWidth(), getHeight());
 
@@ -619,11 +643,6 @@ public class CelebCamSparklesView extends View implements CCMemoryWatcher {
 				canvas.drawCircle(mCurrentX, mCurrentY, mCircleRadius, paint);
 			
 			mEmitter.update();
-			
-			if( (mEmitter.getDirection() & SparklesEmitter.WEST) > 0)
-				canvas.drawBitmap(mBrushLeft, mCurrentX - mBrushLeft.getWidth()/2, mCurrentY - mBrushLeft.getHeight()/2, null);
-			else if( (mEmitter.getDirection() & SparklesEmitter.EAST) > 0)
-				canvas.drawBitmap(mBrushRight, mCurrentX - mBrushRight.getWidth()/2, mCurrentY - mBrushRight.getHeight()/2, null);
 
 			invalidate();
 		}
@@ -633,7 +652,7 @@ public class CelebCamSparklesView extends View implements CCMemoryWatcher {
 	{
 		if( getVisibility() == VISIBLE )
 		{
-			(new SparklesEmitter(mContext, 10, 0xfff45A82, (float)0.2, mPublishSize.width, mPublishSize.height)).draw(canvas);
+			mEmitter.publish(canvas);
 		}
 	}
 }

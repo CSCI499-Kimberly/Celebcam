@@ -1,15 +1,18 @@
 package com.celebcam;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
 
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
 import android.os.Environment;
 import android.util.Log;
@@ -19,18 +22,31 @@ import android.net.Uri;
 
 public class CelebCamApplication extends Application {
 
-	private String mURLOfMostRecentPhoto;
+	private final String TAG = "CelebCamApplication";
+	private String       mURLOfMostRecentPhoto;
 	private CelebCamFont mFont;
+    private boolean      mExternalStorageAvailable = false;
+    private boolean      mExternalStorageWriteable = false;
+    
+    static private CelebCamApplication mCurrent;
 	
-	public void onCreate()
+    public void onCreate()
 	{
 		super.onCreate();
 
-		CelebCamFont.setFont(getBaseContext(), R.drawable.font_512, 71, 50);
+		mCurrent = this;
 		
-        boolean mExternalStorageAvailable = false;
-        boolean mExternalStorageWriteable = false;
-        String state = Environment.getExternalStorageState();
+		CelebCamFont.setFont(getBaseContext(), R.drawable.font_512, 71, 50);
+		 
+		CelebCamLibrary.createLibrary();
+//		CelebCamLibrary.addToLibrary( BitmapFactory.decodeResource(getResources(), R.drawable.tom_cruise));
+//		CelebCamLibrary.addToLibrary( BitmapFactory.decodeResource(getResources(), R.drawable.zeta));
+//		CelebCamLibrary.addToLibrary( BitmapFactory.decodeResource(getResources(), R.drawable.justin_beiber));
+//		CelebCamLibrary.addToLibrary( BitmapFactory.decodeResource(getResources(), R.drawable.beyonce));
+//		CelebCamLibrary.addToLibrary( BitmapFactory.decodeResource(getResources(), R.drawable.rihanna));
+
+		
+		String state = Environment.getExternalStorageState();
 
         if (Environment.MEDIA_MOUNTED.equals(state)) {
             // We can read and write the media
@@ -44,23 +60,22 @@ public class CelebCamApplication extends Application {
             //  to know is we can neither read nor write
             mExternalStorageAvailable = mExternalStorageWriteable = false;
         }
-        
-        if( mExternalStorageWriteable )
-        {
-        	Log.d("CelebCamApplication", "storage writable.");
-        	createExternalStoragePublicPicture();
-        	
-        }
-        else
-        {
-        	Log.d("CelebCamApplication", "cannot write");
-        }
 	}
 	
-
-	public void onTerminate()
+    static public CelebCamApplication getApplication()
+    {
+    	return mCurrent;
+    }
+    
+	
+	public boolean isWritable()
 	{
-		super.onTerminate();
+		return mExternalStorageWriteable;
+	}
+	
+	public boolean isStorageAvailable()
+	{
+		return mExternalStorageAvailable;
 	}
 	
 	public void setMostRecentURL( String url )
@@ -92,8 +107,7 @@ public class CelebCamApplication extends Application {
 		getResources().getString(R.string.email_subject));
 		
 		emailIntent.setType("image/jpg");
-		//emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, getResources()
-		// .getString(R.string.email_message));
+		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, getResources().getString(R.string.email_message));
 
 		Uri uri = Uri.parse( getMostRecentURL() );
 		
@@ -106,35 +120,173 @@ public class CelebCamApplication extends Application {
 		
 	}
 	
-	void createExternalStoragePublicPicture() {
-	    // Create a path where we will place our picture in the user's
-	    // public pictures directory.  Note that you should be careful about
-	    // what you place here, since the user often manages these files.  For
-	    // pictures and other media owned by the application, consider
-	    // Context.getExternalMediaDir().
-	    File path = Environment.getExternalStorageDirectory();
-	   
-	    
-	   
-	    //File file = new File(path, "DemoPicture.jpg");
+	public String mostRecentFile()
+	{
+		return mMostRecentFile;
+	}
+	
+	String mMostRecentFile = new String();
+	
+	File file;
+	public void storeInCache(byte[] data, String name)
+	{
 
-	    Log.d("CelebcamApp data", path.getParent() );
+		Log.d(TAG,"storing in cache...");
+		
+		    try {
+		    	deleteFile(name);
+			FileOutputStream tempFile = openFileOutput(name, Context.MODE_PRIVATE);//new FileOutputStream(file);
+			
+			if( tempFile != null )
+			{
+				tempFile.write(data);
+				tempFile.close();
+				
+				tempFile = null;
+				data     = null;
+			}
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			Log.d(TAG, "FileNotFoundException");
+		} catch (IOException e) {
+			e.printStackTrace();
+			Log.d(TAG, "IOException");
+		}
+		
+		Log.d(TAG,"store completed.");
+	}
+	
+	public void storeInCache(Bitmap bitmap, String name)
+	{
+
+		Log.d(TAG,"storing in cache...");
+		
+		 try {
+		    
+		    deleteFile(name);
+		    
+			FileOutputStream tempFile = openFileOutput(name, Context.MODE_PRIVATE);//new FileOutputStream(file);
+			
+			if( tempFile != null )
+			{
+				bitmap.compress(Bitmap.CompressFormat.PNG, 100, tempFile);
+				tempFile.close();
+				
+				tempFile = null;
+			}
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			Log.d(TAG, "FileNotFoundException");
+		} catch (IOException e) {
+			e.printStackTrace();
+			Log.d(TAG, "IOException");
+		}
+		
+		Log.d(TAG,"store completed.");
+	}
+	
+	
+	public Bitmap loadFromCache( String name )
+	{
+		Log.d(TAG, "loading from cache...");
+		
+		Bitmap bitmap = null;
+		try {
+		
+			FileInputStream tempFile = openFileInput(name);
+
+			bitmap =  BitmapFactory.decodeStream(tempFile);
+		
+			tempFile = null;
+		
+			if(bitmap == null )
+				Log.d("DataAcquisitionActivity", "loadFromCache failed");
+		
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.d("DataAcquisitionActivity", "loadFromCache file Not found");
+		}
+		
+		Log.d(TAG, "load completed.");
+		
+		return bitmap;
+	}
+
+	public void emptyCache()
+	{
+		if( file != null )
+		file.delete();
+	}
+	
+	public void store(short[] data, String name)
+	{
+		try {
+			
+			
+			FileOutputStream tempFile = openFileOutput(name, Context.MODE_PRIVATE);
+			
+			
+			if( tempFile != null )
+			{
+				//tempFile.write(data);
+				tempFile.close();
+				data = null;
+			}
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public boolean load(byte[] data, String name)
+	{
+		try {
+			FileInputStream tempFile = openFileInput(name );
+			
+			if( tempFile != null )
+			{
+				tempFile.read(data);
+				tempFile.close();
+				return true;
+			}
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	
+	
+	public void writeImageToDisk( String fileName, Bitmap bitmap ) {
+		
+		if( !isWritable())
+			return;
+		
+	    File path = new File( Environment.getExternalStorageDirectory().toString() + "/DCIM/Camera/Celebcam");
+	    
+	    mMostRecentFile = path +"/"+ fileName;
+	    
+	    
+	    Log.d("FileName: ", mMostRecentFile);
+	    
+	    File file = new File(path, fileName );
+
 	    try {
 	        // Make sure the Pictures directory exists.
 	        path.mkdirs();
-
-	        // Very simple code to copy a picture from the application's
-	        // resource into the external file.  Note that this code does
-	        // no error checking, and assumes the picture is small (does not
-	        // try to copy it in chunks).  Note that if external storage is
-	        // not currently mounted this will silently fail.
-	        InputStream is = getResources().openRawResource(R.drawable.tom_cruise);
-	       // OutputStream os = new FileOutputStream(file);
-	        byte[] data = new byte[is.available()];
-	        is.read(data);
-	       // os.write(data);
-	        is.close();
-	        //os.close();
+        
+	        OutputStream os = new FileOutputStream(file);
+	        
+	        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+	        os.close();
 
 	        // Tell the media scanner about the new file so that it is
 	        // immediately available to the user.
@@ -152,77 +304,16 @@ public class CelebCamApplication extends Application {
 				} });
 				
 	        connection.connect();
-	        Uri uri;
-	       //connection.scanFile(file.toString(),  null);
+	        
+	        if( connection.isConnected() )
+	        	connection.scanFile(file.toString(),  null);
 	             
 	            
 	    } catch (IOException e) {
 	        // Unable to create file, likely because external storage is
 	        // not currently mounted.
-	        //Log.w("ExternalStorage", "Error writing " + file, e);
+	        Log.w("ExternalStorage", "Error writing " + file, e);
 	    }
 	}
-//
-//	void deleteExternalStoragePublicPicture() {
-//	    // Create a path where we will place our picture in the user's
-//	    // public pictures directory and delete the file.  If external
-//	    // storage is not currently mounted this will fail.
-//	    File path = Environment.getExternalStoragePublicDirectory(
-//	            Environment.DIRECTORY_PICTURES);
-//	    File file = new File(path, "DemoPicture.jpg");
-//	    file.delete();
-//	}
-//
-//	boolean hasExternalStoragePublicPicture() {
-//	    // Create a path where we will place our picture in the user's
-//	    // public pictures directory and check if the file exists.  If
-//	    // external storage is not currently mounted this will think the
-//	    // picture doesn't exist.
-//	    File path = Environment.getExternalStoragePublicDirectory(
-//	            Environment.DIRECTORY_PICTURES);
-//	    File file = new File(path, "DemoPicture.jpg");
-//	    return file.exists();
-//	}
-//	
-	public static final int MEDIA_TYPE_IMAGE = 1;
-	public static final int MEDIA_TYPE_VIDEO = 2;
-
-	/** Create a file Uri for saving an image or video */
-	private static Uri getOutputMediaFileUri(int type){
-	      return Uri.fromFile(getOutputMediaFile(type));
-	}
-
-	/** Create a File for saving an image or video */
-	private static File getOutputMediaFile(int type){
-	    // To be safe, you should check that the SDCard is mounted
-	    // using Environment.getExternalStorageState() before doing this.
-
-	    File mediaStorageDir = new File(Environment.getExternalStorageDirectory(
-	              ), "MyCameraApp");
-	    // This location works best if you want the created images to be shared
-	    // between applications and persist after your app has been uninstalled.
-
-	    // Create the storage directory if it does not exist
-	    if (! mediaStorageDir.exists()){
-	        if (! mediaStorageDir.mkdirs()){
-	            Log.d("MyCameraApp", "failed to create directory");
-	            return null;
-	        }
-	    }
-
-	    // Create a media file name
-	    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-	    File mediaFile;
-	    if (type == MEDIA_TYPE_IMAGE){
-	        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-	        "IMG_"+ timeStamp + ".jpg");
-	    } else if(type == MEDIA_TYPE_VIDEO) {
-	        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-	        "VID_"+ timeStamp + ".mp4");
-	    } else {
-	        return null;
-	    }
-
-	    return mediaFile;
-	}
+	
 }

@@ -53,6 +53,12 @@ public final class CCDebug {
 			memUsers.add( object );
 		}
 		
+		static void unRegister( Object object)
+		{
+			memUsers.remove( object );
+			listeners.remove(object);
+		}
+		
 		static int getMemoryUsage()
 		{
 			if( mFirstRun )

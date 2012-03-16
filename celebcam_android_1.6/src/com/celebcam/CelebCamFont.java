@@ -74,7 +74,11 @@ public class CelebCamFont implements CCMemoryWatcher {
 	int spaceBetweenCharacters;
 	int numberOfCharacters = 40;
 	static CelebCamFont currentFont;
-	private Context mContext;
+
+	float scaledSpacing;
+	float degreesRotated;
+	float xFactor;
+	float yFactor;
 	
 	public CelebCamFont( )
 	{
@@ -84,6 +88,7 @@ public class CelebCamFont implements CCMemoryWatcher {
 	{
 		this.size = size;
 		this.spaceBetweenCharacters = spaceBetweenCharacters;
+		this.scaledSpacing = spaceBetweenCharacters;
 		Bitmap font = BitmapFactory.decodeResource( context.getResources(), resId );
 		Bitmap character;
 		int count = 0;
@@ -187,6 +192,21 @@ public class CelebCamFont implements CCMemoryWatcher {
 		}
 	}
 	
+	public void adjustSpacing( float  factor )
+	{
+		scaledSpacing *= factor;
+	}
+	
+	public void setXFactor( float factor )
+	{
+		xFactor = factor;
+	}
+	
+	public void setYFactor( float factor )
+	{
+		yFactor = factor;
+	}
+	
 	public void paint( Canvas canvas, String text, float x, float y, Matrix transformMatrix )
 	{
 	
@@ -203,8 +223,8 @@ public class CelebCamFont implements CCMemoryWatcher {
 			
 			if( tmp != null )
 			{
-				posMatrix.setTranslate(x + (i*spaceBetweenCharacters), y);
-				tmpMatrix.setConcat(transformMatrix, posMatrix);
+				posMatrix.setTranslate(x + (i*scaledSpacing), y);
+				tmpMatrix.setConcat( posMatrix, transformMatrix);
 				
 				canvas.drawBitmap( tmp , tmpMatrix, null );
 			}
@@ -220,6 +240,38 @@ public class CelebCamFont implements CCMemoryWatcher {
 	{
 		
 		currentFont.paint( canvas, text,0,0, transformMatrix );
+	}
+	
+	static public void publish( Canvas canvas, String text, Matrix transformMatrix, Size publishSize)
+	{
+		
+		Ratio ratio = CelebCamEffectsLibrary.publishToPreviewRatio();
+		
+		char textToPaint[] = text.toCharArray();
+		
+		Bitmap tmp;
+		
+		Matrix tmpMatrix = new Matrix();
+		Matrix posMatrix = new Matrix();
+		
+		for( int i = 0; i < text.length(); i++ )
+		{
+			tmp = currentFont.getBitmapOf( textToPaint[i] );
+			
+			if( tmp != null )
+			{
+				posMatrix.setTranslate((i*currentFont.scaledSpacing)*ratio.width, 0);
+				tmpMatrix.setConcat( posMatrix, transformMatrix);
+				
+				canvas.drawBitmap( tmp , tmpMatrix, null );
+			}
+		}
+	}
+
+
+	public static void paint(Canvas canvas, CelebCamText next) {
+
+		
 	}
 
 	

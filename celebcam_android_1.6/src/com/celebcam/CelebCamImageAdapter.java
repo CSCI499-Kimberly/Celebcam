@@ -4,37 +4,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Gallery;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.content.Context;
 
-
-
 public class CelebCamImageAdapter extends BaseAdapter {
     private Context   mContext;
-    private Integer[] mThumbIds;
     
     public CelebCamImageAdapter(Context c) {
         mContext = c;
     }
 
     public int getCount() {
-        return mThumbIds.length;
+        return PhotoBrowserActivity.mSize;
     }
 
     public Object getItem(int position) {
-        return null;
+        return position;
     }
 
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
-    private void loadImageViaUriInDatabase()
-    {
-    	
-    }
-    	
+
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView;
@@ -47,7 +39,9 @@ public class CelebCamImageAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        imageView.setImageResource(mThumbIds[position]);
+        imageView.setImageBitmap(PhotoBrowserActivity.mBitmaps[position]);
+
+        
         return imageView;
     }
 

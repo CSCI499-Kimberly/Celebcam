@@ -2,6 +2,7 @@
 
 <FrameLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/data_acquisition_frame"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
@@ -13,39 +14,45 @@
   	<SurfaceView
     	android:id="@+id/camera_surface"
     	android:layout_gravity="center"
-    	android:layout_width="640dp"
-    	android:layout_height="512dp"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
      />
- 
- 
+ 	
+   	<com.celebcam.GreenScreen
+    	android:id="@+id/green_screen"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+     />
+   	 	
     <com.celebcam.CelebCamOverlaidView
     	android:id="@+id/celeb_surface"
     	android:layout_gravity="center"
-    	android:layout_width="640dp"
-    	android:layout_height="512dp"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
     />
-  
+    
+    
     <com.celebcam.CelebCamTextView
     	android:id="@+id/text_surface"
     	android:layout_gravity="center"
-    	android:layout_width="640dp"
-    	android:layout_height="512dp"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
     	android:visibility="gone"
     />
   
     <com.celebcam.CelebCamSparklesView
         android:id ="@+id/sparkles_view"
     	android:layout_gravity="center"
-    	android:layout_width="640dp"
-    	android:layout_height="512dp"
-    	android:visibility="gone"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:visibility="invisible"
     />
     
     <com.celebcam.CelebCamBorderView
         android:id ="@+id/border_view"
     	android:layout_gravity="center"
-    	android:layout_width="640dp"
-    	android:layout_height="512dp"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
     	android:visibility="gone"
     />
     
@@ -57,6 +64,13 @@
     android:layout_gravity="right|bottom"
     />
     
+    <com.celebcam.CelebCamLibraryView
+    	android:id="@+id/library_surface"
+    	android:layout_gravity="center"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    /> 
+    
 <!--  END OF CRITICAL SECTION, END OF CRITICAL SECTION, END OF CRITICAL SECTION -->
 <!--  END OF CRITICAL SECTION, END OF CRITICAL SECTION, END OF CRITICAL SECTION -->
 <!--  END OF CRITICAL SECTION, END OF CRITICAL SECTION, END OF CRITICAL SECTION -->
@@ -64,8 +78,8 @@
    	<com.celebcam.CelebCamEditView 
    	    android:id="@+id/editing_view"   	
     	android:layout_gravity="center"
-    	android:layout_width="640dp"
-    	android:layout_height="512dp"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
     	
      />
    	    
@@ -137,12 +151,8 @@
 	        android:text="Add Text"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content" />
-	    
-	    <Button 
-	        android:id="@+id/effect_add_border"
-	        android:text="Add Border"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content" />
+
+
 	    
 	    <Button 
 	        android:id="@+id/effect_add_sparkles"
@@ -185,6 +195,12 @@
 	        android:text="Save"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content" />
+	     
+	     <Button 
+	        android:id="@+id/gallery_button"
+	        android:text="Gallery"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content" />
 	    	    
 	    <Button 
 	        android:id="@+id/email_button"
@@ -192,14 +208,22 @@
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content" />
 	    
-		<Button
-		android:id="@+id/Button_OAuth"
-		android:text="Twitter"
+	 <EditText
+	        android:id="@+id/twitter_text_field"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        />
+	    	    
+		    
+	  <Button
+		android:id="@+id/twitter_post_button"
+		android:text="Post Tweet"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent"
-		android:onClick="authent"
+		android:onClick="postTweet"
 		/>	
-		    
+
+				
 	    <Button 
 	        android:id="@+id/debug_button"
 	        android:text="Debug"
@@ -209,8 +233,87 @@
 	</LinearLayout>
 	</ScrollView>
 
+	<!--
  </SlidingDrawer>
+ 
+	<SlidingDrawer
+     android:id="@+id/menus"
+     android:layout_width="fill_parent"
+     android:layout_height="fill_parent"
+     android:orientation="horizontal"
+     android:layout_gravity="right"
 
+
+     android:handle="@+id/effect"
+     android:content="@+id/sub_menus">	  
+       
+	    <Button 
+	        android:id="@+id/effect"
+	        android:text=" "
+	        android:layout_width="50dp"
+	        android:layout_height="fill_parent" />
+	    
+	    
+	    <FrameLayout
+	        android:id="@+id/sub_menus"
+	        android:layout_width="fill_parent"
+	        android:layout_height="fill_parent"
+			android:orientation="horizontal"
+	        >
+		
+			<SlidingDrawer
+     android:id="@+id/borders"
+     android:layout_width="200dp"
+     android:layout_height="fill_parent"
+     android:orientation="horizontal"
+     android:layout_gravity="right"
+
+
+     android:handle="@+id/effect_add_border"
+     android:content="@+id/border_list">	  
+       
+	    <Button 
+	        android:id="@+id/effect_add_border"
+	        android:text="1"
+	        android:layout_width="30dp"
+	        android:layout_height="fill_parent" />
+	    
+	    <ListView
+	        android:id="@+id/border_list"
+	        android:layout_width="200dp"
+	        android:layout_height="wrap_content" />
+	    
+	 </SlidingDrawer>
+	 
+						<SlidingDrawer
+     android:id="@+id/borders2"
+     android:layout_width="fill_parent"
+     android:layout_height="fill_parent"
+     android:orientation="horizontal"
+     android:layout_gravity="right"
+
+
+     android:handle="@+id/effect_add_border2"
+     android:content="@+id/border_list2">	  
+       
+	    <Button 
+	        android:id="@+id/effect_add_border2"
+	        android:text="1"
+	        android:layout_width="30dp"
+	        android:layout_height="fill_parent" />
+	    
+	    <ListView
+	        android:id="@+id/border_list2"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content" />
+	    
+	 </SlidingDrawer>
+
+	 
+	 </FrameLayout>
+	    -->
+	 </SlidingDrawer>
+	    
   <com.celebcam.CCDebugView
       	     android:id="@+id/debug_view"
 	        android:layout_width="fill_parent"

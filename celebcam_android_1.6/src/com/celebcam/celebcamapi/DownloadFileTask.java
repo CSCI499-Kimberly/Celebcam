@@ -7,6 +7,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import com.celebcam.CelebCamLibrary;
+
+
 import android.os.AsyncTask;
 
 /** 
@@ -15,7 +18,7 @@ import android.os.AsyncTask;
  * @author William Locke
  * @todo Implement exceptions, handle errors downloading
  */  
-class DownloadFileTask extends AsyncTask<String, String, String> {
+public class DownloadFileTask extends AsyncTask<String, String, byte[]> {
 
 	public byte[] fileData;
 	public Object delegate;
@@ -44,7 +47,7 @@ class DownloadFileTask extends AsyncTask<String, String, String> {
 	}
 
 	@Override
-	protected String doInBackground(String... aurl) {
+	protected byte[] doInBackground(String... aurl) {
 		int count;
 
 		try {
@@ -71,7 +74,8 @@ class DownloadFileTask extends AsyncTask<String, String, String> {
 			output.close();
 			input.close();
 		} catch (Exception e) {}
-		return null;
+		
+		return fileData;
 
 	}
 	protected void onProgressUpdate(String... progress) {
@@ -80,9 +84,10 @@ class DownloadFileTask extends AsyncTask<String, String, String> {
 	}
 
 	@Override
-	protected void onPostExecute(String unused) {
+	protected void onPostExecute(byte[] imageData) {
 		java.lang.reflect.Method method = null;
 		
+		CelebCamLibrary.getLibrary().addToLibrary( imageData );
 		try {
 			method = delegate.getClass().getMethod(callback, new Class[] { this.getClass() });
 		} catch (SecurityException e) {

@@ -6,15 +6,9 @@
 android:summary="@string/yourName" android:key="username"></EditTextPreference>
 
 <EditTextPreference android:title="@string/titleFBUsername"
-android:summary="@string/facebookUsername" android:key="username"></EditTextPreference>
+android:summary="@string/facebookUsername" android:key="fb_username"></EditTextPreference>
 
 <EditTextPreference android:title="@string/titleFBPassword"
-android:summary="@string/facebookPassword" android:key="username"></EditTextPreference>
+android:summary="@string/facebookPassword" android:key="fb_pass"></EditTextPreference>
 
-<EditTextPreference android:title="@string/titleTwitterUsername"
-android:summary="@string/twitterUsername" android:key="username"></EditTextPreference>
-
-<EditTextPreference android:title="@string/titleTwitterPassword"
-android:summary="@string/twitterPassword" android:key="username"></EditTextPreference>
-	
 </PreferenceScreen>
