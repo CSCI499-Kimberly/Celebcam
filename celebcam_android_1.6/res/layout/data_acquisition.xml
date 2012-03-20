@@ -220,7 +220,7 @@
 		android:text="Post Tweet"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent"
-		android:onClick="postTweet"
+		android:onClick="pressTweet"
 		/>	
 
 				

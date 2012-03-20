@@ -17,6 +17,7 @@ import android.hardware.Camera.ShutterCallback;
 import android.hardware.Camera.Size;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
@@ -41,6 +42,7 @@ import android.text.TextWatcher;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -132,18 +134,26 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	SQLiteDatabase   mDatabase;
 	CelebCamDbHelper mDbHelper;
 	
-	private static final String callbackURL = "oob";
+	
+	
+	//private static final String TAG = "PersistOptions";
+
+	private static final String callbackURL = "app://twitter";
 	private static final String consumerKEY = "8JlWrU08QfMLG3SwVUU4LQ";
 	private static final String consumerSECRET = "NrHaVm2My0t2wf2nUaMt2Vno98mPHzg8YOgHBxlt1M";
-
+	
 	private static final String userAccessTOKEN = "accessToken";
 	private static final String userAccessTokenSECRET = "accessTokenSecret";
+	private SharedPreferences mPrefs;
+
 	
 	private Twitter twitter;
 	private RequestToken reqTOKEN;
-
-
+	
 	EditText textField;
+	
+	
+	
 
 	private CelebCamEnum mLaunch;
 	
@@ -205,26 +215,30 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
         
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         
-                Log.i(TAG, "STARTED - onCreate() ");
 
+        Log.i(TAG, "STARTED - onCreate() ");
+
+		mPrefs = getSharedPreferences("twitterPrefs", MODE_PRIVATE);
+		Log.i(TAG, "Got Preferences");
+        
+	//	String link = "http://tinyurl.com/c3lcam";	//get URL from server
+		
+	//	String celebrityName = "Rihanna";	//get celebrity from server
+		
+    	textField = (EditText)findViewById(R.id.twitter_text_field);
+    	textField.setText("Check out this picture I took with " + ". " + ". #CelebCam" , TextView.BufferType.NORMAL );
+
+		
         //Create new twitter item using 4jtwitter
-      		//twitter = new TwitterFactory().getInstance();
-      		Log.i(TAG, "Got Twitter4j");
+      	twitter = new TwitterFactory().getInstance();
+      	Log.i(TAG, "Got Twitter4j");
       		
-      		// Tell twitter4j that we want to use it with our app
-      		// Use twitter4j to authenticate
-      		//twitter.setOAuthConsumer(consumerKEY, consumerSECRET);
-      		Log.i(TAG, "Inflated Twitter4j");
-      		
-      		ConfigurationBuilder cb = new ConfigurationBuilder();
-      		cb.setDebugEnabled(true)
-      		  .setOAuthConsumerKey(consumerKEY)
-      		  .setOAuthConsumerSecret(consumerSECRET);
-      		  //.setOAuthAccessToken("516977033-GRn9ZDdnH0FOTDgIXRDqm812LC12ZBr5U8RyUEFk")
-      		  //.setOAuthAccessTokenSecret("	wyGEClY1BJZddvVxAvajzLDKcY4keUzkegoKLQGTA");
-      		TwitterFactory tf = new TwitterFactory(cb.build());
-      		twitter = tf.getInstance();
-      		
+      	// Tell twitter4j that we want to use it with our app
+      	// Use twitter4j to authenticate
+      	twitter.setOAuthConsumer(consumerKEY, consumerSECRET);
+      	Log.i(TAG, "Inflated Twitter4j");
+		
+                
       		
         prefs = PreferenceManager.getDefaultSharedPreferences(this); //
         prefs.registerOnSharedPreferenceChangeListener(this);
@@ -482,8 +496,8 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 
         mLaunch = CelebCamEnum.NONE;
         
-        if( prefs.getString("twitter_pin", "NOT_SET").equals("NOT_SET"))
-        	mLaunch = CelebCamEnum.TWITTER_PREF;
+//        if( prefs.getString("twitter_pin", "NOT_SET").equals("NOT_SET"))
+//        	mLaunch = CelebCamEnum.TWITTER_PREF;
     }
     
     
@@ -746,121 +760,217 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 		super.onResume();
 		Log.i(TAG, "STARTED - onResume()");
 
-		ConfigurationBuilder cb;
-		switch( mLaunch )
-		{
-		case NONE:
-			cb = new ConfigurationBuilder();
-	  		cb.setDebugEnabled(true)
-			  .setOAuthConsumerKey(consumerKEY)
-			  .setOAuthConsumerSecret(consumerSECRET)
-			  .setOAuthAccessToken(prefs.getString("oauth_access_token", ""))
-			  .setOAuthAccessTokenSecret(prefs.getString("oauth_access_secret", ""));
-			
-			twitter = new TwitterFactory(cb.build()).getInstance();
-			break;
-		case TWITTER_PREF:
-			cb = new ConfigurationBuilder();
-			
-	  		cb.setDebugEnabled(true)
-			  .setOAuthConsumerKey(consumerKEY)
-			  .setOAuthConsumerSecret(consumerSECRET);
-	  		
-	  		twitter = new TwitterFactory(cb.build()).getInstance();
-			authenticate_pre_pin();
-			break;
-		default:
-			authenticate_post_pin(prefs.getString("twitter_pin", ""));
-			break;
-		}
+//		ConfigurationBuilder cb;
+//		switch( mLaunch )
+//		{
+//		case NONE:
+//			cb = new ConfigurationBuilder();
+//	  		cb.setDebugEnabled(true)
+//			  .setOAuthConsumerKey(consumerKEY)
+//			  .setOAuthConsumerSecret(consumerSECRET)
+//			  .setOAuthAccessToken(prefs.getString("oauth_access_token", ""))
+//			  .setOAuthAccessTokenSecret(prefs.getString("oauth_access_secret", ""));
+//			
+//			twitter = new TwitterFactory(cb.build()).getInstance();
+//			break;
+//		case TWITTER_PREF:
+//			cb = new ConfigurationBuilder();
+//			
+//	  		cb.setDebugEnabled(true)
+//			  .setOAuthConsumerKey(consumerKEY)
+//			  .setOAuthConsumerSecret(consumerSECRET);
+//	  		
+//	  		twitter = new TwitterFactory(cb.build()).getInstance();
+//			authenticate_pre_pin();
+//			break;
+//		default:
+//			authenticate_post_pin(prefs.getString("twitter_pin", ""));
+//			break;
+//		}
 		
-		mLaunch = CelebCamEnum.PERSIST_OPTIONS;
+//		mLaunch = CelebCamEnum.PERSIST_OPTIONS;
   		
 
 	}
 
-    public void postTweet(View button) {
+
+	
+    public void pressTweet(View button) {
+      //  String fieldContents = textField.getText().toString();
     	
-    	textField = (EditText)findViewById(R.id.twitter_text_field);
-    	
-        String fieldContents = textField.getText().toString();
-        
-		if ( prefs.getString("twitter_pin","NOT_SET").equals("NOT_SET") ){
+	//	Toast.makeText(this, textField.getText().toString(), Toast.LENGTH_SHORT).show();
+//    	textField.invalidate();
+		if ( textField.getText().toString().equals("") ){
+			Toast.makeText(this, "type something", Toast.LENGTH_SHORT).show();
+		}
+		else{
+
 			
-			Toast.makeText(this, "After you recieved your pin, you will have to enter it in the settings menus.", Toast.LENGTH_LONG).show();
-			authenticate_pre_pin();
-			mLaunch = CelebCamEnum.SETTINGS_PREF;
-		}
-		else if( fieldContents.length() <= 0 ){
-			Toast.makeText(this, "No text entered.", Toast.LENGTH_SHORT).show();
-		}
-		else
-		{
-			sendTweet( fieldContents );
+			if (mPrefs.contains(userAccessTOKEN)) {
+				Log.i(TAG, "Repeat User");
+				loginAuthorisedUser();
+			} else {
+				Log.i(TAG, "New User");
+				
+				Intent intent = new Intent( this, TwitterLauncherActivity.class );
+				
+				startActivityForResult( intent, RESULT_OK );
+			}
+			/*
+			//Toast.makeText(this, fieldContents, Toast.LENGTH_SHORT).show();
+			Log.i(TAG, "New User");
+			authent();
+			Log.i(TAG, "New User authentication");
+			*/
 		}
 
     }
+	
+    
+    
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
+		
+		sendTweet();
+		
+		
+	}
 
-	private void authenticate_pre_pin(){
 
+	private void loginAuthorisedUser() {
+		String token = mPrefs.getString(userAccessTOKEN, null);
+		String secret = mPrefs.getString(userAccessTokenSECRET, null);
+
+		// Create the twitter access token from the credentials we got previously
+		AccessToken at = new AccessToken(token, secret);
+
+		twitter.setOAuthAccessToken(at);
+		
+		Toast.makeText(this, "Welcome back", Toast.LENGTH_SHORT).show();
+		
+		sendTweet();
+		Log.i(TAG, "Old User tweet sent");
+		
+	}
+	
+	private void authent(){
+		Log.i(TAG, "STARTED - quthent()");
 		try {
 			reqTOKEN = twitter.getOAuthRequestToken(callbackURL);
-
-			Intent intent = new Intent(this, TwitterPrefActivity.class);
 			
-			intent.putExtra("request_token", reqTOKEN.getAuthenticationURL());
-			
-			startActivityForResult(intent, RESULT_OK);
-
+			Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(reqTOKEN.getAuthenticationURL()));
+			// Start new intent on Web browser
+			startActivity(intent);
+			Log.i(TAG, "Starting Oauth from web"); 
 		   } catch (Exception e) {
-			   Log.d(TAG, "Authentication failed.");
+			   Log.w("oauth fail", e);
+			// Toast.makeText(button.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
 		   }
 	   }
 	
-	private void authenticate_post_pin( String oauthVerifier ){
-
+	
+	private void sendTweet(){ 
+		//Testing sending tweets after authenticated
+	//	Toast.makeText(this, textField.getText().toString(), Toast.LENGTH_SHORT).show();
+		
+		
 		try {
-			
-			Log.i(TAG, "trying access token"); 
-			Log.d(TAG, "twitter pin" + prefs.getString("twitter_pin", "NOT_SET"));
-			
-			AccessToken at = twitter.getOAuthAccessToken(reqTOKEN, oauthVerifier);
-			
-			Log.d(TAG, "AccessToken : " + at.toString());
-			
-			Editor edit = prefs.edit();
-			edit.putString("oauth_access_token", at.getToken());
-			edit.putString("oauth_access_secret", at.getTokenSecret());
-			edit.commit();
-			
-			twitter.setOAuthAccessToken(at);
-			
-
-		   } catch (Exception e) {
-			   Log.d(TAG, "Authentication failed.");
-		   }
-	   }
-
-
-	private void sendTweet(String fieldContents){ 
-
-		try {
-
-			Log.e("Login", "Twitter Initialised");
-			twitter.updateStatus( fieldContents );
+			twitter.updateStatus( textField.getText().toString() );
 
 			Toast.makeText(this, "Tweet Successful!", Toast.LENGTH_SHORT).show();
 			Log.i(TAG, "Post Sent");
 
 		} catch (TwitterException e) {
 			Toast.makeText(this, "Tweet error, try again later", Toast.LENGTH_SHORT).show();
+			Log.i(TAG,  textField.getText().toString());
 			Log.i(TAG, "Post NOT Sent");
 			Log.e(TAG, "Post NOT Sent", e);
 
 
 		}
+		
+	}
+	
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		Log.i(TAG, "STARTED - onNewIntent");
+		Uri uri = intent.getData();
+		Log.i(TAG, "Returned to Program"); 
+
+		if (uri !=null && uri.toString().startsWith(callbackURL)){
+			String oauthVerifier = uri.getQueryParameter("oauth_verifier");
+			Log.i(TAG, "string verifier created"); 
+			try {
+				Log.i(TAG, "trying access token"); 
+				AccessToken at = twitter.getOAuthAccessToken(reqTOKEN, oauthVerifier);
+				Log.i(TAG, "trying to set token"); 
+				twitter.setOAuthAccessToken(at);
+				Log.e("Login", "Twitter Initialised");
+				
+
+
+				saveAccessToken(at);
+				Log.i(TAG, "Access token saved");
+				
+				// Set the content view back after we changed from browser 
+				setContentView(R.layout.persist_options);
+				
+				sendTweet();
+				Log.i(TAG, "New User tweet sent");
+				
+		    	textField = (EditText)findViewById(R.id.theTextField);
+				
+
+				} catch (Exception e) {
+					Log.e(TAG, "OAuth - Access Token Retrieval Error", e);
+					
+				}
+			
+
+		}
+		else{
+			Log.i(TAG, "Intent from something other that twitter website");
+		}
+	}
+	
+	
+
+	
+	
+	private void saveAccessToken(AccessToken at) {
+		mPrefs =  getSharedPreferences("LOGIN_DETAILS", MODE_PRIVATE);
+		String token = at.getToken();
+		String secret = at.getTokenSecret();
+		SharedPreferences.Editor editor = mPrefs.edit();
+		editor.putString(userAccessTOKEN, token);
+		editor.putString(userAccessTokenSECRET, secret);
+		editor.commit();
+	}
+	
+	
+	public void sendEmail (View button) {
+
+		Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+
+		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
+				getResources().getString(R.string.email_subject));
+
+		emailIntent.setType("image/jpg");
+		//emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, getResources()
+		//		.getString(R.string.email_message));
+        
+		Uri uri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "DemoPicture.jpg"));
+
+		emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
+		startActivity(Intent.createChooser(emailIntent, "Send mail"));
 
 	}
+	
+	
 
 
 }
