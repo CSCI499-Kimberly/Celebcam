@@ -24,6 +24,7 @@ import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -37,10 +38,15 @@ import com.celebcam.R;
 import android.widget.Button;
 import android.view.KeyEvent;
 import android.view.View.OnKeyListener;
+import android.view.ViewStub;
+import android.view.ViewGroup;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.widget.LinearLayout;
+import android.widget.ImageButton;
+
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -152,8 +158,26 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	
 	EditText textField;
 	
-	
-	
+	/** MENU VIEWS */
+	private enum MenuScheme {NO_MENU, SHOW_MAIN, SHOW_EFFECTS}; 
+	private enum EffectsSubMenu {NONE, TEXT, BORDER, SPARKLES, COLOR, TINT};
+	private MenuScheme key = MenuScheme.NO_MENU;
+	private EffectsSubMenu keyFX = EffectsSubMenu.NONE;
+    private LinearLayout panelMain;
+    private LinearLayout panelEffects;
+    private LinearLayout panelEffectsSub;
+    private LinearLayout effectsButtons;
+    private View slidemenu_effects_borders = null;
+    private View slidemenu_effects_sparkles = null;
+    private View slidemenu_effects_text = null;
+    private View slidemenu_effects_tints = null;
+    private ImageButton btnMasterHandle;
+    private ViewStub slidemenu_effects_borders_stub;
+    private ViewStub slidemenu_effects_sparkles_stub;
+    private ViewStub slidemenu_effects_text_stub;
+    private ViewStub slidemenu_effects_tints_stub;
+	private EditText textFromUser;
+    /** END MENU VIEWS */
 
 	private CelebCamEnum mLaunch;
 	
@@ -217,6 +241,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
         
 
         Log.i(TAG, "STARTED - onCreate() ");
+        
 
 		mPrefs = getSharedPreferences("twitterPrefs", MODE_PRIVATE);
 		Log.i(TAG, "Got Preferences");
@@ -282,191 +307,11 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
         		}
         });
         
-        mText     = (CelebCamTextView) findViewById( R.id.text_surface);
-        
-        mSparkles = (CelebCamSparklesView) findViewById( R.id.sparkles_view);
-        
-        
-        mBorder   = (CelebCamBorderView) findViewById( R.id.border_view);
-        
+        mText     = (CelebCamTextView) findViewById( R.id.text_surface);       
+        mSparkles = (CelebCamSparklesView) findViewById( R.id.sparkles_view);     
+        mBorder   = (CelebCamBorderView) findViewById( R.id.border_view);       
         mEditView = (CelebCamEditView) findViewById( R.id.editing_view);
         mEditView.setVisibility(View.INVISIBLE);
-        
-        mEditText = (EditText) findViewById(R.id.text_to_add);
-        
-        mEditText.addTextChangedListener(this);
-
-        mEditText.setOnKeyListener(new OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                // If the event is a key-down event on the "enter" button
-                
-            	if ((event.getAction() == KeyEvent.ACTION_DOWN) && keyCode == KeyEvent.KEYCODE_ENTER ) {
-                  // Perform action on key press
-                	mText.setText( mEditText.getText().toString());
-                	
-                  return true;
-                }
-            	
-            	return false;
-            }
-
-        });
-        
-        mAddText = (Button) findViewById( R.id.effect_add_text );
-        mAddText.setOnClickListener( new View.OnClickListener() {
-			
-			public void onClick(View v) {
-				
-				if( mText.getVisibility() == View.VISIBLE)
-					mText.setVisibility(View.GONE);
-				else
-					mText.setVisibility(View.VISIBLE);
-
-			}
-		});
-        
-        
-        String[] borders = getResources().getStringArray(R.array.borders_array);
-        
-//        ListView lv = (ListView) findViewById(R.id.border_list);
-//        
-//        lv.setAdapter(new ArrayAdapter<String>(this, R.layout.list_item, borders));
-//
-//        
-//        lv.setTextFilterEnabled(true);
-//
-//        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//          public void onItemClick(AdapterView<?> parent, View view,
-//              int position, long id) {
-//            // When clicked, show a toast with the TextView text
-//            Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
-//                Toast.LENGTH_SHORT).show();
-//            
-//            mBorder.selectBorderByName(((TextView) view).getText().toString());
-//        	mBorder.setVisibility(View.VISIBLE);New UserNew User
-//          }
-//        });
-
-        
-        
-        mAddSparkles = (Button) findViewById( R.id.effect_add_sparkles );
-        mAddSparkles.setOnClickListener( new View.OnClickListener() {
-
-			public void onClick(View v) {
-				
-				if( mSparkles.getVisibility() == View.VISIBLE)
-				{
-					mSparkles.setVisibility(View.GONE);
-				}
-				else
-				{
-					mSparkles.setVisibility(View.VISIBLE);
-				}
-			}
-		});
-        
-        mSparklesBrush = (Button) findViewById( R.id.sparkles_brush);
-        mSparklesBrush.setOnClickListener( new View.OnClickListener() {
-
-			public void onClick(View v) {
-				
-					mSparkles.toggleEnable();
-			}
-		});       
-        mBlackAndWhite = (Button) findViewById( R.id.effect_bw );
-        mBlackAndWhite.setOnClickListener( new View.OnClickListener() {
-
-			public void onClick(View v) {
-				
-			}
-		});
-
-        mSliders = findViewById( R.id.sliders);
-        mColor = (Button) findViewById( R.id.effect_color );
-        mColor.setOnClickListener( new View.OnClickListener() {
-
-			public void onClick(View v) {
-				if( mSliders.getVisibility() == View.VISIBLE)
-				{
-					mSliders.setVisibility(View.GONE);
-				}
-				else
-				{
-					mSliders.setVisibility(View.VISIBLE);
-				}
-				
-			}
-		});
-        
-        mEdit = (Button) findViewById( R.id.edit_button );
-        mEdit.setOnClickListener( new View.OnClickListener() {
-
-			public void onClick(View v) {
-				if( mEditView.getVisibility() == View.VISIBLE)
-				{
-					mEditView.setVisibility(View.GONE);
-					mCamera.startPreview();
-					
-					CelebCamEffectsLibrary.release();
-					mEditView.release();
-					System.gc();
-					mCelebView.restore(mApp);
-				}
-				else
-				{
-					mCelebView.release(mApp);
-					mEditView.setBitmap( ((CelebCamApplication)getApplication()).loadFromCache(TAKEN_PHOTO));
-					
-					mEditView.setVisibility(View.VISIBLE);
-					mEditView.invalidate();
-				}
-				
-			}
-		});
-
-        
-        mSave = (Button) findViewById( R.id.save_button );
-        mSave.setOnClickListener( new View.OnClickListener() {
-			
-			public void onClick(View v) {
-				mCelebView.release(mApp);
-				mEditView.release();
-				
-				System.gc();
-				
-				Bitmap bitmap = ((CelebCamApplication)getApplication()).loadFromCache(TAKEN_PHOTO);
-				save(finalProcess( bitmap ));
-
-				bitmap.recycle();
-				bitmap = null;
-				System.gc();
-			}
-		});
-        
-        mGallery = (Button) findViewById( R.id.gallery_button );
-        mGallery.setOnClickListener( new View.OnClickListener() {
-			
-			public void onClick(View v) {
-				startActivity( new Intent(mContext, PhotoBrowserActivity.class));
-			}
-		});
-        
-        mEmail = (Button) findViewById( R.id.email_button );
-        mEmail.setOnClickListener( new View.OnClickListener() {
-
-			public void onClick(View v) {
-				((CelebCamApplication) getApplication() ).sendEmail();
-				
-			}
-		});
-        
-        mDebug = (Button) findViewById( R.id.debug_button );
-        mDebug.setOnClickListener( new View.OnClickListener() {
-
-			public void onClick(View v) {
-				CCDebug.toggle();
-			}
-		});
         
         SliderGroup colorGroup = new SliderGroup(3);
         
@@ -498,6 +343,226 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
         
 //        if( prefs.getString("twitter_pin", "NOT_SET").equals("NOT_SET"))
 //        	mLaunch = CelebCamEnum.TWITTER_PREF;
+        
+        /*******************************
+         * MENU PANELS ASSIGN VIEWS
+         *********************************/
+        
+        //assign menu views
+        panelMain = (LinearLayout)findViewById(R.id.main_slide_menu);
+        panelEffects = (LinearLayout)findViewById(R.id.effects_menu);
+		panelEffectsSub = (LinearLayout)findViewById(R.id.effects_submenus);
+        btnMasterHandle=(ImageButton)findViewById(R.id.slide_menu_master_btn);
+        effectsButtons = (LinearLayout)findViewById(R.id.effects_buttons);
+
+        
+        //assign menu stubs
+        slidemenu_effects_borders_stub = (ViewStub) findViewById(R.id.slidemenu_effects_borders);
+        slidemenu_effects_sparkles_stub = (ViewStub) findViewById(R.id.slidemenu_effects_sparkles);
+        slidemenu_effects_text_stub = (ViewStub) findViewById(R.id.slidemenu_effects_text);
+        slidemenu_effects_tints_stub = (ViewStub) findViewById(R.id.slidemenu_effects_tints);
+
+        //initialize menu scheme to no menu
+        setMenuScheme(MenuScheme.NO_MENU);
+        
+        /*******************************
+         * MAIN MENU SLIDER BEHAVIOR SETUP
+         *********************************/
+      //master handle button behavior (only visible when no windows open
+        btnMasterHandle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+            	switch (key) {
+                case NO_MENU:  setMenuScheme(MenuScheme.SHOW_MAIN);
+                	break;
+                default: setMenuScheme(MenuScheme.NO_MENU);
+                	break;
+            	}
+            }
+        });
+        
+        //main menu opened panel handle button
+        final ImageButton btnMainHandle=(ImageButton)findViewById(R.id.main_menu_handle_btn);
+        btnMainHandle.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View arg0) {
+        	switch (key) {
+            case NO_MENU:  setMenuScheme(MenuScheme.SHOW_MAIN);
+            	break;
+            case SHOW_MAIN: setMenuScheme(MenuScheme.NO_MENU);
+                break;
+            default: setMenuScheme(MenuScheme.NO_MENU);
+            	break;
+        	}
+        }
+        });
+        //main menu outer (transparent) button
+        final Button btnMainMenuOuter=(Button)findViewById(R.id.main_menu_outer_btn);
+        btnMainMenuOuter.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View arg0) {
+        	switch (key) {
+            case NO_MENU: setMenuScheme(MenuScheme.SHOW_MAIN);
+            	break;
+            case SHOW_MAIN: setMenuScheme(MenuScheme.NO_MENU);
+                break;
+            default: setMenuScheme(MenuScheme.NO_MENU);
+            	break;
+        	}
+        }
+        });
+        
+        /**********************
+         * MAIN MENU BUTTONS
+         ***********************/
+        // Effects menu button
+        final Button btnEffectsMenu=(Button)findViewById(R.id.effects_menu_btn);
+        btnEffectsMenu.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View arg0) {
+        	switch (key) {
+            case SHOW_MAIN: setMenuScheme(MenuScheme.SHOW_EFFECTS);
+                break;
+            case SHOW_EFFECTS: setMenuScheme(MenuScheme.SHOW_MAIN);
+                break;
+            default: setMenuScheme(MenuScheme.NO_MENU);
+            	break;
+        	}
+        }
+        });
+        
+        //main menu EDIT button
+        final Button editBtn = (Button) findViewById( R.id.edit_menu_button );
+        editBtn.setOnClickListener( new View.OnClickListener() {
+
+			public void onClick(View v) {
+				if( mEditView.getVisibility() == View.VISIBLE)
+				{
+					mEditView.setVisibility(View.GONE);
+					mCamera.startPreview();
+					
+					CelebCamEffectsLibrary.release();
+					mEditView.release();
+					System.gc();
+					mCelebView.restore(mApp);
+				}
+				else
+				{
+					mCelebView.release(mApp);
+					mEditView.setBitmap( ((CelebCamApplication)getApplication()).loadFromCache(TAKEN_PHOTO));
+					
+					mEditView.setVisibility(View.VISIBLE);
+					mEditView.invalidate();
+				}
+				
+			}
+		});
+        
+        //main menu SAVE button
+        final Button saveBtn = (Button) findViewById( R.id.save_menu_button );
+        saveBtn.setOnClickListener( new View.OnClickListener() {
+			
+			public void onClick(View v) {
+				mCelebView.release(mApp);
+				mEditView.release();
+				
+				System.gc();
+				
+				Bitmap bitmap = ((CelebCamApplication)getApplication()).loadFromCache(TAKEN_PHOTO);
+				save(finalProcess( bitmap ));
+
+				bitmap.recycle();
+				bitmap = null;
+				System.gc();
+			}
+		});
+        
+       //main menu GALLERY button
+        final Button galleryBtn = (Button) findViewById( R.id.gallery_menu_button );
+        galleryBtn.setOnClickListener( new View.OnClickListener() {
+			
+			public void onClick(View v) {
+				startActivity( new Intent(mContext, PhotoBrowserActivity.class));
+			}
+		});
+        
+        //main menu EMAIL button
+        final Button emailBtn = (Button) findViewById( R.id.email_menu_button );
+        emailBtn.setOnClickListener( new View.OnClickListener() {
+			public void onClick(View v) {
+				((CelebCamApplication) getApplication() ).sendEmail();
+			}
+		});
+        
+        
+        //main menu DEBUG button 
+        final Button debugBtn = (Button) findViewById( R.id.debug_menu_button );
+        debugBtn.setOnClickListener( new View.OnClickListener() {
+
+			public void onClick(View v) {
+				CCDebug.toggle();
+			}
+		});
+        
+        /*************************************************
+         * EFFECTS SUBMENUS SETUP
+         * (submenus created dynamically from stubs)
+         *************************************************/
+        // Effects menu handle: toggles effects menu open/ close
+        final ImageButton btnEffectsHandle=(ImageButton)findViewById(R.id.effects_menu_handle_btn);
+        btnEffectsHandle.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View arg0) {
+        	switch (key) {
+            case SHOW_MAIN: setMenuScheme(MenuScheme.SHOW_EFFECTS);
+                break;
+            case SHOW_EFFECTS:
+            	//if there is an effects submenu inflated, collapse it
+            	//and make all effects buttons 'unselected' style
+            	if (keyFX != EffectsSubMenu.NONE){
+            		makeChildBtnsUnselected(effectsButtons);
+            		hideAllChildren(panelEffectsSub);
+                    keyFX=EffectsSubMenu.NONE;
+                   	}
+            	else setMenuScheme(MenuScheme.SHOW_MAIN);
+            	
+                break;
+            default: setMenuScheme(MenuScheme.NO_MENU);
+            	break;
+        	}
+        }
+        });
+        
+        //effects menu outer (transparent) panel
+        final Button btnEffectsOuter=(Button)findViewById(R.id.effects_menu_outer_btn);
+        btnEffectsOuter.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View arg0) {
+        	switch (key) {
+            case SHOW_EFFECTS: setMenuScheme(MenuScheme.SHOW_MAIN);
+                break;
+            default: setMenuScheme(MenuScheme.NO_MENU);
+            	break;
+        	}
+        }
+        });
+        
+        /**EFFECT TEXT OPEN SUBMENU BUTTON*/
+        final Button btnEffectsTextMenu=(Button)findViewById(R.id.text_btn);
+        btnEffectsTextMenu.setOnClickListener(clickTextMenuBtn);
+
+        /**EFFECT BORDER OPEN SUBMENU BUTTON */
+        final Button btnEffectsBorderMenu=(Button)findViewById(R.id.border_btn);
+        btnEffectsBorderMenu.setOnClickListener(clickBorderMenuBtn);
+        
+        /**EFFECT MENU SPARKLE OPEN SUBMENU BUTTON */
+        final Button btnEffectsSparkle=(Button)findViewById(R.id.sparkles_btn);
+        btnEffectsSparkle.setOnClickListener(clickSparkleMenuBtn);    
+        
+        /**EFFECT TINT(Color) OPEN SUBMENU BUTTON */
+        final Button btnEffectsTint=(Button)findViewById(R.id.tints_btn);
+        btnEffectsTint.setOnClickListener(clickTintsMenuBtn); 
+        
     }
     
     
@@ -680,7 +745,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	
 	public void afterTextChanged( Editable text )
 	{
-		mText.setText( text.toString());
+		//mText.setText( text.toString());
 	}
 		
 	public void beforeTextChanged(CharSequence sequence, int start, int count, int after )
@@ -971,6 +1036,252 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	}
 	
 	
+	/** Hide all children of a view */
 
+    private void hideAllChildren( ViewGroup view ){
+    	view.getChildCount(); 
+    	for (int i=0;i<view.getChildCount();i++){
+    		view.getChildAt(i).setVisibility(View.GONE);
+    	}
+    }
+    
+    /** Make button 'selected' style and all button siblings 'unselected' style */
+    private void makeBtnSelected(View view){
+    	ViewGroup parent = (ViewGroup)view.getParent();
+    	makeChildBtnsUnselected(parent);
+    	Button b=(Button)view;
+    	b.setBackgroundResource(R.drawable.slidemenu_btn_selected_bg);
+    }
+    
+    /** Make all child buttons of this view unselected style */
+    private void makeChildBtnsUnselected(ViewGroup view){
+    	for (int i=0; i<view.getChildCount();i++){
+    		if (view.getChildAt(i) instanceof Button){
+    			view.getChildAt(i).setBackgroundResource(R.drawable.slidemenu_btn_bg);
+    		}
+    	}	
+    }
+    /** Make a effect button style 'toggle on' and sibling buttons 'toggle off' **/
+    private void toggleEffectBtnOn(View view){
+        ViewGroup parent = (ViewGroup)view.getParent();
+        for (int i=0;i<parent.getChildCount();i++){
+        	Button btn =  (Button)parent.getChildAt(i);
+        	btn.setBackgroundResource(R.drawable.slidemenu_btn_bg);
+        }
+        view.setBackgroundResource(R.drawable.slidemenu_btn_toggleon_bg);  
+    }  
+    
+    /********************************
+     * MENU PANELS HELPER FUNCTIONS
+     ********************************/
+	private void setMenuScheme( MenuScheme _key ){
+        
+    	switch (_key) {
+        case NO_MENU:  
+        	btnMasterHandle.setVisibility(View.VISIBLE);
+        	panelMain.setVisibility(View.GONE);
+	    	panelEffects.setVisibility(View.GONE);
+        	key= MenuScheme.NO_MENU;
+        	keyFX=EffectsSubMenu.NONE;  
+        	break;
+        case SHOW_MAIN:
+        	btnMasterHandle.setVisibility(View.GONE);
+        	panelMain.setVisibility(View.VISIBLE);
+	    	panelEffects.setVisibility(View.GONE);
+        	key= MenuScheme.SHOW_MAIN;
+        	keyFX=EffectsSubMenu.NONE;  
+            break;
+        case SHOW_EFFECTS:
+        	btnMasterHandle.setVisibility(View.GONE);
+        	panelMain.setVisibility(View.GONE);
+	    	panelEffects.setVisibility(View.VISIBLE);
+        	key= MenuScheme.SHOW_EFFECTS;
+        	keyFX=EffectsSubMenu.NONE;  
+            break;
+        default: 
+        	btnMasterHandle.setVisibility(View.GONE);
+        	panelMain.setVisibility(View.GONE);
+	    	panelEffects.setVisibility(View.GONE);
+        	key= MenuScheme.NO_MENU;
+        	keyFX=EffectsSubMenu.NONE;  
+        	break;
+    	}
+    	
+	}
+    /********************************
+     * EFFECTS MENU BUTTON HANDLERS *
+     ********************************/
+    private OnClickListener clickTextMenuBtn = new OnClickListener(){
+    	public void onClick(View thisBtn){
+        	hideAllChildren(panelEffectsSub);
+        	if (slidemenu_effects_text == null){
+        		slidemenu_effects_text = slidemenu_effects_text_stub.inflate();
+        		
+        		textFromUser = (EditText) findViewById(R.id.text_from_user);  
+        		textFromUser.addTextChangedListener(new TextWatcher() {
+        	        public void onTextChanged(CharSequence s, int start, int before, int count) {
 
+        	        }
+        	        public void afterTextChanged(Editable text) {
+        	        	mText.setText( text.toString());
+
+        	        }
+        	        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        	        	
+        	        }
+        	    });
+
+        		textFromUser.setOnKeyListener(new OnKeyListener() {
+                    public boolean onKey(View v, int keyCode, KeyEvent event) {
+                        // If the event is a key-down event on the "enter" button
+                        
+                    	if ((event.getAction() == KeyEvent.ACTION_DOWN) && keyCode == KeyEvent.KEYCODE_ENTER ) {
+                          // Perform action on key press
+                        	mText.setText( textFromUser.getText().toString());
+                        	
+                          return true;
+                        }
+                    	
+                    	return false;
+                    }
+
+                });
+                
+                Button addTextBtn = (Button) findViewById( R.id.effect_add_text2 );
+                addTextBtn.setOnClickListener( new View.OnClickListener() {
+        			public void onClick(View v) {
+        				mText.setVisibility(View.VISIBLE);
+        			}
+        		});
+                Button removeTextBtn = (Button) findViewById( R.id.effect_remove_text2 );
+                removeTextBtn.setOnClickListener( new View.OnClickListener() {
+        			public void onClick(View v) {
+        				mText.setVisibility(View.GONE);
+        			}
+        		});
+        	
+        	
+        	}
+        	else slidemenu_effects_text.setVisibility(View.VISIBLE);
+        	makeBtnSelected(thisBtn);
+
+            keyFX=EffectsSubMenu.TEXT;
+    	}
+    	
+    };
+    
+    private OnClickListener clickTintsMenuBtn = new OnClickListener(){
+    	public void onClick(View thisBtn){
+    		hideAllChildren(panelEffectsSub);
+    		if (slidemenu_effects_tints == null){
+        		slidemenu_effects_tints = slidemenu_effects_tints_stub.inflate();
+        		Button tintsBWBtn = (Button)findViewById(R.id.effects_tints_blackwhite);
+          		tintsBWBtn.setOnClickListener(new View.OnClickListener() {
+            		public void onClick(View thisBtn ){ 
+            			toggleEffectBtnOn(thisBtn);
+            			mSliders.setVisibility(View.GONE);
+
+            		}
+          		});	
+        		Button tintsSepiaBtn = (Button)findViewById(R.id.effects_tints_sepia);
+          		tintsSepiaBtn.setOnClickListener(new View.OnClickListener() {
+            		public void onClick(View thisBtn ){ 
+            			toggleEffectBtnOn(thisBtn);
+            			mSliders.setVisibility(View.GONE);
+            		}
+          		});
+        		Button tintsRGBBtn = (Button)findViewById(R.id.effects_tints_rgb);
+          		tintsRGBBtn.setOnClickListener(new View.OnClickListener() {
+            		public void onClick(View thisBtn ){ 
+            			toggleEffectBtnOn(thisBtn);
+            			mSliders.setVisibility(View.VISIBLE);
+            		}
+          		});
+        		Button tintsNoneBtn = (Button)findViewById(R.id.effects_tints_none);
+          		tintsNoneBtn.setOnClickListener(new View.OnClickListener() {
+            		public void onClick(View thisBtn ){ 
+            			toggleEffectBtnOn(thisBtn);
+            			mSliders.setVisibility(View.GONE);
+            		}
+          		});
+
+        	}
+        	else slidemenu_effects_tints.setVisibility(View.VISIBLE);
+        	makeBtnSelected(thisBtn);
+            keyFX=EffectsSubMenu.TINT;      
+    	}	
+    };
+  
+     
+    /** Click the border button in effects menu to open border submenu */
+    private OnClickListener clickBorderMenuBtn = new OnClickListener() {
+        public void  onClick(View thisBtn) {
+        	hideAllChildren(panelEffectsSub);
+        	if (slidemenu_effects_borders == null){
+        		//inflate border submenu and add button handlers
+        		slidemenu_effects_borders = slidemenu_effects_borders_stub.inflate();
+        		final ViewGroup borderBtns = (ViewGroup) findViewById( R.id.effects_border_buttons );	
+        		//assign the same button handler to all border buttons
+            	for (int i=0;i<borderBtns.getChildCount();i++){
+            		final Button btn = (Button)borderBtns.getChildAt(i);
+            		btn.setOnClickListener(clickBorderBtn);
+            	}            		
+        	}
+        	else slidemenu_effects_borders.setVisibility(View.VISIBLE);
+
+        	makeBtnSelected(thisBtn);
+            keyFX=EffectsSubMenu.BORDER;
+        }
+     };
+     /** Click a particular border style button to apply an effect */
+     private OnClickListener clickBorderBtn = new OnClickListener() {
+         public void  onClick(View thisBtn) {
+             Button b = (Button)thisBtn;
+             String buttonText = b.getText().toString().concat(" was clicked");
+
+             Toast toast = Toast.makeText(getApplicationContext(), buttonText, Toast.LENGTH_SHORT);
+             toast.show();
+             
+             toggleEffectBtnOn(thisBtn);   		     	
+         }
+      };
+      /** Sparkle effects menu sparkles button **/
+      private OnClickListener clickSparkleMenuBtn = new OnClickListener() {
+          public void  onClick(View thisBtn) {
+          	hideAllChildren(panelEffectsSub);
+          	if (slidemenu_effects_sparkles == null){
+          		//inflate border submenu and add button handlers
+          		slidemenu_effects_sparkles = slidemenu_effects_sparkles_stub.inflate();
+          		//assign listeners to buttons
+          		Button spreadSparklesBtn = (Button)findViewById(R.id.effects_sparkle_spreadable_btn);
+          		spreadSparklesBtn.setOnClickListener(new View.OnClickListener() {
+            		public void onClick(View thisBtn ){ 
+            			toggleEffectBtnOn(thisBtn);
+            			mSparkles.setVisibility(View.VISIBLE);
+            		}
+          		});	
+
+           		Button brushSparklesBtn = (Button)findViewById(R.id.effects_sparkle_brushable_btn);
+          		brushSparklesBtn.setOnClickListener(new View.OnClickListener() {
+            		public void onClick(View thisBtn ){ 
+            			toggleEffectBtnOn(thisBtn);
+            			mSparkles.setVisibility(View.GONE);
+
+            		}
+          		});
+           		Button noSparklesBtn = (Button)findViewById(R.id.effects_sparkle_none_btn);
+          		noSparklesBtn.setOnClickListener(new View.OnClickListener() {
+            		public void onClick(View thisBtn ){ 
+            			toggleEffectBtnOn(thisBtn);
+            			mSparkles.setVisibility(View.GONE);
+            		}
+          		});
+          	}
+          	else slidemenu_effects_sparkles.setVisibility(View.VISIBLE);
+
+          	makeBtnSelected(thisBtn);
+            keyFX=EffectsSubMenu.SPARKLES;
+          }
+       };
+ 
 }
