@@ -1,6 +1,8 @@
 package com.celebcam;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,7 +11,6 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
@@ -17,6 +18,14 @@ import android.hardware.Camera.ShutterCallback;
 import android.hardware.Camera.Size;
 import android.net.Uri;
 import android.os.Bundle;
+<<<<<<< HEAD
+import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.Menu;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.View;
+=======
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -25,16 +34,24 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+<<<<<<< HEAD
+import android.widget.SlidingDrawer;
+=======
 import android.widget.PopupWindow;
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 import android.widget.Toast;
 import android.widget.TextView;
 import com.celebcam.R;
+import com.celebcam.celebcamapi.CelebCamAPIInterface;
+import com.celebcam.celebcamapi.CelebcamApi;
+
 import android.widget.Button;
 import android.view.KeyEvent;
 import android.view.View.OnKeyListener;
@@ -44,6 +61,32 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+<<<<<<< HEAD
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Calendar;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.auth.AccessToken;
+import twitter4j.auth.RequestToken;
+import twitter4j.conf.ConfigurationBuilder;
+
+import com.facebook.android.*;
+import com.facebook.android.Facebook.*;
+
+
+public class DataAcquisitionActivity extends Activity implements SurfaceHolder.Callback, TextWatcher,OnSharedPreferenceChangeListener,
+ CelebCamAPIInterface, CCMemoryWatcher {
+=======
 import android.widget.LinearLayout;
 import android.widget.ImageButton;
 
@@ -64,6 +107,7 @@ import twitter4j.conf.ConfigurationBuilder;
 
 public class DataAcquisitionActivity extends Activity implements SurfaceHolder.Callback, TextWatcher,OnSharedPreferenceChangeListener,
  CCMemoryWatcher {
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 
 	public int getSizeInBytes() {
 		int m = 0;
@@ -92,6 +136,25 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
     private SurfaceHolder mSurfaceHolder;
     private SurfaceView   mSurfaceView;
     
+<<<<<<< HEAD
+    private CelebCamButton 		  mAddText;
+    private CelebCamButton	      mAddSparkles;
+    private CelebCamButton	      mSparklesBrush;
+    private CelebCamButton        mBlackAndWhite;
+    private CelebCamButton        mColor;
+    private CelebCamButton        mEdit;
+    private CelebCamButton        mSave;
+    private CelebCamButton        mEmail;
+    private CelebCamButton        mFacebookUploadButton;
+    
+    
+    private CelebCamButton	      mTextMenuButton;
+    private CelebCamButton		  mBorderMenuButton;
+    private CelebCamButton		  mSparklesMenuButton;
+    private CelebCamButton		  mColorEffectsMenuButton;
+    private CelebCamButton		  mSharingMenuButton;
+    private CelebCamButton        mGallery;
+=======
     private Button 		  mAddText;
     private Button	      mAddSparkles;
     private Button	      mSparklesBrush;
@@ -101,6 +164,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
     private Button        mSave;
     private Button        mEmail;
     private Button        mGallery;
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
     
     private Button        mDebug;
 	
@@ -130,6 +194,47 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	private Context  mContext;
 	
 	private boolean mPreviewRunning;
+<<<<<<< HEAD
+	
+	private String TAKEN_PHOTO   = "tp";
+	
+	private String PREVIEW_PHOTO = "pp";
+
+	private CelebCamApplication mApp;
+	
+	private TextView mTwitterDialogTextView;
+	private Button   mTwitterDialogOkButton;
+	private Button   mTwitterDialogCancelButton;
+	private EditText mTwitterDialogEditText;
+	
+	private CelebCamDrawerGroup mDrawerGroup;
+	private CelebCamSlidingDrawer mTextDrawer;
+	private CelebCamSlidingDrawer mBordersDrawer;
+	private CelebCamSlidingDrawer mSparklesDrawer;
+	private CelebCamSlidingDrawer mColorEffectDrawer;
+	private CelebCamSlidingDrawer mSharingDrawer;
+	private SlidingDrawer mMainDrawer;
+	
+	SharedPreferences mPrefs;
+	SQLiteDatabase    mDatabase;
+	CelebCamDbHelper  mDbHelper;
+	
+	private static final String callbackURL = "oob";
+	private static final String consumerKEY = "8JlWrU08QfMLG3SwVUU4LQ";
+	private static final String consumerSECRET = "NrHaVm2My0t2wf2nUaMt2Vno98mPHzg8YOgHBxlt1M";
+	private static final String userAccessTOKEN = "accessToken";
+	private static final String userAccessTokenSECRET = "accessTokenSecret";
+	
+	private CelebcamApi celebcamApi;
+	
+	private Twitter twitter;
+	private RequestToken reqTOKEN;
+
+	Facebook facebook = new Facebook("358082674235839");
+	private AsyncFacebookRunner mAsyncRunner;
+
+	EditText textField;
+=======
 	
 	private String TAKEN_PHOTO   = "tp1";
 	
@@ -178,6 +283,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
     private ViewStub slidemenu_effects_tints_stub;
 	private EditText textFromUser;
     /** END MENU VIEWS */
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 
 	private CelebCamEnum mLaunch;
 	
@@ -198,6 +304,26 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 		return height;
 	}
 	
+<<<<<<< HEAD
+
+	public boolean dispatchKeyEvent(KeyEvent event) {
+		
+		
+		if( event.getKeyCode() == KeyEvent.KEYCODE_CAMERA )
+		{
+			CelebCamEffectsLibrary.release();
+			mEditView.release();
+			System.gc();
+			mCelebView.restore(mApp);
+			mCamera.takePicture(null, null ,mjpeg);
+
+		}
+
+		return super.dispatchKeyEvent(event);
+	}
+	
+=======
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 	ShutterCallback mShutterCallback = new ShutterCallback(){
 		public void onShutter() { Log.d(TAG,"shutter");}
 	};
@@ -211,15 +337,31 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 			
 			if( data != null ) {
 				
+<<<<<<< HEAD
+				mApp.storeInCache(data, TAKEN_PHOTO);
+				
+				mCelebView.release(mApp);
+				
+=======
 				Log.d(TAG,"length of camera data : " + Integer.toString(data.length));
 
 				mApp.storeInCache(data, TAKEN_PHOTO);
 				
 				Bitmap b = BitmapFactory.decodeByteArray( data, 0, data.length);
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 				data = null;
 				
 				System.gc();
 				
+<<<<<<< HEAD
+				Bitmap b = mApp.loadFromCache( TAKEN_PHOTO );				
+				
+				onPhotoAcquired(b);
+			}
+		}
+	};
+	
+=======
 				mCelebView.release(mApp);
 				
 				
@@ -227,11 +369,17 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 			}
 		}
 	};
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         Log.d(TAG, "onCreate Called");
         
+<<<<<<< HEAD
+        celebcamApi = new CelebcamApi();
+        
+=======
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
         setContentView(R.layout.data_acquisition);
         
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, 
@@ -240,6 +388,90 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         
 
+<<<<<<< HEAD
+      		ConfigurationBuilder cb = new ConfigurationBuilder();
+      		cb.setDebugEnabled(true)
+      		  .setOAuthConsumerKey(consumerKEY)
+      		  .setOAuthConsumerSecret(consumerSECRET);
+
+      		TwitterFactory tf = new TwitterFactory(cb.build());
+      		twitter = tf.getInstance();
+      		
+
+      		
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this); //
+        mPrefs.registerOnSharedPreferenceChangeListener(this);
+
+//        mAsyncRunner = new AsyncFacebookRunner(facebook);
+//        
+//        String access_token = mPrefs.getString("access_token", null);
+//        long expires = mPrefs.getLong("access_expires", 0);
+//        if(access_token != null) {
+//            facebook.setAccessToken(access_token);
+//        }
+//        if(expires != 0) {
+//            facebook.setAccessExpires(expires);
+//        }
+        
+        /*
+         * Only call authorize if the access_token has expired.
+         */
+//        if(!facebook.isSessionValid()) {
+//
+//            facebook.authorize(this, new String[] {"publish_stream"}, new DialogListener() {
+//                @Override
+//                public void onComplete(Bundle values) {
+//                    SharedPreferences.Editor editor = mPrefs.edit();
+//                    editor.putString("access_token", facebook.getAccessToken());
+//                    editor.putLong("access_expires", facebook.getAccessExpires());
+//                    editor.commit();
+//                }
+//    
+//                @Override
+//                public void onFacebookError(FacebookError error) {}
+//    
+//                @Override
+//                public void onError(DialogError e) {}
+//    
+//                @Override
+//                public void onCancel() {}
+//            });
+//        }
+        
+        mFacebookUploadButton= (CelebCamButton) findViewById( R.id.facebook_post_button);
+        
+        mFacebookUploadButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Bundle params = new Bundle();
+                params.putString("method", "photos.upload");
+
+                URL uploadFileUrl = null;
+                try {
+                    uploadFileUrl = new URL(
+                        "http://www.facebook.com/images/devsite/iphone_connect_btn.jpg");
+                } catch (MalformedURLException e) {
+                	e.printStackTrace();
+                }
+                try {
+                    HttpURLConnection conn= (HttpURLConnection)uploadFileUrl.openConnection();
+                    conn.setDoInput(true);
+                    conn.connect();
+                    int length = conn.getContentLength();
+
+                    byte[] imgData =new byte[length];
+                    InputStream is = conn.getInputStream();
+                    is.read(imgData);
+                    params.putByteArray("picture", imgData);
+
+                } catch  (IOException e) {
+                    e.printStackTrace();
+                }
+
+                mAsyncRunner.request(null, params, "POST",
+                        new SampleUploadListener(), null);
+            }
+        });
+=======
         Log.i(TAG, "STARTED - onCreate() ");
         
 
@@ -267,6 +499,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
       		
         prefs = PreferenceManager.getDefaultSharedPreferences(this); //
         prefs.registerOnSharedPreferenceChangeListener(this);
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 
         CCDebug.registerMemoryWatcher(this);
         
@@ -327,6 +560,113 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
         mGreenSlider.setChannel(Channel.GREEN);
         mBlueSlider.setChannel(Channel.BLUE);
         
+<<<<<<< HEAD
+        mEditView.setOnClickListener(new View.OnClickListener() {
+        	public void onClick( View view )
+        	{
+        		mDrawerGroup.toggle(4);
+        	}
+        });
+        
+        mEditText = (EditText) findViewById(R.id.text_to_add);
+        
+        mEditText.addTextChangedListener(this);
+
+        mEditText.setOnKeyListener(new OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                // If the event is a key-down event on the "enter" button
+                
+            	if ((event.getAction() == KeyEvent.ACTION_DOWN) && keyCode == KeyEvent.KEYCODE_ENTER ) {
+                  // Perform action on key press
+                	mText.setText( mEditText.getText().toString());
+                	
+                  return true;
+                }
+            	
+            	return false;
+            }
+
+        });
+              
+        String[] borders = getResources().getStringArray(R.array.borders_array);
+        
+        ListView lv = (ListView) findViewById(R.id.border_list);
+        
+        lv.setAdapter(new ArrayAdapter<String>(this, R.layout.list_item, borders));
+
+        
+        lv.setTextFilterEnabled(true);
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+          public void onItemClick(AdapterView<?> parent, View view,
+              int position, long id) {
+            
+            mBorder.selectBorderByName(((TextView) view).getText().toString());
+        	mBorder.setVisibility(View.VISIBLE);
+          }
+        });
+
+        
+        
+        mAddSparkles = (CelebCamButton) findViewById( R.id.effect_add_sparkles );
+        mAddSparkles.setOnClickListener( new View.OnClickListener() {
+
+			public void onClick(View v) {
+
+				if( mSparkles.getVisibility() == View.VISIBLE)
+				{
+					mSparkles.setVisibility(View.GONE);
+					
+				}
+				else
+				{
+					mSparkles.setVisibility(View.VISIBLE);
+					
+				}
+			}
+		});
+        
+        mSparklesBrush = (CelebCamButton) findViewById( R.id.sparkles_brush);
+        mSparklesBrush.setOnClickListener( new View.OnClickListener() {
+
+			public void onClick(View v) {
+				
+					mSparkles.toggleEnable();
+			}
+		});       
+        mBlackAndWhite = (CelebCamButton) findViewById( R.id.effect_bw );
+        mBlackAndWhite.setOnClickListener( new View.OnClickListener() {
+
+			public void onClick(View v) {
+				
+			}
+		});
+
+        mSliders = findViewById( R.id.sliders);
+        mColor = (CelebCamButton) findViewById( R.id.effect_color );
+        mColor.setOnClickListener( new View.OnClickListener() {
+
+			public void onClick(View v) {
+				Intent intent = new Intent(Intent.ACTION_MAIN);
+				intent.setComponent(new ComponentName("com.celebcam.processor","com.celebcam.processor.Celebcam_image_processorActivity"));
+				//startActivity(intent);
+				
+				startActivity( new Intent(mContext, FXProcessor.class));
+				if( mSliders.getVisibility() == View.VISIBLE)
+				{
+					mSliders.setVisibility(View.GONE);
+				}
+				else
+				{
+					mSliders.setVisibility(View.VISIBLE);
+				}
+				
+			}
+		});
+        
+        mEdit = (CelebCamButton) findViewById( R.id.edit_button );
+        mEdit.setOnClickListener( new View.OnClickListener() {
+=======
         mRedSlider.setEditView(mEditView);
         mGreenSlider.setEditView(mEditView);
         mBlueSlider.setEditView(mEditView);
@@ -434,6 +774,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
         //main menu EDIT button
         final Button editBtn = (Button) findViewById( R.id.edit_menu_button );
         editBtn.setOnClickListener( new View.OnClickListener() {
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 
 			public void onClick(View v) {
 				if( mEditView.getVisibility() == View.VISIBLE)
@@ -471,6 +812,32 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 				Bitmap bitmap = ((CelebCamApplication)getApplication()).loadFromCache(TAKEN_PHOTO);
 				save(finalProcess( bitmap ));
 
+<<<<<<< HEAD
+        
+        mSave = (CelebCamButton) findViewById( R.id.save_button );
+        mSave.setOnClickListener( new View.OnClickListener() {
+			
+			public void onClick(View v) {
+				mCelebView.release(mApp);
+				mEditView.release();
+				CelebCamEffectsLibrary.release();
+				
+				System.gc();
+				
+				Bitmap bitmap = ((CelebCamApplication)getApplication()).loadFromCache(TAKEN_PHOTO);
+				save( bitmap );
+
+				//bitmap = null;
+				System.gc();
+			}
+		});
+        
+
+        
+        mEmail = (CelebCamButton) findViewById( R.id.email_button );
+        mEmail.setOnClickListener( new View.OnClickListener() {
+
+=======
 				bitmap.recycle();
 				bitmap = null;
 				System.gc();
@@ -489,6 +856,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
         //main menu EMAIL button
         final Button emailBtn = (Button) findViewById( R.id.email_menu_button );
         emailBtn.setOnClickListener( new View.OnClickListener() {
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 			public void onClick(View v) {
 				((CelebCamApplication) getApplication() ).sendEmail();
 			}
@@ -504,6 +872,131 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 			}
 		});
         
+<<<<<<< HEAD
+        mTextDrawer        = (CelebCamSlidingDrawer) findViewById(R.id.text_drawer);
+		mBordersDrawer     = (CelebCamSlidingDrawer) findViewById(R.id.borders_drawer);
+		mSparklesDrawer    = (CelebCamSlidingDrawer) findViewById(R.id.sparkles_drawer);
+		mColorEffectDrawer = (CelebCamSlidingDrawer) findViewById(R.id.color_effects_drawer);
+		mSharingDrawer     = (CelebCamSlidingDrawer) findViewById(R.id.sharing_options_drawer);
+		mMainDrawer        = (SlidingDrawer) findViewById(R.id.drawer);
+		
+		
+		((CelebCamDrawerHandle)mTextDrawer.getHandle()).setParent(mTextDrawer);
+		((CelebCamDrawerHandle)mBordersDrawer.getHandle()).setParent(mBordersDrawer);
+		((CelebCamDrawerHandle)mSparklesDrawer.getHandle()).setParent(mSparklesDrawer);
+		((CelebCamDrawerHandle)mColorEffectDrawer.getHandle()).setParent(mColorEffectDrawer);
+		((CelebCamDrawerHandle)mSharingDrawer.getHandle()).setParent(mSharingDrawer);
+		
+		((CelebCamDrawerHandle)mMainDrawer.getHandle()).setParent(mMainDrawer);
+		((CelebCamDrawerHandle)mMainDrawer.getHandle()).setActiveBitmap( CelebCamGlobals.RIGHT_DRAWER_HANDLE_BACK );
+		((CelebCamDrawerHandle)mMainDrawer.getHandle()).setInActiveBitmap( CelebCamGlobals.RIGHT_DRAWER_HANDLE );
+		((CelebCamDrawerHandle)mMainDrawer.getHandle()).enable(true);		
+		
+		mDrawerGroup = new CelebCamDrawerGroup(mMainDrawer, new CelebCamSlidingDrawer[]{ mTextDrawer, mBordersDrawer, mSparklesDrawer, mColorEffectDrawer, mSharingDrawer});
+		
+		mMainDrawer.setOnDrawerCloseListener( new SlidingDrawer.OnDrawerCloseListener() {
+
+			public void onDrawerClosed() {
+			
+				if( mDrawerGroup.isAllClosed() )
+				{
+					((CelebCamDrawerHandle)mMainDrawer.getHandle()).enable(true);
+					((CelebCamDrawerHandle)mMainDrawer.getHandle()).setOpenState(false);
+				}
+			}
+		});
+		
+		mMainDrawer.setOnDrawerOpenListener( new SlidingDrawer.OnDrawerOpenListener() {
+
+			public void onDrawerOpened() {
+			
+					((CelebCamDrawerHandle)mMainDrawer.getHandle()).enable(true);
+					((CelebCamDrawerHandle)mMainDrawer.getHandle()).setOpenState(true);
+			
+			}
+		});
+
+      mTextMenuButton         = (CelebCamButton) findViewById( R.id.text_menu_button);
+	  mBorderMenuButton       = (CelebCamButton) findViewById( R.id.border_menu_button);
+	  mSparklesMenuButton     = (CelebCamButton) findViewById( R.id.sparkles_menu_button);
+	  mColorEffectsMenuButton = (CelebCamButton) findViewById( R.id.color_effects_menu_button);
+	  mSharingMenuButton      = (CelebCamButton) findViewById( R.id.sharing_menu_button);
+	  
+	  mGallery = (CelebCamButton) findViewById( R.id.gallery_button );
+	  
+        mGallery.setOnClickListener( new View.OnClickListener() {
+			
+			public void onClick(View v) {
+				startActivity( new Intent(mContext, PhotoBrowserActivity.class));
+			}
+		});
+		
+			mTextMenuButton.setOnClickListener( new View.OnClickListener() {
+			
+			public void onClick(View v) {
+				
+				mDrawerGroup.open(0);
+				
+
+			}
+		});
+    		  mBorderMenuButton.setOnClickListener( new View.OnClickListener() {
+			
+			public void onClick(View v) {
+				
+				mDrawerGroup.open(1);
+
+			}
+		});
+    		  mSparklesMenuButton.setOnClickListener( new View.OnClickListener() {
+			
+			public void onClick(View v) {
+				
+				mDrawerGroup.open(2);
+			}
+		});
+    		  mColorEffectsMenuButton.setOnClickListener( new View.OnClickListener() {
+			
+			public void onClick(View v) {
+				
+				mDrawerGroup.open(3);
+
+			}
+		});
+    		  mSharingMenuButton.setOnClickListener( new View.OnClickListener() {
+			
+			public void onClick(View v) {
+				
+				mDrawerGroup.open(4);
+
+			}
+		});
+	  
+        mAddText = (CelebCamButton) findViewById( R.id.effect_add_text );
+        
+        mAddText.setOnClickListener( new View.OnClickListener() {
+			
+			public void onClick(View v) {
+				
+				if( mText.getVisibility() == View.VISIBLE)
+				{
+					mText.setVisibility(View.GONE);
+				}
+				else
+				{
+					mText.setVisibility(View.VISIBLE);
+					
+				}
+
+			}
+		});
+	
+        SliderGroup colorGroup = new SliderGroup(3);
+        
+        mRedSlider   = (CelebCamSlider) findViewById( R.id.red_controller);
+        mGreenSlider = (CelebCamSlider) findViewById( R.id.green_controller);
+        mBlueSlider  = (CelebCamSlider) findViewById( R.id.blue_controller);
+=======
         /*************************************************
          * EFFECTS SUBMENUS SETUP
          * (submenus created dynamically from stubs)
@@ -532,6 +1025,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
         	}
         }
         });
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
         
         /**EFFECT TEXT OPEN SUBMENU BUTTON*/
         final Button btnEffectsTextMenu=(Button)findViewById(R.id.text_btn);
@@ -549,19 +1043,89 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
         final Button btnEffectsTint=(Button)findViewById(R.id.tints_btn);
         btnEffectsTint.setOnClickListener(clickTintsMenuBtn); 
         
+        mApp = (CelebCamApplication) getApplication();
+
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this); //
+        mPrefs.registerOnSharedPreferenceChangeListener(this);
+
+        textField = (EditText)findViewById(R.id.twitter_text_field);
+        
+        System.gc();
     }
     
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        facebook.authorizeCallback(requestCode, resultCode, data);
+    }
+
+    private final int TWITTER_PIN_DIALOG = 0;
+    
+    Dialog mDialog;
+    public Dialog onCreateDialog(int id)
+    {
+    	Dialog dialog = new Dialog(this);
+    	switch( id )
+    	{
+    		case TWITTER_PIN_DIALOG:
+    			mDialog = dialog;
+			dialog.setContentView(R.layout.twitter_pin_dialog);
+			dialog.setTitle("Twitter Authentication Required");
+			
+			mTwitterDialogTextView = (TextView) dialog.findViewById(R.id.text);
+			mTwitterDialogTextView.setText("Enter pin:");
+	
+			mTwitterDialogEditText = (EditText) dialog.findViewById(R.id.pinEditText);
+			
+			mTwitterDialogOkButton = (Button) dialog.findViewById( R.id.ok_button );
+			
+			mTwitterDialogOkButton.setOnClickListener( new View.OnClickListener() {
+				public void onClick( View view )
+				{
+					Editor edit = mPrefs.edit();
+					edit.putString("twitter_pin", mTwitterDialogEditText.getText().toString());
+					edit.commit();
+
+					mDialog.dismiss();
+				}
+			});
+			
+			mTwitterDialogCancelButton = (Button) dialog.findViewById( R.id.cancel_button);
+			
+			mTwitterDialogCancelButton.setOnClickListener( new View.OnClickListener() {
+				public void onClick( View view )
+				{
+					mDialog.dismiss();
+				}
+			});
+			
+			break;
+			
+    		default:
+    			dialog = null;
+    	}
+    	
+    	return dialog;
+    }
     
     public void surfaceCreated(SurfaceHolder holder) {
 
     	Log.d(TAG, "surfaceCreated called");
     	
         mCamera = Camera.open();
+<<<<<<< HEAD
+        
+        //mZoomAndSnapButton.setCamera( mCamera );
+        
+        if( mCamera == null )
+        	return;
+=======
         //mZoomAndSnapButton.setCamera( mCamera );
         if( mCamera == null )
         	return;
         
         Parameters p = mCamera.getParameters();
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 
         Size mPictureSize = mCamera.getParameters().getPictureSize();
         
@@ -571,19 +1135,27 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
         if( mEditView.getWidth() < mEditView.getHeight())
         {
         	 width = mEditView.getWidth();
-        	 height = (mPictureSize.height*mEditView.getWidth())/mPictureSize.width;
+        	 height = (CelebCamGlobals.MAX_PICTURE_SIZE.height*mEditView.getWidth())/CelebCamGlobals.MAX_PICTURE_SIZE.width;
         }
         else if( mEditView.getWidth() > mEditView.getHeight())
         {
         	Log.d(TAG, "width greater than height");
        	 	height = mEditView.getHeight();
+<<<<<<< HEAD
+       	    width = ((CelebCamGlobals.MAX_PICTURE_SIZE.width*height)/CelebCamGlobals.MAX_PICTURE_SIZE.height);
+=======
        	    width = ((mPictureSize.width*height)/mPictureSize.height);
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
         }
 
-        CelebCamEffectsLibrary.setPublishSize( mPictureSize.width, mPictureSize.height );
+        CelebCamEffectsLibrary.setPublishSize( CelebCamGlobals.MAX_PICTURE_SIZE.width, CelebCamGlobals.MAX_PICTURE_SIZE.height );
+        
         CelebCamEffectsLibrary.setPreviewSize( width, height );
         
+<<<<<<< HEAD
+=======
         //mSurfaceView.layout(0, 0, width, height);
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
         
     }
 
@@ -616,7 +1188,10 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 
         Camera.Parameters p = mCamera.getParameters();
         p.setPreviewSize(w, h);
+<<<<<<< HEAD
+=======
         Log.d(TAG, "width: " + Integer.toString(w) + " height: " + Integer.toString(h));
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
         p.setPictureSize(w, h);
         mCamera.setParameters(p);
         mCamera.setPreviewDisplay(holder);
@@ -641,7 +1216,11 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	    return c; // returns null if camera is unavailable
 	}
 
+<<<<<<< HEAD
+	void onPhotoAcquired(Bitmap bitmap)
+=======
 	void startEditor(Bitmap bitmap)
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 	{
 		
 		String strFunction = " ";
@@ -667,7 +1246,11 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 			
 			strFunction = "addText";
 			
+<<<<<<< HEAD
+			//CelebCamEffectsLibrary.addText(mText);
+=======
 			CelebCamEffectsLibrary.addText(mText);
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 			
 			strFunction = "addSparkles";
 			
@@ -675,8 +1258,13 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 			
 			strFunction = "addBorder";
 			
+<<<<<<< HEAD
+			//CelebCamEffectsLibrary.addBorder(mBorder);
+	        
+=======
 			CelebCamEffectsLibrary.addBorder(mBorder);
 	
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 			//CelebCamEffectsLibrary.slipChannels();
 			
 			strFunction = "mEditView.setBitmap";
@@ -685,8 +1273,11 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 			
 			strFunction = "save";
 			
+<<<<<<< HEAD
+=======
 			save(CelebCamEffectsLibrary.getCurrentBitmap2());
 			
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 			strFunction = "setVisibility";
 			mEditView.setVisibility(View.VISIBLE);
 		
@@ -711,16 +1302,62 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 		}
 		
 		CelebCamEffectsLibrary.setPublishBitmap( bitmap );
+<<<<<<< HEAD
+		
+		CelebCamEffectsLibrary.setState2( CelebCamEffectsLibrary.PUBLISH );
+		
+		mCelebView.restore(mApp);
+		
+=======
 		
 		CelebCamEffectsLibrary.setState( CelebCamEffectsLibrary.PUBLISH );
 		
 		mCelebView.restore(mApp);
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 		CelebCamEffectsLibrary.addImage( mCelebView.getBitmap(), mCelebView.getMatrix() );
 		
-		CelebCamEffectsLibrary.addText(mText);
+		//CelebCamEffectsLibrary.addText(mText);
 		
 		CelebCamEffectsLibrary.addSparkles( mSparkles );
 		
+<<<<<<< HEAD
+		//CelebCamEffectsLibrary.addBorder(mBorder);
+				
+		mCamera.startPreview();
+
+		return CelebCamEffectsLibrary.getCurrentBitmap2();
+		
+	}
+	
+	public void afterTextChanged( Editable text )
+	{
+		//mText.setText( text.toString());
+	}
+		
+	public void beforeTextChanged(CharSequence sequence, int start, int count, int after )
+	{
+		
+	}
+	
+	public void onTextChanged(CharSequence sequence, int start, int before, int after )
+	{
+		
+	}
+	
+	public void save(Bitmap bitmap)
+	{
+		celebcamApi.uploadImage(bitmap, null, this);
+		
+		Calendar calendar = Calendar.getInstance();
+		
+		String url = Long.toString(calendar.getTimeInMillis());
+		
+		String createdAt = 
+			Integer.toString(calendar.get(Calendar.DATE))  + "-" +
+			Integer.toString(calendar.get(Calendar.MONTH)) + "-" +
+			Integer.toString(calendar.get(Calendar.YEAR));
+		
+=======
 		CelebCamEffectsLibrary.addBorder(mBorder);
 				
 		mCamera.startPreview();
@@ -755,13 +1392,17 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 			Integer.toString(calendar.get(Calendar.MONTH)) + "-" +
 			Integer.toString(calendar.get(Calendar.YEAR));
 		
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 		//((CelebCamApplication) getApplication() ).writeImageToDisk( url, CelebCamEffectsLibrary.applyColorNotes(CelebCamEffectsLibrary.getCurrentBitmap()) );
 		((CelebCamApplication) getApplication() ).writeImageToDisk( url, bitmap );	
 		((CelebCamApplication) getApplication() ).setMostRecentURL( url );
 		
 		if( url != null ) {
 			
+<<<<<<< HEAD
+=======
 			Bundle bundle = new Bundle();
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 
 			mDatabase = mDbHelper.getWritableDatabase();
 			ContentValues values = new ContentValues(); 
@@ -778,6 +1419,13 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 			} catch (SQLException e) { //
 			// Ignore exception
 				Log.d(TAG, e.getMessage());
+<<<<<<< HEAD
+			}
+			finally
+			{
+				mDatabase.close();
+			}
+=======
 			}
 			finally
 			{
@@ -789,6 +1437,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 			Intent mIntent = new Intent();
 			mIntent.putExtras(bundle);
 			setResult(RESULT_OK, mIntent);
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 			
 		}
 	}
@@ -805,6 +1454,38 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	}
 	
 
+<<<<<<< HEAD
+	private void sendTweet(String fieldContents){ 
+
+		try {
+
+			twitter.updateStatus( fieldContents );
+
+			Toast.makeText(this, "Tweet Successful!", Toast.LENGTH_SHORT).show();
+
+
+		} catch (TwitterException e) {
+			Toast.makeText(this, "Tweet error, try again later", Toast.LENGTH_SHORT).show();
+
+		}
+
+	}
+	
+
+	public boolean onPrepareOptionsMenu (Menu menu) {
+		mMainDrawer.animateOpen();
+		return super.onPrepareOptionsMenu ( menu);
+	}
+
+
+	public void onServerResponse(String response) {
+		Toast.makeText( this, response, Toast.LENGTH_LONG);
+	}
+
+
+	public void getCutoutsLoaded(JSONObject jsonObject) {
+		
+=======
  
 
 	protected void onResume() {
@@ -842,10 +1523,56 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 //		mLaunch = CelebCamEnum.PERSIST_OPTIONS;
   		
 
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 	}
 
 
 	
+<<<<<<< HEAD
+	public class SampleUploadListener extends BaseRequestListener {
+
+	    public void onComplete(final String response, final Object state) {
+	        try {
+	            // process the response here: (executed in background thread)
+	            Log.d("Facebook-Example", "Response: " + response.toString());
+	            JSONObject json = Util.parseJson(response);
+	            final String src = json.getString("src");
+
+	            // then post the processed result back to the UI thread
+	            // if we do not do this, an runtime exception will be generated
+	            // e.g. "CalledFromWrongThreadException: Only the original
+	            // thread that created a view hierarchy can touch its views."
+	            DataAcquisitionActivity.this.runOnUiThread(new Runnable() {
+	                public void run() {
+	                    Toast.makeText(mContext,"Hello there, photo has been uploaded at \n" + src, Toast.LENGTH_LONG);
+	                }
+	            });
+	        } catch (JSONException e) {
+	            Log.w("Facebook-Example", "JSON Error in response");
+	        } catch (FacebookError e) {
+	            Log.w("Facebook-Example", "Facebook Error: " + e.getMessage());
+	        }
+	    }
+	}
+	
+ 
+
+	protected void onResume() {
+		super.onResume();
+		Log.i(TAG, "STARTED - onResume()");
+  		
+
+	}
+
+
+	
+    public void pressTweet(View button) {
+    	
+		if ( textField.getText().length() == 0 ){
+			Toast.makeText(this, "type something", Toast.LENGTH_SHORT).show();
+		}
+		else{
+=======
     public void pressTweet(View button) {
       //  String fieldContents = textField.getText().toString();
     	
@@ -856,6 +1583,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 		}
 		else{
 
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 			
 			if (mPrefs.contains(userAccessTOKEN)) {
 				Log.i(TAG, "Repeat User");
@@ -867,6 +1595,12 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 				
 				startActivityForResult( intent, RESULT_OK );
 			}
+<<<<<<< HEAD
+
+		}
+
+    }
+=======
 			/*
 			//Toast.makeText(this, fieldContents, Toast.LENGTH_SHORT).show();
 			Log.i(TAG, "New User");
@@ -888,6 +1622,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 		
 		
 	}
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 
 
 	private void loginAuthorisedUser() {
@@ -929,6 +1664,84 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 		
 		try {
 			twitter.updateStatus( textField.getText().toString() );
+<<<<<<< HEAD
+
+			Toast.makeText(this, "Tweet Successful!", Toast.LENGTH_SHORT).show();
+			Log.i(TAG, "Post Sent");
+
+		} catch (TwitterException e) {
+			Toast.makeText(this, "Tweet error, try again later", Toast.LENGTH_SHORT).show();
+			Log.i(TAG,  textField.getText().toString());
+			Log.i(TAG, "Post NOT Sent");
+			Log.e(TAG, "Post NOT Sent", e);
+
+
+		}
+		
+	}
+	
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		Log.i(TAG, "STARTED - onNewIntent");
+		Uri uri = intent.getData();
+		Log.i(TAG, "Returned to Program"); 
+
+		if (uri !=null && uri.toString().startsWith(callbackURL)){
+			String oauthVerifier = uri.getQueryParameter("oauth_verifier");
+			Log.i(TAG, "string verifier created"); 
+			try {
+				Log.i(TAG, "trying access token"); 
+				AccessToken at = twitter.getOAuthAccessToken(reqTOKEN, oauthVerifier);
+				Log.i(TAG, "trying to set token"); 
+				twitter.setOAuthAccessToken(at);
+				Log.e("Login", "Twitter Initialised");
+				
+
+
+				saveAccessToken(at);
+				Log.i(TAG, "Access token saved");
+				
+				// Set the content view back after we changed from browser 
+				setContentView(R.layout.persist_options);
+				
+				sendTweet();
+				Log.i(TAG, "New User tweet sent");
+				
+		    	textField = (EditText)findViewById(R.id.twitter_text_field);
+				
+
+				} catch (Exception e) {
+					Log.e(TAG, "OAuth - Access Token Retrieval Error", e);
+					
+				}
+			
+
+		}
+		else{
+			Log.i(TAG, "Intent from something other that twitter website");
+		}
+	}
+	
+	
+
+	
+	
+	private void saveAccessToken(AccessToken at) {
+		mPrefs =  getSharedPreferences("LOGIN_DETAILS", MODE_PRIVATE);
+		String token = at.getToken();
+		String secret = at.getTokenSecret();
+		SharedPreferences.Editor editor = mPrefs.edit();
+		editor.putString(userAccessTOKEN, token);
+		editor.putString(userAccessTokenSECRET, secret);
+		editor.commit();
+	}
+	
+
+}
+
+=======
 
 			Toast.makeText(this, "Tweet Successful!", Toast.LENGTH_SHORT).show();
 			Log.i(TAG, "Post Sent");
@@ -1271,3 +2084,4 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
        };
  
 }
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f

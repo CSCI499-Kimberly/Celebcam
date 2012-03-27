@@ -22,6 +22,17 @@ public class CelebCamEditView extends View implements CCMemoryWatcher {
 	}
 
 	private Bitmap mBitmap;
+	private Paint  mBgPaint;
+
+	public CelebCamEditView( Context context )
+	{
+		super( context );
+		
+		CCDebug.registerMemoryWatcher( this );
+		
+		mBgPaint = new Paint();
+		mBgPaint.setColor(0xff999999);
+	}
 	
 	public CelebCamEditView( Context context, AttributeSet attributeSet)
 	{
@@ -29,6 +40,8 @@ public class CelebCamEditView extends View implements CCMemoryWatcher {
 		
 		CCDebug.registerMemoryWatcher( this );
 		
+		mBgPaint = new Paint();
+		mBgPaint.setColor(0xff999999);
 	}
 	
 	public void setBitmap( Bitmap bitmap )
@@ -49,6 +62,11 @@ public class CelebCamEditView extends View implements CCMemoryWatcher {
 			mBitmap.recycle();
 			mBitmap = null;
 		}
+<<<<<<< HEAD
+		
+		invalidate();
+=======
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 	}
 	
 	public void update()
@@ -58,10 +76,13 @@ public class CelebCamEditView extends View implements CCMemoryWatcher {
 	
 	public void onDraw( Canvas canvas )
 	{
-		super.onDraw(canvas);
+		
 		
 		if( mBitmap != null )
-			canvas.drawBitmap(mBitmap, 0, 0, null);
+		{
+			canvas.drawPaint(mBgPaint);
+			canvas.drawBitmap(mBitmap, (getWidth()-mBitmap.getWidth())/2, (getHeight()-mBitmap.getHeight())/2, null);
+		}
 		
 	}
 }

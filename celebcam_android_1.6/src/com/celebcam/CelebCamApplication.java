@@ -36,6 +36,15 @@ public class CelebCamApplication extends Application {
 
 		mCurrent = this;
 		
+<<<<<<< HEAD
+		CelebCamGlobals.create( getBaseContext() );
+		
+		CelebCamButton.setColorScheme(new CelebCamColorScheme(0x44de9105, 0x99594a2f, 0x99e8b860, 0xfffaf3e5));
+		
+		CelebCamFont.setFont(getBaseContext(), R.drawable.font_512, 71, 50);
+		 
+		CelebCamLibrary.createLibrary();
+=======
 		CelebCamFont.setFont(getBaseContext(), R.drawable.font_512, 71, 50);
 		 
 		CelebCamLibrary.createLibrary();
@@ -44,6 +53,7 @@ public class CelebCamApplication extends Application {
 //		CelebCamLibrary.addToLibrary( BitmapFactory.decodeResource(getResources(), R.drawable.justin_beiber));
 //		CelebCamLibrary.addToLibrary( BitmapFactory.decodeResource(getResources(), R.drawable.beyonce));
 //		CelebCamLibrary.addToLibrary( BitmapFactory.decodeResource(getResources(), R.drawable.rihanna));
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 
 		
 		String state = Environment.getExternalStorageState();
@@ -297,7 +307,7 @@ public class CelebCamApplication extends Application {
 	                Log.i("ExternalStorage", "-> uri=" + uri);
 	            }
 
-				@Override
+
 				public void onMediaScannerConnected() {
 					// TODO Auto-generated method stub
 					

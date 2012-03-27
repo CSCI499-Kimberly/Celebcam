@@ -10,7 +10,12 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONObject;
+
 import android.os.AsyncTask;
 
 /** 
@@ -25,6 +30,13 @@ class HttpRequestTask extends AsyncTask<String, String, String>{
 	public String method;
 	public String baseUrl;
 	
+	static final byte GET = 0;
+	static final byte PUT = 1;
+	static final byte POST = 2;
+	
+	private byte mType;
+	private byte[] mImageData;
+	private JSONObject mImageTag;
 	/** 
 	 * Constructor for initiating necessary data needed for retrieving remote string.
 	 * 
@@ -39,19 +51,46 @@ class HttpRequestTask extends AsyncTask<String, String, String>{
     	this.callback = callback;
     	this.baseUrl = baseUrl;
     	
+    	mType = GET;
+    } 
+    
+    public HttpRequestTask (Object delegate, String callback, String baseUrl, byte type, byte[] imageData, JSONObject imageTag)
+    {
+    	this.delegate = delegate;
+    	this.callback = callback;
+    	this.baseUrl = baseUrl;
+    	
+    	mImageData = imageData;
+    	mImageTag  = imageTag;
+    	
+    	mType = type;
     } 
 	
 	protected String doInBackground(String... params) {
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpResponse response;
+		
 		String responseString = null;
 		try {
 			String url = new String();
 			
 			// Option to add get parameters will be added here
 			url = this.baseUrl;
-
-			response = httpclient.execute(new HttpGet(url));
+			
+			HttpUriRequest request = new HttpGet(url);
+			
+			if( mType == PUT )
+			{
+				request = new HttpPut( url );
+			}
+			else if( mType == POST )
+			{
+				request = new HttpPost( url );
+			}
+			
+				
+			response = httpclient.execute(request);
+			
 			StatusLine statusLine = response.getStatusLine();
 			if(statusLine.getStatusCode() == HttpStatus.SC_OK){
 				ByteArrayOutputStream out = new ByteArrayOutputStream();

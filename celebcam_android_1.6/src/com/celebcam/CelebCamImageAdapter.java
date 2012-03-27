@@ -39,7 +39,11 @@ public class CelebCamImageAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
+<<<<<<< HEAD
+        imageView.setImageBitmap(((PhotoBrowserActivity) mContext).getImageAt(position));
+=======
         imageView.setImageBitmap(PhotoBrowserActivity.mBitmaps[position]);
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 
         
         return imageView;

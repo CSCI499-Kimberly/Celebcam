@@ -5,9 +5,12 @@ import java.lang.reflect.InvocationTargetException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.celebcam.CelebCamImageBundle;
 import com.celebcam.celebcamapi.HttpRequestTask;
 
+import android.graphics.Bitmap;
 import android.util.Log;
+
 
 /**
  * Used to interface with Celebcam remote Web Api
@@ -38,6 +41,7 @@ public class CelebcamApi {
 		HttpRequestTask requestTask = new HttpRequestTask(this, callback, url);
         requestTask.execute();
 	}
+	
 	public void getCutoutsLoaded(HttpRequestTask httpRequestTask){
 		java.lang.reflect.Method method = null;
 		JSONObject jsonObject = null;
@@ -65,4 +69,9 @@ public class CelebcamApi {
 		}
 	}
 
+	public void uploadImage(Bitmap image, JSONObject imageTag, CelebCamAPIInterface requestOwner){
+
+		(new UploadFileTask(requestOwner)).execute(new CelebCamImageBundle( image, imageTag));
+
+	} 
 }

@@ -47,7 +47,12 @@ public class CelebCamLibraryView extends View implements CCMemoryWatcher {
 	{
 		super( context, attributeSet );
 		
+<<<<<<< HEAD
+		CCDebug.register(this);//		Rect bounds = new Rect();
+//		String text;
+=======
 		CCDebug.register(this);
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 		CCDebug.registerMemoryWatcher(this);
 
 		mContext = context;
@@ -125,14 +130,27 @@ public class CelebCamLibraryView extends View implements CCMemoryWatcher {
 			canvas.drawBitmap(mLibrary.getImage(), mX, mY, null );
 		
 		int x_offset = mX;
+<<<<<<< HEAD
+		
+		if( mActive )
+			canvas.drawBitmap(mPrevButtonBitmap, x_offset, getHeight()-mPrevButtonBitmap.getHeight(), null );
+=======
 		canvas.drawBitmap(mPrevButtonBitmap, x_offset, getHeight()-mPrevButtonBitmap.getHeight(), null );
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 		
 		if( mFirstDraw )
 			mPrevRectF = new RectF(x_offset, getHeight() - mPrevButtonBitmap.getHeight(),x_offset+ mPrevButtonBitmap.getWidth() , getHeight() );
 		
+<<<<<<< HEAD
+		
+		x_offset += mPrevButtonBitmap.getWidth();
+		
+	
+=======
 
 		x_offset += mPrevButtonBitmap.getWidth();
 		
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 		canvas.drawBitmap(mBrowseButtonBitmap, x_offset, getHeight()-mBrowseButtonBitmap.getHeight(), null );
 		
 		if( mFirstDraw )
@@ -141,7 +159,12 @@ public class CelebCamLibraryView extends View implements CCMemoryWatcher {
 
 		x_offset += mBrowseButtonBitmap.getWidth();
 		
+<<<<<<< HEAD
+		if( mActive )
+			canvas.drawBitmap(mNextButtonBitmap, x_offset, getHeight()-mNextButtonBitmap.getHeight(), null );
+=======
 		canvas.drawBitmap(mNextButtonBitmap, x_offset, getHeight()-mNextButtonBitmap.getHeight(), null );
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 	
 		if( mFirstDraw )
 			mNextRectF = new RectF(x_offset, getHeight() - mNextButtonBitmap.getHeight(),  x_offset+ mNextButtonBitmap.getWidth(), getHeight());

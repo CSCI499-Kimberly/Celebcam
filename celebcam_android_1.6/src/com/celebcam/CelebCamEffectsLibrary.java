@@ -10,6 +10,14 @@ class Size
 {
 	int width;
 	int height;
+	
+	public Size() {}
+	
+	public Size( int width, int height)
+	{
+		this.width  = width;
+		this.height = height;
+	}
 }
 
 class Ratio
@@ -26,9 +34,25 @@ class Ratio
 
 class Channel
 {
+	static byte RED_INDEX   = 0;
+	static byte GREEN_INDEX = 1;
+	static byte BLUE_INDEX  = 2;
+	
 	static int RED   = 0x00ff0000;
 	static int GREEN = 0x0000ff00;
 	static int BLUE  = 0x000000ff;
+	
+	static int getChannel( byte index )
+	{
+		int channel = RED;
+		
+		if( index == GREEN_INDEX )
+			channel = GREEN;
+		else if( index == BLUE_INDEX )
+			channel = BLUE;
+		
+		return channel;
+	}
 }
 
 class CelebCamBitmap implements CCMemoryWatcher {
@@ -213,6 +237,18 @@ class CelebCamBitmap implements CCMemoryWatcher {
 			}
 		}	
 	}
+
+
+	public int getWidth() {
+
+		return width;
+	}
+
+
+	public int getHeight() {
+		
+		return height;
+	}
 }
 
 public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
@@ -321,7 +357,11 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 		}
 		
 		mCanvas = new Canvas();
+<<<<<<< HEAD
+		mCanvas.setBitmap( mCurrentBitmap );
+=======
 		mCanvas.setBitmap(mCurrentBitmap);
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 
 	}
 	
@@ -364,7 +404,20 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 	
 	static void setPublishBitmap( Bitmap bitmap )
 	{
+<<<<<<< HEAD
+		if( mPublishSize == null )
+			Log.d("DataAcquisitionActivity", "mPreviewSize null ");
+		
+		mPublishBitmap =  Bitmap.createScaledBitmap(bitmap, mPublishSize.width, mPublishSize.height, false);
+		
+		
+		if( mCanvas == null )
+			mCanvas = new Canvas();
+		
+		mCanvas.setBitmap(bitmap);
+=======
 		mPublishBitmap = bitmap;
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 	}
 	
 	static CelebCamBitmap getCCBitmap()
@@ -620,6 +673,7 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 	}
 	
 	static public void addImage( Bitmap bitmap, Matrix upperBitmapMatrix)
+<<<<<<< HEAD
 	{
 		
 		if( upperBitmapMatrix == null )
@@ -635,6 +689,23 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 	
 	static public Bitmap negative( CelebCamBitmap ccBitmap )
 	{
+=======
+	{
+		
+		if( upperBitmapMatrix == null )
+			upperBitmapMatrix = new Matrix();
+
+		if( mState == PUBLISH )
+		{
+			upperBitmapMatrix.postScale((float)mPublishSize.width/mPreviewSize.width, (float)mPublishSize.height/mPreviewSize.height );
+		}
+
+		mCanvas.drawBitmap( bitmap, upperBitmapMatrix, null );
+	}
+	
+	static public Bitmap negative( CelebCamBitmap ccBitmap )
+	{
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 		Bitmap bitmap = ccBitmap.toAndroidBitmap();
 		
 		for( int i = 0; i < bitmap.getWidth(); i++ )
@@ -730,7 +801,7 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 		}
 		
 		if( mMergedBitmap == null )
-			mMergedBitmap = Bitmap.createBitmap( mCurrentBitmap.getWidth(), mCurrentBitmap.getHeight(), mCurrentBitmap.getConfig());
+			mMergedBitmap = Bitmap.createBitmap( mCCBitmap.getWidth(), mCCBitmap.getHeight(), Bitmap.Config.ARGB_8888);
 
 		
 		int width = mMergedBitmap.getWidth();
@@ -790,6 +861,80 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 		return mMergedBitmap;
 	}
 	
+<<<<<<< HEAD
+	static Bitmap adjustChannels2( float...amounts )
+	{
+		Log.d("DataAcquisitionActivity", "adjust starting");
+		
+		mColorNotes = amounts;
+		
+		if( mCCBitmap == null )
+		{
+			return mCurrentBitmap;
+		}
+		
+		if( mMergedBitmap == null)
+			mMergedBitmap = Bitmap.createBitmap(mCCBitmap.getWidth(), mCCBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+		int width = mCCBitmap.getWidth();
+		
+		int height= mCCBitmap.getHeight();
+		
+		int pixel;
+		
+		float[] exclusion = new float[] {1,1,1,1};
+		
+		for( int i = 0; i < amounts.length && i < exclusion.length; i++ )
+		{
+			exclusion[i] = amounts[i];
+		}
+
+		int a,r,g,b;
+		
+		for( int i = 0; i < width; i++ )
+		{
+			for( int j = 0; j < height; j++ )
+			{
+					a = ( ((int)mCCBitmap.alpha[(i*height) + j]) << 24);
+					
+					if ( exclusion[0] * mCCBitmap.red[(i*height) + j]  > 0xFF )
+					{
+						r = 0x00FF0000;
+					}
+					else
+					{
+						r = ((int)(   (exclusion[0] * mCCBitmap.red[(i*height) + j]  ) )  << 16);
+					}
+					
+					if( exclusion[1] * mCCBitmap.green[(i*height) + j] > 0xFF ) 
+					{
+						g = 0x0000FF00;
+					}
+					else
+					{
+						g = ((int)(   (exclusion[1] * mCCBitmap.green[(i*height) + j]) )  << 8);
+					}
+				     
+					if( exclusion[2] * mCCBitmap.blue[(i*height) + j] > 0xFF )
+					{
+						b = 0x000000FF;
+					}
+					else
+					{
+						b = (int)(    exclusion[2] * mCCBitmap.blue[(i*height) + j]);
+					}
+				
+					pixel = a | r | g | b ;
+					
+				mMergedBitmap.setPixel(i, j, pixel);
+			}
+			
+		}	
+		
+		return mMergedBitmap;
+	}
+	
+=======
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 	static Bitmap applyColorNotes( Bitmap bitmap )
 	{
 		Log.d("DataAcquisitionActivity", "adjust starting");
@@ -854,7 +999,11 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 		return bitmap;
 	}
 	
+<<<<<<< HEAD
+	static Bitmap adjustChannel2( int channel, float amount )
+=======
 	static Bitmap adjustChannel( int channel, float amount )
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 	{
 		Log.d("DataAcquisitionActivity", "adjust starting");
 		if( mCCBitmap == null )
@@ -929,6 +1078,127 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 			}
 		}		
 		
+		Log.d("DataAcquisitionActivity", "adjust finished");
+		
+		return mMergedBitmap;
+	}
+
+
+	static Bitmap adjustChannel( int channel, float amount )
+	{
+		Log.d("DataAcquisitionActivity", "adjust starting");
+		if( mCCBitmap == null )
+		{
+			Log.d("DataAcquisitionActivity", "mCCBitmap is null");
+			return mCurrentBitmap;
+		}
+		
+		if( mMergedBitmap == null )
+			mMergedBitmap = Bitmap.createBitmap(mCCBitmap.getWidth(), mCCBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+
+		int width = mMergedBitmap.getWidth();
+		int height= mMergedBitmap.getHeight();
+		
+		int pixel;
+		
+		float[] exclusion = new float[] { 1,1,1};
+		
+		if( channel == Channel.RED )
+			exclusion[0] = amount;
+		else if ( channel == Channel.GREEN)
+			exclusion[1] = amount;
+		else if ( channel == Channel.BLUE)
+			exclusion[2] = amount;
+
+		int a,r,g,b;
+		
+		a = 0xFF000000;
+		
+		if( channel == Channel.RED )
+		{
+			for( int i = 0; i < width; i++ )
+			{
+				for( int j = 0; j < height; j++ )
+				{
+					mCCBitmap.red[(i*height) + j] *= exclusion[0];
+						
+					if ( mCCBitmap.red[(i*height) + j]  > 0xFF )
+					{
+						r = 0x00FF0000;
+					}
+					else
+					{
+						r = ((int)(   ( mCCBitmap.red[(i*height) + j]  ) )  << 16);
+					}
+					
+							g = ((int)( mCCBitmap.green[(i*height) + j])  << 8);
+					
+
+							b = (int)( exclusion[2] * mCCBitmap.blue[(i*height) + j]);
+						
+					
+						pixel = a | r | g | b ;
+						
+					mMergedBitmap.setPixel(i, j, pixel);
+				}
+			}		
+		}
+		else if( channel == Channel.GREEN )
+		{
+			for( int i = 0; i < width; i++ )
+			{
+				for( int j = 0; j < height; j++ )
+				{
+						
+							r = ((int)(   ( mCCBitmap.red[(i*height) + j]  ) )  << 16);
+	
+							if( exclusion[1] * mCCBitmap.green[(i*height) + j] > 0xFF ) 
+							{
+								g = 0x0000FF00;
+							}
+							else
+							{
+								mCCBitmap.green[(i*height) + j] *= exclusion[1];
+								g = (int)(mCCBitmap.green[(i*height) + j]  << 8);
+							}
+					
+
+							b = (int)( exclusion[2] * mCCBitmap.blue[(i*height) + j]);
+					
+					
+						pixel = a | r | g | b ;
+						
+					mMergedBitmap.setPixel(i, j, pixel);
+				}
+			}		
+		}
+		else if( channel == Channel.BLUE )
+		{
+			for( int i = 0; i < width; i++ )
+			{
+				for( int j = 0; j < height; j++ )
+				{
+						
+							r = ((int)(   ( mCCBitmap.red[(i*height) + j]  ) )  << 16);
+	
+							g = ((int)( mCCBitmap.green[(i*height) + j])  << 8);
+					
+					     
+						if( exclusion[2] * mCCBitmap.blue[(i*height) + j] > 0xFF )
+						{
+							b = 0x000000FF;
+						}
+						else
+						{
+							b = (int)( exclusion[2] * mCCBitmap.blue[(i*height) + j]);
+						}
+					
+						pixel = a | r | g | b ;
+						
+					mMergedBitmap.setPixel(i, j, pixel);
+				}
+			}		
+		}
 		Log.d("DataAcquisitionActivity", "adjust finished");
 		
 		return mMergedBitmap;
@@ -1009,13 +1279,14 @@ class Queue
 
 class CelebCamEffectsProcessor extends AsyncTask<CelebCamBitmap, Integer, Bitmap>{
 	
-	private static CelebCamEditView mEditView;
+	private static CelebCamEditView mCelebCamEditView;
 	private static int mIdCounter = -1;
 	
 	public int   id;
 	private byte  mType;
 	private int   mChannel;
 	private float mAmount;
+	private float[] mAmounts;
 	
 	static Queue waitQueue = new Queue();
 	
@@ -1031,7 +1302,7 @@ class CelebCamEffectsProcessor extends AsyncTask<CelebCamBitmap, Integer, Bitmap
 		
 
 
-		mEditView = viewToPostUpdates;
+		mCelebCamEditView = viewToPostUpdates;
 	}
 	
 	CelebCamEffectsProcessor(CelebCamEditView viewToPostUpdates, byte type, int channel, float amount )
@@ -1044,10 +1315,27 @@ class CelebCamEffectsProcessor extends AsyncTask<CelebCamBitmap, Integer, Bitmap
 		
 		waitQueue.enQueue( this );
 				
-		mEditView = viewToPostUpdates;
+		mCelebCamEditView = viewToPostUpdates;
 		mType     = type;
 		mChannel  = channel;
 		mAmount   = amount;
+		
+	}
+	
+	
+	CelebCamEffectsProcessor(CelebCamEditView viewToPostUpdates, byte type, float[] amounts )
+	{
+		super();
+
+		mIdCounter++;
+		
+		id = mIdCounter;
+		
+		waitQueue.enQueue( this );
+				
+		mCelebCamEditView = viewToPostUpdates;
+		mType     = type;
+		mAmounts   = amounts;
 		
 	}
 	
@@ -1059,15 +1347,14 @@ class CelebCamEffectsProcessor extends AsyncTask<CelebCamBitmap, Integer, Bitmap
 			
 		}		
 	}
-	
 	public void setCelebCamEditView( CelebCamEditView view )
 	{
-		mEditView = view;
+		mCelebCamEditView = view;
 	}
 	
 	public CelebCamEditView getCelebCamEditView()
 	{
-		return mEditView;
+		return mCelebCamEditView;
 	}
 	
 	public Bitmap doInBackground(CelebCamBitmap... bitmap )
@@ -1099,10 +1386,10 @@ class CelebCamEffectsProcessor extends AsyncTask<CelebCamBitmap, Integer, Bitmap
 	{
 		waitQueue.deQueue();
 		
-		if( mEditView != null && bitmap != null )
+		if( mCelebCamEditView != null && bitmap != null )
 		{
 			Log.d("DataAcquisitionActivity", "posting update");
-			mEditView.setBitmap( bitmap );			
+			mCelebCamEditView.setBitmap( bitmap );			
 			
 		}
 		
