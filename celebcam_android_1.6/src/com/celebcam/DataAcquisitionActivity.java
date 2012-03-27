@@ -1133,13 +1133,13 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 
                 });
                 
-                Button addTextBtn = (Button) findViewById( R.id.effect_add_text2 );
+                Button addTextBtn = (Button) findViewById( R.id.effect_add_text );
                 addTextBtn.setOnClickListener( new View.OnClickListener() {
         			public void onClick(View v) {
         				mText.setVisibility(View.VISIBLE);
         			}
         		});
-                Button removeTextBtn = (Button) findViewById( R.id.effect_remove_text2 );
+                Button removeTextBtn = (Button) findViewById( R.id.effect_remove_text );
                 removeTextBtn.setOnClickListener( new View.OnClickListener() {
         			public void onClick(View v) {
         				mText.setVisibility(View.GONE);

@@ -3,7 +3,7 @@
 	<LinearLayout
 		android:id="@+id/effects_sub_text"
 		xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:layout_width="200dp" 
+	    android:layout_width="300dp" 
 	    android:layout_height="fill_parent"
 	    android:orientation = "vertical"
 	    android:gravity="left"
@@ -17,12 +17,12 @@
 	        />
 	    
 	    <Button 
-	        android:id="@+id/effect_add_text2"
+	        android:id="@+id/effect_add_text"
 	        android:text="Add Text"
 	        style="@style/slidemenu_btn"	        
 	        />
 	    <Button 
-	        android:id="@+id/effect_remove_text2"
+	        android:id="@+id/effect_remove_text"
 	        android:text="Remove Text"
 	        style="@style/slidemenu_btn"	        
 	        />

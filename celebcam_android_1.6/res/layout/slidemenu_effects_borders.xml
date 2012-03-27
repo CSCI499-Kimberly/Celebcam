@@ -2,14 +2,14 @@
 <!-- EFFECTS: border SUBMENU  -->
 <ScrollView 
         xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:layout_width="300dp" 
+	    android:layout_width="100dp" 
 	    android:layout_height="fill_parent"
 	    android:orientation = "vertical"
 	    android:background="@drawable/slidemenu_submenu_bg"
 	    android:gravity="left">
  	<LinearLayout
  	    android:id="@+id/effects_border_buttons"
-	    android:layout_width="fill_parent" 
+	    android:layout_width="100dp" 
 	    android:layout_height="fill_parent"
 	    android:orientation = "vertical"
 	    android:gravity="left"
@@ -18,26 +18,36 @@
 	     android:id="@+id/effects_border_newyork"
 	     android:text="New York"
 		 style="@style/slidemenu_btn"
+		 android:drawableTop="@drawable/icon_border"
+		 
 		 />
     
      <Button 
 	     android:id="@+id/effects_border_gothic"
 	     android:text="Gothic"
-		 style="@style/slidemenu_btn"/>
+		 style="@style/slidemenu_btn"
+		 android:drawableTop="@drawable/icon_border"
+		 />
      <Button 
 	     android:id="@+id/effects_border_hearts"
 	     android:text="Hearts"
 		 style="@style/slidemenu_btn"
+		 android:drawableTop="@drawable/icon_border"
+		 
 		 />
      <Button 
 	     android:id="@+id/effects_border_psychadelic"
 	     android:text="Psychadelic"
 		 style="@style/slidemenu_btn"
+		 android:drawableTop="@drawable/icon_border"
+		 
 		/>
      <Button	     
          android:id="@+id/effects_border_none"
 	     android:text="None"
 		 style="@style/slidemenu_btn"
+		 android:drawableTop="@drawable/icon_border"
+		 
 		/>
      </LinearLayout>
 </ScrollView>

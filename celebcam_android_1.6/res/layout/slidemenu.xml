@@ -146,7 +146,7 @@ android:layout_height="fill_parent">
 		
 <ScrollView
 		android:id="@+id/effects_palette_scroll"
-	    android:layout_width="200px" 
+	    android:layout_width="100dp" 
 	    android:layout_height="fill_parent"
 	    android:orientation = "vertical"
 	    android:gravity="left"
@@ -165,22 +165,30 @@ android:layout_height="fill_parent">
 	        android:id="@+id/text_btn"
 	        android:text="Text"
 	        style="@style/slidemenu_btn"
+	        android:drawableTop="@drawable/icon_text"
+	        
 	        />
 	    
 	    <Button 
 	        android:id="@+id/sparkles_btn"
-	        android:text="Add Sparkles"
+	        android:text="Sparkles"
 	        style="@style/slidemenu_btn"
+	        android:drawableTop="@drawable/icon_sparkle_spread"
+	        
 	        />
 		<Button 
 	        android:id="@+id/border_btn"
 	        android:text="Border"
 	        style="@style/slidemenu_btn"
+	        android:drawableTop="@drawable/icon_border"
+	        
 	        />
 		<Button 
 	        android:id="@+id/tints_btn"
 	        android:text="Tint"
 	        style="@style/slidemenu_btn"
+	        android:drawableTop="@drawable/icon_generic"
+	        
 	        />
 
 	</LinearLayout>
