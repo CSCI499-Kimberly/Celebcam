@@ -396,21 +396,21 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
         	}
         }
         });
-        //main menu outer (transparent) button
-        final Button btnMainMenuOuter=(Button)findViewById(R.id.main_menu_outer_btn);
-        btnMainMenuOuter.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View arg0) {
-        	switch (key) {
-            case NO_MENU: setMenuScheme(MenuScheme.SHOW_MAIN);
-            	break;
-            case SHOW_MAIN: setMenuScheme(MenuScheme.NO_MENU);
-                break;
-            default: setMenuScheme(MenuScheme.NO_MENU);
-            	break;
-        	}
-        }
-        });
+//        //main menu outer (transparent) button
+//        final Button btnMainMenuOuter=(Button)findViewById(R.id.main_menu_outer_btn);
+//        btnMainMenuOuter.setOnClickListener(new View.OnClickListener() {
+//        @Override
+//        public void onClick(View arg0) {
+//        	switch (key) {
+//            case NO_MENU: setMenuScheme(MenuScheme.SHOW_MAIN);
+//            	break;
+//            case SHOW_MAIN: setMenuScheme(MenuScheme.NO_MENU);
+//                break;
+//            default: setMenuScheme(MenuScheme.NO_MENU);
+//            	break;
+//        	}
+//        }
+//        });
         
         /**********************
          * MAIN MENU BUTTONS
@@ -526,20 +526,6 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
                    	}
             	else setMenuScheme(MenuScheme.SHOW_MAIN);
             	
-                break;
-            default: setMenuScheme(MenuScheme.NO_MENU);
-            	break;
-        	}
-        }
-        });
-        
-        //effects menu outer (transparent) panel
-        final Button btnEffectsOuter=(Button)findViewById(R.id.effects_menu_outer_btn);
-        btnEffectsOuter.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View arg0) {
-        	switch (key) {
-            case SHOW_EFFECTS: setMenuScheme(MenuScheme.SHOW_MAIN);
                 break;
             default: setMenuScheme(MenuScheme.NO_MENU);
             	break;

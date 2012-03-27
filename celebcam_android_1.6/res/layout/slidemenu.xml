@@ -132,13 +132,7 @@ android:layout_height="fill_parent">
 	android:id="@+id/main_menu_handle_btn"
 	style="@style/handle_btn"
 	/>
-	
-<Button 
-android:id="@+id/main_menu_outer_btn"
-android:layout_width="fill_parent"
-android:layout_height="fill_parent"
-android:background="@android:color/transparent"
-android:padding="0dp" />
+
 </LinearLayout>
 
 <!-- EFFECTS MENU  -->
@@ -152,7 +146,7 @@ android:layout_height="fill_parent">
 		
 <ScrollView
 		android:id="@+id/effects_palette_scroll"
-	    android:layout_width="100dp" 
+	    android:layout_width="200px" 
 	    android:layout_height="fill_parent"
 	    android:orientation = "vertical"
 	    android:gravity="left"
@@ -160,7 +154,7 @@ android:layout_height="fill_parent">
 	>
 		<LinearLayout
 		android:id="@+id/effects_buttons"
-	    android:layout_width="wrap_content" 
+	    android:layout_width="fill_parent" 
 	    android:layout_height="fill_parent"
 	    android:orientation = "vertical"
 	    android:gravity="center"
@@ -238,12 +232,6 @@ android:layout_height="fill_parent">
 	android:id="@+id/effects_menu_handle_btn"
 	style="@style/handle_btn"
 	/>
-	
-	<Button 
-	android:id="@+id/effects_menu_outer_btn"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:background="@android:color/transparent"
-	android:padding="0dp" />
+
 </LinearLayout>
 </FrameLayout>

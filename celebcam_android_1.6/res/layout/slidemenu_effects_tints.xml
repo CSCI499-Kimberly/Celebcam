@@ -10,6 +10,7 @@
 	    android:layout_height="fill_parent"
 	    android:orientation = "vertical"
 	    android:gravity="left"
+	    android:background="@drawable/slidemenu_submenu_bg"
 		>
 	 <Button 
 	     android:id="@+id/effects_tints_blackwhite"
