@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+   android:gravity="center">
+  
+  
+	<Gallery 
+	   android:id="@+id/gallery"
+	   android:layout_width="fill_parent"
+	   android:layout_height="fill_parent"
+	/>
+
+	<SlidingDrawer
+	     android:id="@+id/menu_drawer"
+	     android:layout_width="fill_parent"
+	     android:layout_height="200dp"
+	     android:orientation="vertical"
+	     android:layout_gravity="bottom">
+
+	<LinearLayout
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+   android:orientation="vertical">
+	
+		<Button 
+	        android:id="@+id/delete_button"
+	        android:text="Delete"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content" />
+
+	    	    
+	    <Button 
+	        android:id="@+id/email_button"
+	        android:text="Email"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content" />
+	    
+		<Button
+		android:id="@+id/Button_OAuth"
+		android:text="Twitter"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent"
+		android:onClick="authent"
+		/>	
+		</LinearLayout>
+>>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
+	
+	     android:handle="@+id/menu_drawer_handle"
+	     android:content="@+id/menu_scrollview">
+		
+	    	      <com.celebcam.CelebCamDrawerHandle
+	          android:id="@+id/menu_drawer_handle"
+	          android:layout_width="102dp"
+	          android:layout_height="33dp"
+	          />
+	    	      
+	    	      	      	 <com.celebcam.CelebCamDrawerContent
+		android:id="@+id/menu_scrollview"
+	    android:layout_width="fill_parent" 
+	    android:layout_height="fill_parent"
+	    android:orientation = "vertical"
+	    android:gravity="center"
+	>
+			      	 	          		<LinearLayout
+		android:id="@+id/mdll1"
+		android:background="#99594a2f"
+	    android:layout_width="fill_parent" 
+	    android:layout_height="fill_parent"
+	    android:orientation = "vertical"
+	    android:gravity="center">
+
+	    	 	    
+	    <com.celebcam.CelebCamButton 
+	        android:id="@+id/post_to_twitter"
+	        android:text="Share on Twitter"
+	        android:textSize="20dp"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content" />
+
+	   <com.celebcam.CelebCamButton 
+	        android:id="@+id/post_to_facebook"
+	        android:text="Share on Facebook"
+	        android:textSize="20dp"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content" />	  
+
+	    <com.celebcam.CelebCamButton
+	        android:id="@+id/email_photo_button"
+	        android:text="Email"
+	        android:textSize="20dp"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content" />
+	    	      	      	 
+	    <com.celebcam.CelebCamButton
+	        android:id="@+id/delete_photo_button"
+	        android:text="Delete Photo"
+	        android:textSize="20dp"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content" />
+	    	      	      	 	    	      	      		   	         
+	   </LinearLayout>
+	   </com.celebcam.CelebCamDrawerContent>
+		
+	</SlidingDrawer>
+	
+		    <com.celebcam.CelebCamButton 
+	        android:id="@+id/back_to_camera_button"
+	        android:text="Camera"
+	        android:textSize="20dp"
+	        android:layout_width="100dp"
+	        android:layout_gravity="right"
+	        android:layout_height="wrap_content" />
+</FrameLayout>

@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FrameLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_sliding_menu"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@android:color/transparent"
+    >
+
+<!-- SLIDER MENU MASTER HANDLE (when no menus are showing) -->   
+<ImageButton	
+	android:id="@+id/slide_menu_master_btn"
+	style="@style/handle_btn"
+	/>
+
+    
+<!-- SLIDE MENU MAIN -->
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="horizontal"
+android:id="@+id/main_slide_menu"
+android:gravity="left"
+android:background="@android:color/transparent"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent">
+<ScrollView
+	    android:layout_width="100dp" 
+	    android:layout_height="fill_parent"
+	    android:orientation = "vertical"
+	    android:gravity="left"
+	    android:background="@drawable/slidemenu_scroller_bg"
+	>
+	<LinearLayout
+	    android:layout_width="fill_parent" 
+	    android:layout_height="fill_parent"
+	    android:orientation = "vertical"
+	    android:gravity="center"
+	    android:background="@android:color/transparent"
+	>
+
+	    <Button 
+	        android:id="@+id/celeb_menu_btn"
+	        android:text="Celebs"
+	        android:drawableTop="@drawable/slidemenu_celeb_icon"
+	        style="@style/slidemenu_btn"/>
+	    
+	    <Button 
+	        android:id="@+id/effects_menu_btn"
+	        android:text="Effects"
+	        android:drawableTop="@drawable/slidemenu_effects_icon"
+	        style="@style/slidemenu_btn"/>
+	    
+	   	<Button 
+	        android:id="@+id/gallery_menu_btn"
+	        android:text="Gallery"
+	        android:drawableTop="@drawable/slidemenu_gallery_icon"
+	        style="@style/slidemenu_btn"/>
+	    
+	    <Button 
+	        android:id="@+id/tutorial_menu_btn"
+	        android:text="Tutorial"
+	        style="@style/slidemenu_btn"
+	        />
+	     <Button 
+	        android:id="@+id/preferences_menu_btn"
+	        android:text="Preferences"
+	        style="@style/slidemenu_btn"
+	        />
+	     <Button 
+	        android:id="@+id/about_menu_btn"
+	        android:text="About"
+	        style="@style/slidemenu_btn"
+	        />
+	     <Button 
+	        android:id="@+id/home_menu_btn"
+	        android:text="Home"
+	        style="@style/slidemenu_btn"
+	        />
+	     	          
+	    <Button 
+	        android:id="@+id/edit_menu_button"
+	        android:text="Edit"
+	        style="@style/slidemenu_btn"
+	        />
+
+	     <Button 
+	        android:id="@+id/save_menu_button"
+	        android:text="Save"
+	        style="@style/slidemenu_btn"
+	        />
+	     
+	     <Button 
+	        android:id="@+id/gallery_menu_button"
+	        android:text="Gallery"
+	        style="@style/slidemenu_btn"
+
+	        />
+	    	    
+	    <Button 
+	        android:id="@+id/email_menu_button"
+	        android:text="Email"
+	        style="@style/slidemenu_btn"
+	         />
+	    
+	    <EditText
+	        android:id="@+id/twitter_text_field"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        />
+	    	   
+		    
+	   <Button
+		android:id="@+id/twitter_post_button"
+		android:text="Post Tweet"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent"
+		android:onClick="pressTweet"
+		/>		
+
+				
+	    <Button 
+	        android:id="@+id/debug_menu_button"
+	        android:text="Debug"
+	        style="@style/slidemenu_btn"
+	         />
+	    	    
+	    	    
+	</LinearLayout>
+	</ScrollView>
+
+<ImageButton	
+	android:id="@+id/main_menu_handle_btn"
+	style="@style/handle_btn"
+	/>
+
+</LinearLayout>
+
+<!-- EFFECTS MENU  -->
+<LinearLayout
+android:orientation="horizontal"
+android:id="@+id/effects_menu"
+android:gravity="left"
+android:background="@android:color/transparent"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent">
+		
+<ScrollView
+		android:id="@+id/effects_palette_scroll"
+	    android:layout_width="100dp" 
+	    android:layout_height="fill_parent"
+	    android:orientation = "vertical"
+	    android:gravity="left"
+	    android:background="@drawable/slidemenu_scroller_bg"
+	>
+		<LinearLayout
+		android:id="@+id/effects_buttons"
+	    android:layout_width="fill_parent" 
+	    android:layout_height="fill_parent"
+	    android:orientation = "vertical"
+	    android:gravity="center"
+	    android:background="#66000000"
+	>
+	    
+	    <Button 
+	        android:id="@+id/text_btn"
+	        android:text="Text"
+	        style="@style/slidemenu_btn"
+	        android:drawableTop="@drawable/icon_text"
+	        
+	        />
+	    
+	    <Button 
+	        android:id="@+id/sparkles_btn"
+	        android:text="Sparkles"
+	        style="@style/slidemenu_btn"
+	        android:drawableTop="@drawable/icon_sparkle_spread"
+	        
+	        />
+		<Button 
+	        android:id="@+id/border_btn"
+	        android:text="Border"
+	        style="@style/slidemenu_btn"
+	        android:drawableTop="@drawable/icon_border"
+	        
+	        />
+		<Button 
+	        android:id="@+id/tints_btn"
+	        android:text="Tint"
+	        style="@style/slidemenu_btn"
+	        android:drawableTop="@drawable/icon_generic"
+	        
+	        />
+
+	</LinearLayout>
+	</ScrollView>
+	
+	<!-- EFFECTS SUBMENUS contains all effects submenus as children -->
+	<LinearLayout 
+	    android:id="@+id/effects_submenus"
+	    android:layout_width="wrap_content" 
+	    android:layout_height="fill_parent"
+	    android:orientation = "vertical"
+	    android:gravity="left"
+	    android:background="@drawable/slidemenu_scroller_bg"
+	>
+	    <!-- EFFECTS: add_text SUBMENU  -->
+	 	<ViewStub 
+	 	       android:id="@+id/slidemenu_effects_text"
+               android:inflatedId="@+id/slidemenu_effects_text"
+               android:layout="@layout/slidemenu_effects_text"
+               android:layout_width="fill_parent"
+               android:layout_height="fill_parent" />
+
+		<!-- EFFECTS: BORDER SUBMENU (view stub) -->
+	 	<ViewStub 
+	 	       android:id="@+id/slidemenu_effects_borders"
+               android:inflatedId="@+id/slidemenu_effects_borders"
+               android:layout="@layout/slidemenu_effects_borders"
+               android:layout_width="fill_parent"
+               android:layout_height="fill_parent" />
+	 	
+		<!-- EFFECTS: SPARKLES SUBMENU (view stub) -->
+	    <ViewStub 
+	 	       android:id="@+id/slidemenu_effects_sparkles"
+               android:inflatedId="@+id/slidemenu_effects_sparkles"
+               android:layout="@layout/slidemenu_effects_sparkles"
+               android:layout_width="fill_parent"
+               android:layout_height="fill_parent" />
+	    <!-- EFFECTS: TINTS SUBMENU (view stub) -->
+	    <ViewStub 
+	 	       android:id="@+id/slidemenu_effects_tints"
+               android:inflatedId="@+id/slidemenu_effects_tints"
+               android:layout="@layout/slidemenu_effects_tints"
+               android:layout_width="fill_parent"
+               android:layout_height="fill_parent" />
+    </LinearLayout>
+	
+	
+	<ImageButton	
+	android:id="@+id/effects_menu_handle_btn"
+	style="@style/handle_btn"
+	/>
+
+</LinearLayout>
+</FrameLayout>

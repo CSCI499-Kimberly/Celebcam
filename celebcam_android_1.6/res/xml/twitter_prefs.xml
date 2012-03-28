@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    
+<Preference android:shouldDisableView="true" android:key="oauth_access_token" android:selectable="false">
+
+</Preference>
+
+<Preference android:shouldDisableView="true" android:key="oauth_access_secret" android:selectable="false"> 
+</Preference>
+
+</PreferenceScreen>

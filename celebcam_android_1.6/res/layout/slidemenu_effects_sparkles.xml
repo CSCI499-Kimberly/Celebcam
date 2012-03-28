@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- EFFECTS: border SUBMENU  -->
+<ScrollView android:id="@+id/effects_sub_sparkles"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="100dp" 
+	    android:layout_height="fill_parent"
+	    android:orientation = "vertical"
+	    	    android:background="@drawable/slidemenu_submenu_bg"
+	    android:gravity="left">
+ 	<LinearLayout
+ 	    android:id="@+id/effects_sparkle_buttons"
+	    android:layout_width="100dp" 
+	    android:layout_height="fill_parent"
+	    android:orientation = "vertical"
+	    android:gravity="left"
+		>
+	 <Button 
+	     android:id="@+id/effects_sparkle_spreadable_btn"
+	     android:text="Spread"
+		 style="@style/slidemenu_btn"
+		 android:drawableTop="@drawable/icon_sparkle_spread"/>
+    
+     <Button 
+	     android:id="@+id/effects_sparkle_brushable_btn"
+	     android:text="Brush"
+		 style="@style/slidemenu_btn"
+		 android:drawableTop="@drawable/icon_sparkle_spread"
+		 
+		 />
+     <Button 
+	     android:id="@+id/effects_sparkle_none_btn"
+	     android:text="None"
+		 style="@style/slidemenu_btn"
+		 android:drawableTop="@drawable/icon_generic"/>
+     </LinearLayout>
+</ScrollView>
