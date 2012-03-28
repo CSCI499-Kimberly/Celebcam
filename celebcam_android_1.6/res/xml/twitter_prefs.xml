@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
- 
-<EditTextPreference android:title="@string/summaryTwitterPin"
-android:summary="@string/summaryTwitterPin" android:key="twitter_pin"></EditTextPreference>
 
-<EditTextPreference android:title=""
-android:summary="" android:shouldDisableView="false" android:key="oauth_access_token"></EditTextPreference>
-
-<EditTextPreference android:title=""
-android:summary="" android:shouldDisableView="false" android:key="oauth_access_secret"></EditTextPreference>
-
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     
+<Preference android:shouldDisableView="true" android:key="oauth_access_token" android:selectable="false">
+
+</Preference>
+
+<Preference android:shouldDisableView="true" android:key="oauth_access_secret" android:selectable="false"> 
+</Preference>
 
 </PreferenceScreen>

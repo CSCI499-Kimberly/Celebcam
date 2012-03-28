@@ -4,10 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import android.app.Activity;
-<<<<<<< HEAD
 import android.content.Context;
-=======
->>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -30,15 +27,10 @@ public class PhotoBrowserActivity extends Activity{
 	CelebCamDbHelper mDbHelper;
 	
 	static String[]  mFileNames;	
-<<<<<<< HEAD
-=======
-	static Bitmap[]  mBitmaps;
->>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 	
 	static int i = 0;
 	static int mSize;
 	
-<<<<<<< HEAD
 	private int mScreenWidth;
 	private int mScreenHeight;
 	
@@ -63,30 +55,11 @@ public class PhotoBrowserActivity extends Activity{
 	SlidingDrawer mMenuDrawer;
 	CelebCamButton mReturnToCamera;
 	
-=======
-	static public Bitmap getNextBitmap()
-	{
-		
-		if( i < mSize-1 )
-		{
-			i++;
-		}
-		else 
-		{ 
-			i = 0;
-		}
-		
-		return mBitmaps[i];
-	}
-	
-	Gallery gallery;
->>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 	public void onCreate( Bundle bundle )
 	{
 		super.onCreate( bundle );
 		setContentView( R.layout.photo_browser );
 		Log.d("PhotoBrowser","onCreate");
-<<<<<<< HEAD
 
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, 
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -106,12 +79,6 @@ public class PhotoBrowserActivity extends Activity{
 		
 		mMenuDrawer = (SlidingDrawer) findViewById( R.id.menu_drawer);
 		
-=======
-
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, 
-				WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        
->>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
         gallery = (Gallery) findViewById(R.id.gallery);
         
         gallery.setOnItemClickListener(new OnItemClickListener() {
@@ -120,91 +87,7 @@ public class PhotoBrowserActivity extends Activity{
             }
         });
 		mDbHelper = new CelebCamDbHelper(this);
-<<<<<<< HEAD
-=======
         
-	}
-	
-	public void onResume()
-	{
-		super.onResume();
-		
-		Log.d("PhotoBrowser","onResume");
-		update();
-	}
-	
-	public void onPause()
-	{
-		super.onPause();
-		
-	}
-	
-	public void update()
-	{
-		mDatabase = mDbHelper.getReadableDatabase();
->>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
-        
-		try {
-			Cursor cursor = mDatabase.query(CelebCamDbHelper.TABLE,new String[]{CelebCamDbHelper.C_SOURCE}, null, null, null, null, null);
-			
-			mFileNames = new String[ cursor.getCount()];
-			mBitmaps   = new Bitmap[ cursor.getCount()];
-			mSize	   = cursor.getCount();
-				try {
-
-					int i = 0;
-					
-					Log.d("PhotoBrowser", "");
-					Log.d("PhotoBrowser", "**********************************");
-					while( cursor.moveToNext() )
-					{
-						mFileNames[i] = cursor.getString(0);
-						
-						
-						if( mFileNames[i] != null )
-						{
-							Log.d("PhotoBrowser", mFileNames[i]);
-						
-							mBitmaps[i] = BitmapFactory.decodeFile(mFileNames[i]);
-						}
-						
-						Log.d("PhotoBrowser", "");
-						Log.d("PhotoBrowser", "");
-						i++;
-					}
-					
-		        } 
-				finally 
-				{
-					cursor.close();
-		        }
-	    } 
-		finally 
-		{
-	        mDatabase.close();
-	    }
-		
-		gallery.setAdapter(new CelebCamImageAdapter(this));
-	}
-	
-	public void delete( int index )
-	{
-		
-	}
-	
-	public void sendViaEmail( int index )
-	{
-		
-	}
-	
-	public void postToTwitter( int index )
-	{
-		
-	}
-	
-	public void postToFacebook( int index )
-	{
-		
 	}
 	
 	public void onResume()

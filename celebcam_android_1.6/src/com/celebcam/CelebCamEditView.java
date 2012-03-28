@@ -62,11 +62,8 @@ public class CelebCamEditView extends View implements CCMemoryWatcher {
 			mBitmap.recycle();
 			mBitmap = null;
 		}
-<<<<<<< HEAD
 		
 		invalidate();
-=======
->>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 	}
 	
 	public void update()

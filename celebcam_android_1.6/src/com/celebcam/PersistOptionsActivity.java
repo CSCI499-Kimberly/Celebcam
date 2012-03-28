@@ -6,10 +6,7 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
-<<<<<<< HEAD
 import twitter4j.conf.ConfigurationBuilder;
-=======
->>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -21,13 +18,8 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.util.Log;
 import android.widget.EditText;
-<<<<<<< HEAD
-=======
-import android.widget.TextView;
->>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 import android.widget.Toast;
 
 
@@ -52,31 +44,11 @@ public class PersistOptionsActivity extends Activity implements OnSharedPreferen
 	
 	SharedPreferences prefs;
 	
-<<<<<<< HEAD
-=======
-	private static final String TAG = "PersistOptions";
-
-	private static final String callbackURL = "app://twitter";
-	private static final String consumerKEY = "8JlWrU08QfMLG3SwVUU4LQ";
-	private static final String consumerSECRET = "NrHaVm2My0t2wf2nUaMt2Vno98mPHzg8YOgHBxlt1M";
-	
-	private static final String userAccessTOKEN = "accessToken";
-	private static final String userAccessTokenSECRET = "accessTokenSecret";
-	private SharedPreferences mPrefs;
-
-	
-	private Twitter twitter;
-	private RequestToken reqTOKEN;
-	
-	EditText textField;
-	
->>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.persist_options);
-<<<<<<< HEAD
 
         Log.i(TAG, "STARTED - onCreate() ");
       		
@@ -214,179 +186,6 @@ public class PersistOptionsActivity extends Activity implements OnSharedPreferen
 
 
 
-=======
-		
-		
-		
-        Log.i(TAG, "STARTED - onCreate() ");
-
-		mPrefs = getSharedPreferences("twitterPrefs", MODE_PRIVATE);
-		Log.i(TAG, "Got Preferences");
-        
-		String link = "http://tinyurl.com/c3lcam";	//get URL from server
-		
-		String celebrityName = "Rihanna";	//get celebrity from server
-		
-    	textField = (EditText)findViewById(R.id.theTextField);
-    	textField.setText("Check out this picture I took with " + celebrityName + ". " + link + ". #CelebCam" , TextView.BufferType.NORMAL );
-
-		
-        //Create new twitter item using 4jtwitter
-      	twitter = new TwitterFactory().getInstance();
-      	Log.i(TAG, "Got Twitter4j");
-      		
-      	// Tell twitter4j that we want to use it with our app
-      	// Use twitter4j to authenticate
-      	twitter.setOAuthConsumer(consumerKEY, consumerSECRET);
-      	Log.i(TAG, "Inflated Twitter4j");
-		
-	}
-
-	
-    public void pressTweet(View button) {
-      //  String fieldContents = textField.getText().toString();
-    	
-	//	Toast.makeText(this, textField.getText().toString(), Toast.LENGTH_SHORT).show();
-//    	textField.invalidate();
-		if ( textField.getText().toString().equals("") ){
-			Toast.makeText(this, "type something", Toast.LENGTH_SHORT).show();
-		}
-		else{
-			if (mPrefs.contains(userAccessTOKEN)) {
-				Log.i(TAG, "Repeat User");
-				loginAuthorisedUser();
-			} else {
-				Log.i(TAG, "New User");
-				authent();
-			}
-			/*
-			//Toast.makeText(this, fieldContents, Toast.LENGTH_SHORT).show();
-			Log.i(TAG, "New User");
-			authent();
-			Log.i(TAG, "New User authentication");
-			*/
-		}
-
-    }
-	
-	private void loginAuthorisedUser() {
-		String token = mPrefs.getString(userAccessTOKEN, null);
-		String secret = mPrefs.getString(userAccessTokenSECRET, null);
-
-		// Create the twitter access token from the credentials we got previously
-		AccessToken at = new AccessToken(token, secret);
-
-		twitter.setOAuthAccessToken(at);
-		
-		Toast.makeText(this, "Welcome back", Toast.LENGTH_SHORT).show();
-		
-		sendTweet();
-		Log.i(TAG, "Old User tweet sent");
-		
-	}
-	
-	private void authent(){
-		Log.i(TAG, "STARTED - quthent()");
-		try {
-			reqTOKEN = twitter.getOAuthRequestToken(callbackURL);
-			
-			Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(reqTOKEN.getAuthenticationURL()));
-			// Start new intent on Web browser
-			startActivity(intent);
-			Log.i(TAG, "Starting Oauth from web"); 
-		   } catch (Exception e) {
-			   Log.w("oauth fail", e);
-			// Toast.makeText(button.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-		   }
-	   }
-	
-	
-	private void sendTweet(){ 
-		//Testing sending tweets after authenticated
-	//	Toast.makeText(this, textField.getText().toString(), Toast.LENGTH_SHORT).show();
-		
-		
-		try {
-			twitter.updateStatus( textField.getText().toString() );
-
-			Toast.makeText(this, "Tweet Successful!", Toast.LENGTH_SHORT).show();
-			Log.i(TAG, "Post Sent");
-
-		} catch (TwitterException e) {
-			Toast.makeText(this, "Tweet error, try again later", Toast.LENGTH_SHORT).show();
-			Log.i(TAG,  textField.getText().toString());
-			Log.i(TAG, "Post NOT Sent");
-			Log.e(TAG, "Post NOT Sent", e);
-
-
-		}
-		
-	}
-	
-	
-	@Override
-	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-		Log.i(TAG, "STARTED - onNewIntent");
-		Uri uri = intent.getData();
-		Log.i(TAG, "Returned to Program"); 
-
-		if (uri !=null && uri.toString().startsWith(callbackURL)){
-			String oauthVerifier = uri.getQueryParameter("oauth_verifier");
-			Log.i(TAG, "string verifier created"); 
-			try {
-				Log.i(TAG, "trying access token"); 
-				AccessToken at = twitter.getOAuthAccessToken(reqTOKEN, oauthVerifier);
-				Log.i(TAG, "trying to set token"); 
-				twitter.setOAuthAccessToken(at);
-				Log.e("Login", "Twitter Initialised");
-				
-
-
-				saveAccessToken(at);
-				Log.i(TAG, "Access token saved");
-				
-				// Set the content view back after we changed from browser 
-				setContentView(R.layout.persist_options);
-				
-				sendTweet();
-				Log.i(TAG, "New User tweet sent");
-				
-		    	textField = (EditText)findViewById(R.id.theTextField);
-				
-
-				} catch (Exception e) {
-					Log.e(TAG, "OAuth - Access Token Retrieval Error", e);
-					
-				}
-			
-
-		}
-		else{
-			Log.i(TAG, "Intent from something other that twitter website");
-		}
-	}
-	
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-		Log.i(TAG, "STARTED - onResume()");
-	}
-	
-	
-	private void saveAccessToken(AccessToken at) {
-		mPrefs =  getSharedPreferences("LOGIN_DETAILS", MODE_PRIVATE);
-		String token = at.getToken();
-		String secret = at.getTokenSecret();
-		SharedPreferences.Editor editor = mPrefs.edit();
-		editor.putString(userAccessTOKEN, token);
-		editor.putString(userAccessTokenSECRET, secret);
-		editor.commit();
-	}
-	
-	
->>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 	public void sendEmail (View button) {
 
 		Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
@@ -404,16 +203,10 @@ public class PersistOptionsActivity extends Activity implements OnSharedPreferen
 		startActivity(Intent.createChooser(emailIntent, "Send mail"));
 
 	}
-<<<<<<< HEAD
 
 	public void onSharedPreferenceChanged(SharedPreferences arg0, String arg1) {
 
 		
 	}
 
-=======
-	
-	
-	
->>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 }

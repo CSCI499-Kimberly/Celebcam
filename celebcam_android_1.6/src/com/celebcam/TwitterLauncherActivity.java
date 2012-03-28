@@ -14,15 +14,8 @@ import android.net.Uri;
 import android.os.Environment;
 import android.view.View;
 import android.content.SharedPreferences;
-<<<<<<< HEAD
 import android.util.Log;
 import android.widget.EditText;
-=======
-import android.content.SharedPreferences.Editor;
-import android.util.Log;
-import android.widget.EditText;
-import android.widget.TextView;
->>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 import android.widget.Toast;
 
 public class TwitterLauncherActivity extends Activity {

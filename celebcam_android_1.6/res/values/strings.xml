@@ -18,7 +18,25 @@
     <string name="button_email">Email</string>
 	<string name="button_twitter">Tweet</string>
 
-	<string-array name="borders_array">
+	<string-array name="font_array">
+	    <item>None</item>
+        <item>New York</item>
+        <item>Gothic</item>
+        <item>Classic</item>
+        <item>Hearts</item>
+        <item>Psychedelic</item>
+    </string-array>
+    
+		<string-array name="borders_array">
+	    <item>None</item>
+        <item>New York</item>
+        <item>Gothic</item>
+        <item>Classic</item>
+        <item>Hearts</item>
+        <item>Psychedelic</item>
+    </string-array>
+    
+	<string-array name="sparkles_array">
 	    <item>None</item>
         <item>New York</item>
         <item>Gothic</item>

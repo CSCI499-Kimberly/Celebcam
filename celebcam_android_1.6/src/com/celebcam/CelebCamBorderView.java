@@ -187,7 +187,6 @@ public class CelebCamBorderView extends View implements CCMemoryWatcher {
 		super( context, attributeSet );
 		
 		mBorder = new ArrayList<Border>();
-<<<<<<< HEAD
 //		Tile tile = 
 //				new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.metal_plate), Border.TOP_TILED,
 //				new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.green_iguana), Border.BOTTOM_TILED,
@@ -218,36 +217,6 @@ public class CelebCamBorderView extends View implements CCMemoryWatcher {
 //	tmp = new Border("None");
 //	mBorder.add(tmp);
 	
-=======
-		Tile tile = 
-				new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.metal_plate), Border.TOP_TILED,
-				new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.green_iguana), Border.BOTTOM_TILED,
-				new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.giraffe), Border.LEFT_TILED,
-				new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.jeans), Border.RIGHT_TILED, null ) ) ) );
-
-		
-		Border tmp = new Border("Psychedelic");
-		tmp.layers[0].addTile( tile );
-		
-		mBorder.add(tmp);
-		
-		tile = 
-			new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.ny_tile), Border.TOP_TILED,
-		new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.ny_tile), Border.BOTTOM_TILED,
-		new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.ny_tile),  Border.LEFT_TILED ,
-		new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.ny_tile),  Border.RIGHT_TILED, null ) ) ) );
-
-		Tile tile2 = 
-			new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.ny), Border.BOTTOM | Border.CENTER, null  );
-
-	tmp = new Border("New York");
-	tmp.layers[0].addTile( tile );
-	tmp.layers[1].addTile( tile2 );
-	
-	mBorder.add(tmp);
-		
-		
->>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 		CCDebug.registerMemoryWatcher( this );
 
 	}

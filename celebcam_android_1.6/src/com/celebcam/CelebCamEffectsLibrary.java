@@ -357,11 +357,7 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 		}
 		
 		mCanvas = new Canvas();
-<<<<<<< HEAD
 		mCanvas.setBitmap( mCurrentBitmap );
-=======
-		mCanvas.setBitmap(mCurrentBitmap);
->>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 
 	}
 	
@@ -404,7 +400,6 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 	
 	static void setPublishBitmap( Bitmap bitmap )
 	{
-<<<<<<< HEAD
 		if( mPublishSize == null )
 			Log.d("DataAcquisitionActivity", "mPreviewSize null ");
 		
@@ -415,9 +410,6 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 			mCanvas = new Canvas();
 		
 		mCanvas.setBitmap(bitmap);
-=======
-		mPublishBitmap = bitmap;
->>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 	}
 	
 	static CelebCamBitmap getCCBitmap()
@@ -673,7 +665,6 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 	}
 	
 	static public void addImage( Bitmap bitmap, Matrix upperBitmapMatrix)
-<<<<<<< HEAD
 	{
 		
 		if( upperBitmapMatrix == null )
@@ -689,23 +680,6 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 	
 	static public Bitmap negative( CelebCamBitmap ccBitmap )
 	{
-=======
-	{
-		
-		if( upperBitmapMatrix == null )
-			upperBitmapMatrix = new Matrix();
-
-		if( mState == PUBLISH )
-		{
-			upperBitmapMatrix.postScale((float)mPublishSize.width/mPreviewSize.width, (float)mPublishSize.height/mPreviewSize.height );
-		}
-
-		mCanvas.drawBitmap( bitmap, upperBitmapMatrix, null );
-	}
-	
-	static public Bitmap negative( CelebCamBitmap ccBitmap )
-	{
->>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 		Bitmap bitmap = ccBitmap.toAndroidBitmap();
 		
 		for( int i = 0; i < bitmap.getWidth(); i++ )
@@ -861,7 +835,6 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 		return mMergedBitmap;
 	}
 	
-<<<<<<< HEAD
 	static Bitmap adjustChannels2( float...amounts )
 	{
 		Log.d("DataAcquisitionActivity", "adjust starting");
@@ -933,8 +906,6 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 		return mMergedBitmap;
 	}
 	
-=======
->>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 	static Bitmap applyColorNotes( Bitmap bitmap )
 	{
 		Log.d("DataAcquisitionActivity", "adjust starting");
@@ -999,11 +970,7 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 		return bitmap;
 	}
 	
-<<<<<<< HEAD
 	static Bitmap adjustChannel2( int channel, float amount )
-=======
-	static Bitmap adjustChannel( int channel, float amount )
->>>>>>> 99e154e296220d23ddba8348631d8dfeabc2035f
 	{
 		Log.d("DataAcquisitionActivity", "adjust starting");
 		if( mCCBitmap == null )
