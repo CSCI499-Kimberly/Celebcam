@@ -277,7 +277,7 @@ class SparklesEmitter implements CCMemoryWatcher {
 			
 			color *= mColorVariance;
 			
-			mBitmaps[i].permanentColorBurn(color);
+			mBitmaps[i].permanentColorOverlay(color);
 		}
 		//mSparkle = null;
 	}

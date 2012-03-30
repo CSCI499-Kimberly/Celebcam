@@ -3,6 +3,7 @@ package com.celebcam;
 import android.view.View;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.graphics.Paint;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -68,8 +69,7 @@ public class CelebCamEditView extends View implements CCMemoryWatcher {
 	
 	public boolean onTouchEvent(MotionEvent motionEvent)
 	{
-		if( CelebCamEffectsLibrary.mCCBitmap != null )
-			setBitmap( CelebCamEffectsLibrary.mCCBitmap.toAndroidBitmap());
+		invalidate();
 		
 		return true;
 	}

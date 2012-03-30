@@ -217,6 +217,8 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Log.d(TAG, "onCreate");
+        
         setContentView(R.layout.data_acquisition);
         
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, 
@@ -630,23 +632,23 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 			
 			strFunction = "restore";
 			
-//			mCelebView.restore(mApp);
+			mCelebView.restore(mApp);
 //			
 //			strFunction = "addImage";
 //			
-//			CelebCamEffectsLibrary.addImage( mCelebView.getBitmap(), mCelebView.getMatrix() );
+			CelebCamEffectsLibrary.addImage( mCelebView.getBitmap(), mCelebView.getMatrix() );
 //			
 //			strFunction = "addText";
 //			
-//			CelebCamEffectsLibrary.addText(mText);
+			CelebCamEffectsLibrary.addText(mText);
 //			
 //			strFunction = "addSparkles";
 //			
-//			CelebCamEffectsLibrary.addSparkles( mSparkles );
+			CelebCamEffectsLibrary.addSparkles( mSparkles );
 //			
 //			strFunction = "addBorder";
 //			
-//			CelebCamEffectsLibrary.addBorder(mBorder);
+			CelebCamEffectsLibrary.addBorder(mBorder);
 //	        
 //			strFunction = "mEditView.setBitmap";
 			
@@ -777,6 +779,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	protected void onResume() {
 		super.onResume();
 		
+		Log.d(TAG, "onResume");
 	}
 
 
@@ -819,7 +822,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 		if( resultCode == RESULT_OK )
 		{
 			Log.d(TAG, "RESULT_OK");
-			mEditView.setBitmap( CelebCamEffectsLibrary.mCCBitmap.toAndroidBitmap());
+			mEditView.setBitmap( ((CelebCamApplication) getApplication()).getCurrentBitmap());
 		}
 		
 		}
@@ -1085,7 +1088,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
           		tintsBWBtn.setOnClickListener(new View.OnClickListener() {
             		public void onClick(View thisBtn ){ 
             			toggleEffectBtnOn(thisBtn);
-            			mSliders.setVisibility(View.GONE);
+
 
             		}
           		});	
@@ -1093,7 +1096,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
           		tintsSepiaBtn.setOnClickListener(new View.OnClickListener() {
             		public void onClick(View thisBtn ){ 
             			toggleEffectBtnOn(thisBtn);
-            			mSliders.setVisibility(View.GONE);
+
             		}
           		});
         		Button tintsRGBBtn = (Button)findViewById(R.id.effects_tints_rgb);
@@ -1102,6 +1105,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
             			toggleEffectBtnOn(thisBtn);
         				
         				((CelebCamApplication) getApplication()).setBitmap(mEditView.getBitmap());
+        				mEditView.setBitmap( null );
         				startActivityForResult( new Intent(mContext, FXProcessor.class), PERFORM_COLOR_TRANSFORM);
             		}
           		});
@@ -1109,7 +1113,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
           		tintsNoneBtn.setOnClickListener(new View.OnClickListener() {
             		public void onClick(View thisBtn ){ 
             			toggleEffectBtnOn(thisBtn);
-            			mSliders.setVisibility(View.GONE);
+
             		}
           		});
 
@@ -1133,6 +1137,8 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
             	for (int i=0;i<borderBtns.getChildCount();i++){
             		final Button btn = (Button)borderBtns.getChildAt(i);
             		btn.setOnClickListener(clickBorderBtn);
+            		
+
             	}            		
         	}
         	else slidemenu_effects_borders.setVisibility(View.VISIBLE);
@@ -1145,12 +1151,11 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
      private OnClickListener clickBorderBtn = new OnClickListener() {
          public void  onClick(View thisBtn) {
              Button b = (Button)thisBtn;
-             String buttonText = b.getText().toString().concat(" was clicked");
-
-             Toast toast = Toast.makeText(getApplicationContext(), buttonText, Toast.LENGTH_SHORT);
-             toast.show();
              
-             toggleEffectBtnOn(thisBtn);   		     	
+             toggleEffectBtnOn(thisBtn);
+             
+             mBorder.selectBorderByName(b.getText().toString());
+         	mBorder.setVisibility(View.VISIBLE);
          }
       };
       /** Sparkle effects menu sparkles button **/

@@ -238,6 +238,8 @@ public class TouchSliderGroup extends View implements CCMemoryWatcher {
 				else
 				{
 					CelebCamEffectsLibrary.setPreviewBitmap(CelebCamEffectsLibrary.mCCBitmap.toAndroidBitmap());
+					
+					((CelebCamApplication)mActivity.getApplication()).setBitmap(((FXProcessor)mActivity).mImageSurface.getBitmap());
 					mActivity.setResult(Activity.RESULT_OK);
 					mActivity.finish();
 				}

@@ -1324,7 +1324,6 @@ class CelebCamEffectsProcessor extends AsyncTask<CelebCamBitmap, Integer, Bitmap
 	
 	public Bitmap doInBackground(CelebCamBitmap... bitmap )
 	{
-		//mEditView.setVisibility( View.GONE );
 		setup();
 		Bitmap processedBitmap = null;
 		
@@ -1332,8 +1331,6 @@ class CelebCamEffectsProcessor extends AsyncTask<CelebCamBitmap, Integer, Bitmap
 		{
 			Log.d("DataAcquisitionActivity", "working, id : " + Integer.toString(id));
 			processedBitmap = CelebCamEffectsLibrary.adjustChannel(mChannel, mAmount);
-			//CelebCamEffectsLibrary.removeColorChannel(mChannel);
-			//processedBitmap = CelebCamEffectsLibrary.getBitmap();
 		}
 		
 		if( processedBitmap == null )
