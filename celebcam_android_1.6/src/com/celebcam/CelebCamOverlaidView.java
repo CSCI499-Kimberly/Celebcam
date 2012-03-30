@@ -102,25 +102,22 @@ public class CelebCamOverlaidView extends View implements CCMemoryWatcher {
 			current = this;
 			mContext = context;
 			
-			mBitmap         = 
+			//mBitmap        
 				//Bitmap.createScaledBitmap(
-						BitmapFactory.decodeResource( getContext().getResources(), R.drawable.rihanna )
+					//	 = BitmapFactory.decodeResource( getContext().getResources(), R.drawable.rihanna )
 						//, 100, 100, false)
-						;
+				//		;
 
 //			mBitmap         = 
 //				        Bitmap.createScaledBitmap(
 //						mBitmap
 //						,300,300, false);
 			
-			mScaledRectF    = new RectF(0, 0, mBitmap.getWidth(), mBitmap.getHeight());
+			mScaledRectF    = new RectF();
 			
-			mCollider = new float[] { 0, 0,
-								 mBitmap.getWidth(), 0,
-								 0, mBitmap.getHeight(),
-								 mBitmap.getWidth(), mBitmap.getHeight() };
+			mCollider = new float[] { 0, 0, 0, 0, 0, 0, 0, 0 };
 			
-			mCenter = new float[]{ mBitmap.getWidth()/2, mBitmap.getHeight()/2 } ;
+			mCenter = new float[]{ 0, 0 } ;
 
 			mActiveFlag = EXCLUDE_TRANSPARENCY;
 			
@@ -164,6 +161,15 @@ public class CelebCamOverlaidView extends View implements CCMemoryWatcher {
 		public void setBitmap( Bitmap bitmap )
 		{
 			mBitmap = bitmap;
+			
+			mScaledRectF    = new RectF(0, 0, mBitmap.getWidth(), mBitmap.getHeight());
+			
+			mCollider = new float[] { 0, 0,
+								 mBitmap.getWidth(), 0,
+								 0, mBitmap.getHeight(),
+								 mBitmap.getWidth(), mBitmap.getHeight() };
+			
+			mCenter = new float[]{ mBitmap.getWidth()/2, mBitmap.getHeight()/2 } ;
 		}
 		
 		public Bitmap getBitmap()

@@ -3,6 +3,7 @@ package com.celebcam;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -22,9 +23,12 @@ public class FXProcessor extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, 
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
         
-		Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test);
+		Bitmap mBitmap = ((CelebCamApplication) getApplication()).getCurrentBitmap();
 		
-		CelebCamEffectsLibrary.setPreviewSize(250, 250);
+		if( mBitmap == null )
+			finish();
+		
+		//CelebCamEffectsLibrary.setPreviewSize(250, 250);
 		CelebCamEffectsLibrary.setPreviewBitmap(mBitmap);
 		CelebCamEffectsLibrary.setState2(CelebCamEffectsLibrary.PREVIEW);
 		CelebCamEffectsLibrary.slipChannels();
@@ -32,8 +36,7 @@ public class FXProcessor extends Activity {
 		mBitmap = null;
 		
 		mImageSurface = (CelebCamEditView) findViewById( R.id.image_surface);
-		
-		
+			
         mSliders = (TouchSliderGroup) findViewById( R.id.touch_sliders);
         
         mSliders.setup(3, mImageSurface, this);

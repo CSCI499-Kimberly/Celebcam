@@ -1,6 +1,5 @@
 package com.celebcam;
 
-import java.io.File;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -11,7 +10,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Environment;
 import android.view.View;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -208,25 +206,6 @@ public class TwitterLauncherActivity extends Activity {
 			editor.putString(userAccessTOKEN, token);
 			editor.putString(userAccessTokenSECRET, secret);
 			editor.commit();
-		}
-		
-		
-		public void sendEmail (View button) {
-
-			Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-
-			emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-					getResources().getString(R.string.email_subject));
-
-			emailIntent.setType("image/jpg");
-			//emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, getResources()
-			//		.getString(R.string.email_message));
-	        
-			Uri uri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "DemoPicture.jpg"));
-
-			emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
-			startActivity(Intent.createChooser(emailIntent, "Send mail"));
-
 		}
 		
 		

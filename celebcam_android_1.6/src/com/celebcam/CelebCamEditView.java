@@ -66,6 +66,14 @@ public class CelebCamEditView extends View implements CCMemoryWatcher {
 		invalidate();
 	}
 	
+	public boolean onTouchEvent(MotionEvent motionEvent)
+	{
+		if( CelebCamEffectsLibrary.mCCBitmap != null )
+			setBitmap( CelebCamEffectsLibrary.mCCBitmap.toAndroidBitmap());
+		
+		return true;
+	}
+	
 	public void update()
 	{
 		invalidate();
@@ -73,11 +81,11 @@ public class CelebCamEditView extends View implements CCMemoryWatcher {
 	
 	public void onDraw( Canvas canvas )
 	{
-		
+		canvas.drawPaint(mBgPaint);
 		
 		if( mBitmap != null )
 		{
-			canvas.drawPaint(mBgPaint);
+			
 			canvas.drawBitmap(mBitmap, (getWidth()-mBitmap.getWidth())/2, (getHeight()-mBitmap.getHeight())/2, null);
 		}
 		

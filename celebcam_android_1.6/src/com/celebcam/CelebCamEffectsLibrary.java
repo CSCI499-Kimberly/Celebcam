@@ -388,8 +388,6 @@ public final class CelebCamEffectsLibrary implements CCMemoryWatcher {
 		
 		mPreviewBitmap = Bitmap.createScaledBitmap(bitmap, mPreviewSize.width, mPreviewSize.height, false);
 		
-		//mPreviewBitmap = bitmap;
-		
 		if( mCanvas == null )
 			mCanvas = new Canvas();
 		

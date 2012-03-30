@@ -27,6 +27,7 @@ public class CelebCamApplication extends Application {
 	private CelebCamFont mFont;
     private boolean      mExternalStorageAvailable = false;
     private boolean      mExternalStorageWriteable = false;
+    private Bitmap       mBitmap;
     
     static private CelebCamApplication mCurrent;
 	
@@ -92,6 +93,16 @@ public class CelebCamApplication extends Application {
 		return this.mFont;
 	}
 
+	public Bitmap getCurrentBitmap()
+	{
+		return mBitmap;
+	}
+	
+	public void setBitmap( Bitmap bitmap )
+	{
+		mBitmap = bitmap;
+	}
+	
 	public void sendEmail () {
 		
 		if( getMostRecentURL() == null )

@@ -93,15 +93,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
     private SurfaceHolder mSurfaceHolder;
     private SurfaceView   mSurfaceView;
     
-    private Button 		  mAddText;
-    private Button	      mAddSparkles;
-    private Button	      mSparklesBrush;
-    private Button        mBlackAndWhite;
-    private Button        mColor;
-    private Button        mEdit;
-    private Button        mSave;
-    private Button        mEmail;
-    private Button        mGallery;
+    private static int PERFORM_COLOR_TRANSFORM = 2;
     
     private Button        mDebug;
 	
@@ -133,8 +125,6 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	private boolean mPreviewRunning;
 	
 	private String TAKEN_PHOTO   = "tp1";
-	
-	private String PREVIEW_PHOTO = "pp";
 
 	private CelebCamApplication mApp;
 	SharedPreferences prefs;
@@ -180,10 +170,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	private EditText textFromUser;
     /** END MENU VIEWS */
 
-	private CelebCamEnum mLaunch;
 	
-	static byte NONE		  = 0;
-	static final byte SETTINGS_PREF = 1;
 
 	public int getPreivewWidth()
 	{
@@ -229,27 +216,17 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        Log.d(TAG, "onCreate Called");
-        
+
         setContentView(R.layout.data_acquisition);
         
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, 
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
         
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        
 
-        Log.i(TAG, "STARTED - onCreate() ");
-        
 
 		mPrefs = getSharedPreferences("twitterPrefs", MODE_PRIVATE);
-		Log.i(TAG, "Got Preferences");
-        
-	//	String link = "http://tinyurl.com/c3lcam";	//get URL from server
-		
-	//	String celebrityName = "Rihanna";	//get celebrity from server
-		
+
     	textField = (EditText)findViewById(R.id.twitter_text_field);
     	textField.setText("Check out this picture I took with " + ". " + ". #CelebCam" , TextView.BufferType.NORMAL );
 
@@ -261,9 +238,6 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
       	// Tell twitter4j that we want to use it with our app
       	// Use twitter4j to authenticate
       	twitter.setOAuthConsumer(consumerKEY, consumerSECRET);
-      	Log.i(TAG, "Inflated Twitter4j");
-		
-                
       		
         prefs = PreferenceManager.getDefaultSharedPreferences(this); //
         prefs.registerOnSharedPreferenceChangeListener(this);
@@ -339,7 +313,6 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
         prefs = PreferenceManager.getDefaultSharedPreferences(this); //
         prefs.registerOnSharedPreferenceChangeListener(this);
 
-        mLaunch = CelebCamEnum.NONE;
         
 //        if( prefs.getString("twitter_pin", "NOT_SET").equals("NOT_SET"))
 //        	mLaunch = CelebCamEnum.TWITTER_PREF;
@@ -560,8 +533,6 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
         //mZoomAndSnapButton.setCamera( mCamera );
         if( mCamera == null )
         	return;
-        
-        Parameters p = mCamera.getParameters();
 
         Size mPictureSize = mCamera.getParameters().getPictureSize();
         
@@ -616,7 +587,6 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 
         Camera.Parameters p = mCamera.getParameters();
         p.setPreviewSize(w, h);
-        Log.d(TAG, "width: " + Integer.toString(w) + " height: " + Integer.toString(h));
         p.setPictureSize(w, h);
         mCamera.setParameters(p);
         mCamera.setPreviewDisplay(holder);
@@ -660,27 +630,25 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 			
 			strFunction = "restore";
 			
-			mCelebView.restore(mApp);
-			
-			strFunction = "addImage";
-			
-			CelebCamEffectsLibrary.addImage( mCelebView.getBitmap(), mCelebView.getMatrix() );
-			
-			strFunction = "addText";
-			
-			//CelebCamEffectsLibrary.addText(mText);
-			
-			strFunction = "addSparkles";
-			
-			CelebCamEffectsLibrary.addSparkles( mSparkles );
-			
-			strFunction = "addBorder";
-			
-			//CelebCamEffectsLibrary.addBorder(mBorder);
-	        
-			//CelebCamEffectsLibrary.slipChannels();
-			
-			strFunction = "mEditView.setBitmap";
+//			mCelebView.restore(mApp);
+//			
+//			strFunction = "addImage";
+//			
+//			CelebCamEffectsLibrary.addImage( mCelebView.getBitmap(), mCelebView.getMatrix() );
+//			
+//			strFunction = "addText";
+//			
+//			CelebCamEffectsLibrary.addText(mText);
+//			
+//			strFunction = "addSparkles";
+//			
+//			CelebCamEffectsLibrary.addSparkles( mSparkles );
+//			
+//			strFunction = "addBorder";
+//			
+//			CelebCamEffectsLibrary.addBorder(mBorder);
+//	        
+//			strFunction = "mEditView.setBitmap";
 			
 			mEditView.setBitmap(CelebCamEffectsLibrary.getCurrentBitmap2());
 			
@@ -699,9 +667,6 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 		}
 		
 	}
-	
-
-
 	
 
 	Bitmap finalProcess(Bitmap bitmap) {
@@ -811,39 +776,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 
 	protected void onResume() {
 		super.onResume();
-		Log.i(TAG, "STARTED - onResume()");
-
-//		ConfigurationBuilder cb;
-//		switch( mLaunch )
-//		{
-//		case NONE:
-//			cb = new ConfigurationBuilder();
-//	  		cb.setDebugEnabled(true)
-//			  .setOAuthConsumerKey(consumerKEY)
-//			  .setOAuthConsumerSecret(consumerSECRET)
-//			  .setOAuthAccessToken(prefs.getString("oauth_access_token", ""))
-//			  .setOAuthAccessTokenSecret(prefs.getString("oauth_access_secret", ""));
-//			
-//			twitter = new TwitterFactory(cb.build()).getInstance();
-//			break;
-//		case TWITTER_PREF:
-//			cb = new ConfigurationBuilder();
-//			
-//	  		cb.setDebugEnabled(true)
-//			  .setOAuthConsumerKey(consumerKEY)
-//			  .setOAuthConsumerSecret(consumerSECRET);
-//	  		
-//	  		twitter = new TwitterFactory(cb.build()).getInstance();
-//			authenticate_pre_pin();
-//			break;
-//		default:
-//			authenticate_post_pin(prefs.getString("twitter_pin", ""));
-//			break;
-//		}
 		
-//		mLaunch = CelebCamEnum.PERSIST_OPTIONS;
-  		
-
 	}
 
 
@@ -869,12 +802,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 				
 				startActivityForResult( intent, RESULT_OK );
 			}
-			/*
-			//Toast.makeText(this, fieldContents, Toast.LENGTH_SHORT).show();
-			Log.i(TAG, "New User");
-			authent();
-			Log.i(TAG, "New User authentication");
-			*/
+
 		}
 
     }
@@ -883,12 +811,18 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
     
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
-		super.onActivityResult(requestCode, resultCode, data);
+
 		
-		sendTweet();
+		Log.d(TAG, "onActivityResult");
+		if (requestCode == PERFORM_COLOR_TRANSFORM) {
 		
+		if( resultCode == RESULT_OK )
+		{
+			Log.d(TAG, "RESULT_OK");
+			mEditView.setBitmap( CelebCamEffectsLibrary.mCCBitmap.toAndroidBitmap());
+		}
 		
+		}
 	}
 
 
@@ -907,21 +841,6 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 		Log.i(TAG, "Old User tweet sent");
 		
 	}
-	
-	private void authent(){
-		Log.i(TAG, "STARTED - quthent()");
-		try {
-			reqTOKEN = twitter.getOAuthRequestToken(callbackURL);
-			
-			Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(reqTOKEN.getAuthenticationURL()));
-			// Start new intent on Web browser
-			startActivity(intent);
-			Log.i(TAG, "Starting Oauth from web"); 
-		   } catch (Exception e) {
-			   Log.w("oauth fail", e);
-			// Toast.makeText(button.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-		   }
-	   }
 	
 	
 	private void sendTweet(){ 
@@ -989,7 +908,6 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 			Log.i(TAG, "Intent from something other that twitter website");
 		}
 	}
-	
 	
 
 	
@@ -1182,11 +1100,9 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
           		tintsRGBBtn.setOnClickListener(new View.OnClickListener() {
             		public void onClick(View thisBtn ){ 
             			toggleEffectBtnOn(thisBtn);
-        				Intent intent = new Intent(Intent.ACTION_MAIN);
-        				intent.setComponent(new ComponentName("com.celebcam.processor","com.celebcam.processor.Celebcam_image_processorActivity"));
-
         				
-        				startActivity( new Intent(mContext, FXProcessor.class));
+        				((CelebCamApplication) getApplication()).setBitmap(mEditView.getBitmap());
+        				startActivityForResult( new Intent(mContext, FXProcessor.class), PERFORM_COLOR_TRANSFORM);
             		}
           		});
         		Button tintsNoneBtn = (Button)findViewById(R.id.effects_tints_none);

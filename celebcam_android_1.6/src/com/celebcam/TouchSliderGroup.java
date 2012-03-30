@@ -51,6 +51,7 @@ public class TouchSliderGroup extends View implements CCMemoryWatcher {
 	{
 		super(context, attributeSet);
 		mFirstRun = true;
+		mClick = NONE;
 	}
 		
 
@@ -78,6 +79,8 @@ public class TouchSliderGroup extends View implements CCMemoryWatcher {
 		mActive = true;
 		
 		CCDebug.registerMemoryWatcher( this );
+		
+		action();
 		
 		invalidate();
 	}
@@ -234,6 +237,8 @@ public class TouchSliderGroup extends View implements CCMemoryWatcher {
 				}
 				else
 				{
+					CelebCamEffectsLibrary.setPreviewBitmap(CelebCamEffectsLibrary.mCCBitmap.toAndroidBitmap());
+					mActivity.setResult(Activity.RESULT_OK);
 					mActivity.finish();
 				}
 				
