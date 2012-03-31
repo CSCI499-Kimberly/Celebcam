@@ -111,10 +111,10 @@ android:layout_height="fill_parent">
 		    
 	   <Button
 		android:id="@+id/twitter_post_button"
-		android:text="Post Tweet"
+		android:text="Post Wall"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent"
-		android:onClick="pressTweet"
+		android:onClick="shareFacebook"
 		/>		
 
 				

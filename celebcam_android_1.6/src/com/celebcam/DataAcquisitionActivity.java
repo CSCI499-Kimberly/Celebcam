@@ -37,6 +37,11 @@ import android.widget.PopupWindow;
 import android.widget.Toast;
 import android.widget.TextView;
 import com.celebcam.R;
+import com.facebook.android.DialogError;
+import com.facebook.android.Facebook;
+import com.facebook.android.FacebookError;
+import com.facebook.android.Facebook.DialogListener;
+
 import android.widget.Button;
 import android.view.KeyEvent;
 import android.view.View.OnKeyListener;
@@ -157,10 +162,48 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	
 	private Twitter twitter;
 	private RequestToken reqTOKEN;
+	
+	
+    private static final String APP_ID = "418584644823688";
+	private static final String[] PERMISSIONS = new String[] {"publish_stream"};
+
+	private static final String TOKEN = "access_token";
+    private static final String EXPIRES = "expires_in";
+    private static final String KEY = "facebook-credentials";
+
+	private Facebook facebook;
+	private String messageToPost;
+	
+	
 	EditText textField;
 	/******************************************************
 	 * 			TWITTER/EMAIL STATIC VARIABLES - END
 	 *******************************************************/
+	
+	
+	/*************************************************
+	 * 			FACEBOOK PREFERENCES  STRT
+	 *************************************************/
+	public boolean saveCredentials(Facebook facebook) {
+		Log.i(TAG, "STARTED - saveCredentials()");
+    	Editor editor = getApplicationContext().getSharedPreferences(KEY, Context.MODE_PRIVATE).edit();
+    	editor.putString(TOKEN, facebook.getAccessToken());
+    	editor.putLong(EXPIRES, facebook.getAccessExpires());
+    	return editor.commit();
+	}
+
+	public boolean restoreCredentials(Facebook facebook) {
+		Log.i(TAG, "STARTED - restoreCredentials()");
+    	SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(KEY, Context.MODE_PRIVATE);
+    	facebook.setAccessToken(sharedPreferences.getString(TOKEN, null));
+    	facebook.setAccessExpires(sharedPreferences.getLong(EXPIRES, 0));
+    	return facebook.isSessionValid();
+	}
+	/*************************************************
+	 * 			FACEBOOK PREFERENCES  ENDS
+	 *************************************************/
+	
+	
 	
 	/** MENU VIEWS */
 	private enum MenuScheme {NO_MENU, SHOW_MAIN, SHOW_EFFECTS}; 
@@ -230,6 +273,8 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 		}
 	};
 	
+
+	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
@@ -266,6 +311,15 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
       	// Use twitter4j to authenticate
       	twitter.setOAuthConsumer(consumerKEY, consumerSECRET);
       	Log.i(TAG, "Twitter4j inflated");
+      	
+
+		facebook = new Facebook(APP_ID);
+      	Log.i(TAG, "Facebook inflated");
+      	
+		//restoreCredentials(facebook);
+
+		
+    //	textField = (EditText)findViewById(R.id.theTextField);
     	/*****************************************
     	 * 			TWITTER/EMAIL  END
     	 *****************************************/
@@ -850,7 +904,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 				Log.i(TAG, "New User tweet sent");
 				
 				// Set textbox
-		    	textField = (EditText)findViewById(R.id.theTextField);
+		    	textField = (EditText)findViewById(R.id.twitter_text_field);
 				
 				} catch (Exception e) {
 					Log.e(TAG, "OAuth - Access Token Retrieval Error", e);
@@ -984,6 +1038,92 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	}
 	
 	*/
+	
+	
+
+	/***********************************************************
+	 * 				FACEBOOK FUNCTIONS STRT
+	 ***********************************************************/
+
+	public void shareFacebook(View button){
+		Log.i(TAG, "STARTED - shareFacebook()");
+
+    	//textField = (EditText)findViewById(R.id.theTextField);
+        String facebookMessage = textField.getText().toString();
+
+		if (facebookMessage == null){
+			Log.i(TAG, "FB message is null");
+			facebookMessage = "More text...";
+		}
+		else{
+		messageToPost = facebookMessage;}
+		Log.i(TAG, "FB message is "+ messageToPost);
+		
+		if (! facebook.isSessionValid()) {
+			Log.i(TAG, "FB session is NOT valid");
+			loginAndPostToWall();
+		}
+		else {
+			Log.i(TAG, "FB session is valid. Message to post " + messageToPost);
+			postToWall(messageToPost);
+		}
+	}
+
+	public void loginAndPostToWall(){
+		Log.i(TAG, "STARTED - saveCredentials()");
+		 facebook.authorize(this, PERMISSIONS, Facebook.FORCE_DIALOG_AUTH, new LoginDialogListener());
+	}
+
+	public void postToWall(String message){
+		Log.i(TAG, "STARTED - postToWall()");
+		Bundle parameters = new Bundle();
+		parameters.putString("message", message);
+		parameters.putString("description", "topic share");
+		try {
+			facebook.request("me");
+			String response = facebook.request("me/feed", parameters, "POST");
+			Log.d("Tests", "got response: " + response);
+			if (response == null || response.equals("") ||
+			        response.equals("false")) {
+				showToast("Blank response.");
+			}
+			else {
+				showToast("Message posted to your facebook wall!");
+			}
+		} catch (Exception e) {
+			showToast("Failed to post to wall!");
+			e.printStackTrace();
+		}
+	}
+
+	class LoginDialogListener implements DialogListener {
+	    public void onComplete(Bundle values) {
+	    	saveCredentials(facebook);
+	    	if (messageToPost != null){
+			postToWall(messageToPost);
+		}
+	    }
+	    public void onFacebookError(FacebookError error) {
+	    	showToast("Authentication with Facebook failed!");
+	        finish();
+	    }
+	    public void onError(DialogError error) {
+	    	showToast("Authentication with Facebook failed!");
+	        finish();
+	    }
+	    public void onCancel() {
+	    	showToast("Authentication with Facebook cancelled!");
+	        finish();
+	    }
+	}
+
+	private void showToast(String message){
+		Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+	}
+	/***********************************************************
+	 * 				FACEBOOK FUNCTIONS ENDS
+	 ***********************************************************/
+	
 	
 	/** Hide all children of a view */
 
