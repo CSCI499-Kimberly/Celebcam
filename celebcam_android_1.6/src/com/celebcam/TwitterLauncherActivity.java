@@ -22,7 +22,7 @@ public class TwitterLauncherActivity extends Activity {
 
 
 
-		private static final String TAG = "PersistOptions";
+		private static final String TAG = "TwitterLauncherActivity";
 
 		private static final String callbackURL = "app://twitter";
 		private static final String consumerKEY = "8JlWrU08QfMLG3SwVUU4LQ";

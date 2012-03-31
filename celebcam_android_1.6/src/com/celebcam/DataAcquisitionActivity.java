@@ -27,6 +27,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -142,9 +143,9 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	CelebCamDbHelper mDbHelper;
 	
 	
-	
-	//private static final String TAG = "PersistOptions";
-
+	/******************************************************
+	 * 			TWITTER/EMAIL STATIC VARIABLES - STRT
+	 *******************************************************/
 	private static final String callbackURL = "app://twitter";
 	private static final String consumerKEY = "8JlWrU08QfMLG3SwVUU4LQ";
 	private static final String consumerSECRET = "NrHaVm2My0t2wf2nUaMt2Vno98mPHzg8YOgHBxlt1M";
@@ -156,8 +157,10 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	
 	private Twitter twitter;
 	private RequestToken reqTOKEN;
-	
 	EditText textField;
+	/******************************************************
+	 * 			TWITTER/EMAIL STATIC VARIABLES - END
+	 *******************************************************/
 	
 	/** MENU VIEWS */
 	private enum MenuScheme {NO_MENU, SHOW_MAIN, SHOW_EFFECTS}; 
@@ -240,29 +243,32 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         
 
+    	
+    	/*****************************************
+    	 * 			TWITTER/EMAIL  STRT
+    	 *****************************************/
         Log.i(TAG, "STARTED - onCreate() ");
-        
-
 		mPrefs = getSharedPreferences("twitterPrefs", MODE_PRIVATE);
-		Log.i(TAG, "Got Preferences");
+		Log.i(TAG, "Got twitter Preferences");
         
 	//	String link = "http://tinyurl.com/c3lcam";	//get URL from server
-		
 	//	String celebrityName = "Rihanna";	//get celebrity from server
 		
+		// Set up textbox where tweets are inserted
     	textField = (EditText)findViewById(R.id.twitter_text_field);
-    	textField.setText("Check out this picture I took with " + ". " + ". #CelebCam" , TextView.BufferType.NORMAL );
+    	textField.setText("DEFAULT TEXT. #CelebCam" , TextView.BufferType.NORMAL );
 
-		
-        //Create new twitter item using 4jtwitter
+        // Create new twitter item using 4jtwitter
       	twitter = new TwitterFactory().getInstance();
-      	Log.i(TAG, "Got Twitter4j");
+      	Log.i(TAG, "Twitter4j constructor");
       		
       	// Tell twitter4j that we want to use it with our app
       	// Use twitter4j to authenticate
       	twitter.setOAuthConsumer(consumerKEY, consumerSECRET);
-      	Log.i(TAG, "Inflated Twitter4j");
-		
+      	Log.i(TAG, "Twitter4j inflated");
+    	/*****************************************
+    	 * 			TWITTER/EMAIL  END
+    	 *****************************************/
                 
       		
         prefs = PreferenceManager.getDefaultSharedPreferences(this); //
@@ -812,145 +818,15 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	protected void onResume() {
 		super.onResume();
 		Log.i(TAG, "STARTED - onResume()");
-
-//		ConfigurationBuilder cb;
-//		switch( mLaunch )
-//		{
-//		case NONE:
-//			cb = new ConfigurationBuilder();
-//	  		cb.setDebugEnabled(true)
-//			  .setOAuthConsumerKey(consumerKEY)
-//			  .setOAuthConsumerSecret(consumerSECRET)
-//			  .setOAuthAccessToken(prefs.getString("oauth_access_token", ""))
-//			  .setOAuthAccessTokenSecret(prefs.getString("oauth_access_secret", ""));
-//			
-//			twitter = new TwitterFactory(cb.build()).getInstance();
-//			break;
-//		case TWITTER_PREF:
-//			cb = new ConfigurationBuilder();
-//			
-//	  		cb.setDebugEnabled(true)
-//			  .setOAuthConsumerKey(consumerKEY)
-//			  .setOAuthConsumerSecret(consumerSECRET);
-//	  		
-//	  		twitter = new TwitterFactory(cb.build()).getInstance();
-//			authenticate_pre_pin();
-//			break;
-//		default:
-//			authenticate_post_pin(prefs.getString("twitter_pin", ""));
-//			break;
-//		}
-		
-//		mLaunch = CelebCamEnum.PERSIST_OPTIONS;
-  		
-
 	}
 
 
-	
-    public void pressTweet(View button) {
-      //  String fieldContents = textField.getText().toString();
-    	
-	//	Toast.makeText(this, textField.getText().toString(), Toast.LENGTH_SHORT).show();
-//    	textField.invalidate();
-		if ( textField.getText().toString().equals("") ){
-			Toast.makeText(this, "type something", Toast.LENGTH_SHORT).show();
-		}
-		else{
-
-			
-			if (mPrefs.contains(userAccessTOKEN)) {
-				Log.i(TAG, "Repeat User");
-				loginAuthorisedUser();
-			} else {
-				Log.i(TAG, "New User");
-				
-				Intent intent = new Intent( this, TwitterLauncherActivity.class );
-				
-				startActivityForResult( intent, RESULT_OK );
-			}
-			/*
-			//Toast.makeText(this, fieldContents, Toast.LENGTH_SHORT).show();
-			Log.i(TAG, "New User");
-			authent();
-			Log.i(TAG, "New User authentication");
-			*/
-		}
-
-    }
-	
-    
-    
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
-		super.onActivityResult(requestCode, resultCode, data);
-		
-		sendTweet();
-		
-		
-	}
-
-
-	private void loginAuthorisedUser() {
-		String token = mPrefs.getString(userAccessTOKEN, null);
-		String secret = mPrefs.getString(userAccessTokenSECRET, null);
-
-		// Create the twitter access token from the credentials we got previously
-		AccessToken at = new AccessToken(token, secret);
-
-		twitter.setOAuthAccessToken(at);
-		
-		Toast.makeText(this, "Welcome back", Toast.LENGTH_SHORT).show();
-		
-		sendTweet();
-		Log.i(TAG, "Old User tweet sent");
-		
-	}
-	
-	private void authent(){
-		Log.i(TAG, "STARTED - quthent()");
-		try {
-			reqTOKEN = twitter.getOAuthRequestToken(callbackURL);
-			
-			Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(reqTOKEN.getAuthenticationURL()));
-			// Start new intent on Web browser
-			startActivity(intent);
-			Log.i(TAG, "Starting Oauth from web"); 
-		   } catch (Exception e) {
-			   Log.w("oauth fail", e);
-			// Toast.makeText(button.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-		   }
-	   }
-	
-	
-	private void sendTweet(){ 
-		//Testing sending tweets after authenticated
-	//	Toast.makeText(this, textField.getText().toString(), Toast.LENGTH_SHORT).show();
-		
-		
-		try {
-			twitter.updateStatus( textField.getText().toString() );
-
-			Toast.makeText(this, "Tweet Successful!", Toast.LENGTH_SHORT).show();
-			Log.i(TAG, "Post Sent");
-
-		} catch (TwitterException e) {
-			Toast.makeText(this, "Tweet error, try again later", Toast.LENGTH_SHORT).show();
-			Log.i(TAG,  textField.getText().toString());
-			Log.i(TAG, "Post NOT Sent");
-			Log.e(TAG, "Post NOT Sent", e);
-
-
-		}
-		
-	}
-	
-	
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 		Log.i(TAG, "STARTED - onNewIntent");
+		
+		/** NECESSARY - TWITTER **/
 		Uri uri = intent.getData();
 		Log.i(TAG, "Returned to Program"); 
 
@@ -963,21 +839,19 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 				Log.i(TAG, "trying to set token"); 
 				twitter.setOAuthAccessToken(at);
 				Log.e("Login", "Twitter Initialised");
-				
-
 
 				saveAccessToken(at);
 				Log.i(TAG, "Access token saved");
 				
 				// Set the content view back after we changed from browser 
-				setContentView(R.layout.persist_options);
+				setContentView(R.layout.data_acquisition);
 				
 				sendTweet();
 				Log.i(TAG, "New User tweet sent");
 				
+				// Set textbox
 		    	textField = (EditText)findViewById(R.id.theTextField);
 				
-
 				} catch (Exception e) {
 					Log.e(TAG, "OAuth - Access Token Retrieval Error", e);
 					
@@ -988,10 +862,83 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 		else{
 			Log.i(TAG, "Intent from something other that twitter website");
 		}
+		/** NECESSARY - TWITTER **/
+		
 	}
 	
+
+	/***********************************************************
+	 * 			TWITTER/EMAIL FUNCTIONS STRT
+	 ***********************************************************/
+    public void pressTweet(View button) {
+		Log.i(TAG, "STARTED - pressTweet()");
+		if ( textField.getText().toString().equals("") ){
+			Toast.makeText(this, "type something", Toast.LENGTH_SHORT).show();
+		}
+		else{
+			
+			if (mPrefs.contains(userAccessTOKEN)) {
+				Log.i(TAG, "Repeat User");
+				loginAuthorisedUser();
+			} else {
+				Log.i(TAG, "New User");
+				authent();
+			/*	Intent intent = new Intent( this, TwitterLauncherActivity.class );
+				startActivityForResult( intent, RESULT_OK );*/
+			}
+		}
+    }
 	
 
+	private void loginAuthorisedUser() {
+		Log.i(TAG, "STARTED - loginAuthorisedUser()" );
+		String token = mPrefs.getString(userAccessTOKEN, null);
+		String secret = mPrefs.getString(userAccessTokenSECRET, null);
+
+		// Create the twitter access token from the credentials we got previously
+		AccessToken at = new AccessToken(token, secret);
+
+		twitter.setOAuthAccessToken(at);
+		Log.i(TAG, "Old User credentials set");
+		
+		sendTweet();
+		Log.i(TAG, "Old User tweet sent");
+	}
+	
+	private void authent(){
+		Log.i(TAG, "STARTED - authent()");
+		try {
+			reqTOKEN = twitter.getOAuthRequestToken(callbackURL);
+			
+			Log.i(TAG, "Starting Oauth from WebView"); 
+			WebView twitterSite = new WebView(this);
+			twitterSite.loadUrl(reqTOKEN.getAuthenticationURL());
+			setContentView(twitterSite);
+
+			/*Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(reqTOKEN.getAuthenticationURL()));
+			Start new intent on Web browser
+			startActivity(intent);*/
+			} 
+		catch (Exception e) {
+			   Log.w("oauth fail", e);
+		   }
+	   }
+	
+	
+	private void sendTweet(){ 
+		Log.i(TAG, "sendTweet()" );
+		try {
+			twitter.updateStatus( textField.getText().toString() );
+
+			Toast.makeText(this, "Tweet Successful!", Toast.LENGTH_SHORT).show();
+			Log.i(TAG, "Post Sent");
+		} 
+		catch (TwitterException e) {
+			Toast.makeText(this, "Tweet error, try again later", Toast.LENGTH_SHORT).show();
+			Log.i(TAG,  textField.getText().toString());
+			Log.e(TAG, "Post NOT Sent", e);
+		}	
+	}
 	
 	
 	private void saveAccessToken(AccessToken at) {
@@ -1005,7 +952,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	}
 	
 	
-	public void sendEmail (View button) {
+	public void sendEmail(View button) {
 
 		Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
 
@@ -1023,6 +970,20 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 
 	}
 	
+	/***********************************************************
+	 * 			TWITTER/EMAIL FUNCTIONS END
+	 ***********************************************************/
+	
+	
+	/*
+	 	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
+		sendTweet();	
+	}
+	
+	*/
 	
 	/** Hide all children of a view */
 
