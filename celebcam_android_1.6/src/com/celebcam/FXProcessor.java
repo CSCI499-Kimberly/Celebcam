@@ -7,13 +7,16 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.ProgressBar;
 
 
 public class FXProcessor extends Activity {
     
 	CelebCamEditView mImageSurface;
-	TouchSliderGroup    mSliders;
+	TouchSliderGroup mSliders;
+	ProgressBar		 mProgressBar;
 	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,12 +38,17 @@ public class FXProcessor extends Activity {
         
 		mBitmap = null;
 		
+		mProgressBar = (ProgressBar) findViewById( R.id.progressBar );
+		mProgressBar.setVisibility( View.INVISIBLE );
+		
 		mImageSurface = (CelebCamEditView) findViewById( R.id.image_surface);
 			
         mSliders = (TouchSliderGroup) findViewById( R.id.touch_sliders);
         
+        mSliders.setProgressBar( mProgressBar );
         mSliders.setup(3, mImageSurface, this);
         
+       
         
     }
 }

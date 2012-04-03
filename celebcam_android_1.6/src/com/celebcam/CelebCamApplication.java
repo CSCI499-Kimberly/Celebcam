@@ -7,6 +7,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import twitter4j.Twitter;
+import twitter4j.TwitterFactory;
+
 
 import android.app.Application;
 import android.content.Context;
@@ -29,8 +32,18 @@ public class CelebCamApplication extends Application {
     private boolean      mExternalStorageWriteable = false;
     private Bitmap       mBitmap;
     
+    private Twitter twitter;
+    
+	private static final String callbackURL = "app://twitter";
+	private static final String consumerKEY    = "8JlWrU08QfMLG3SwVUU4LQ";
+	private static final String consumerSECRET = "NrHaVm2My0t2wf2nUaMt2Vno98mPHzg8YOgHBxlt1M";
+	
+	private static final String userAccessTOKEN = "accessToken";
+	private static final String userAccessTokenSECRET = "accessTokenSecret";
     static private CelebCamApplication mCurrent;
 	
+    private static final int TWITTER_AUTHENTICATION = 3;
+    
     public void onCreate()
 	{
 		super.onCreate();
@@ -67,6 +80,35 @@ public class CelebCamApplication extends Application {
     	return mCurrent;
     }
     
+	public void createTwitter()
+	{
+        //Create new twitter item using 4jtwitter
+		if( twitter == null )
+		{
+	      	twitter = new TwitterFactory().getInstance();
+	      	Log.i(TAG, "Got Twitter4j");
+	      		
+	      	// Tell twitter4j that we want to use it with our app
+	      	// Use twitter4j to authenticate
+	      	twitter.setOAuthConsumer(consumerKEY, consumerSECRET);
+		}
+	}
+	
+	public void postToTwitter( String updateToPost )
+	{
+
+			createTwitter();
+			Intent intent = new Intent( this, TwitterLauncherActivity.class );
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK	);
+			
+			startActivity( intent );
+		
+	}
+	
+	public Twitter getTwitter()
+	{
+		return twitter;
+	}
 	
 	public boolean isWritable()
 	{

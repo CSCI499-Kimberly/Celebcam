@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.graphics.RectF;
 import android.graphics.Paint;
 
@@ -39,6 +40,7 @@ public class TouchSliderGroup extends View implements CCMemoryWatcher {
 	private RectF[] mButtonRectFs;
 
 	private CelebCamEditView mCelebCamSurfaceView;
+	private ProgressBar mProgressBar;
 	
 	private boolean mActive;
 	private boolean mFirstRun;
@@ -85,6 +87,10 @@ public class TouchSliderGroup extends View implements CCMemoryWatcher {
 		invalidate();
 	}
 	
+	public void setProgressBar( ProgressBar progressBar )
+	{
+		mProgressBar = progressBar;
+	}
 	
 	public void adjustment()
 	{
@@ -107,7 +113,8 @@ public class TouchSliderGroup extends View implements CCMemoryWatcher {
 	public void action()
 	{
 
-		new CelebCamEffectsProcessor( mCelebCamSurfaceView, CelebCamEffectsLibrary.ADJUST_COLOR, Channel.getChannel(mCurrent),  mValues[mCurrent] ).execute(  );
+		mProgressBar.setVisibility(View.VISIBLE);
+		new CelebCamEffectsProcessor( mCelebCamSurfaceView, mProgressBar, CelebCamEffectsLibrary.ADJUST_COLOR, Channel.getChannel(mCurrent),  mValues[mCurrent] ).execute(  );
 
 	}
 	

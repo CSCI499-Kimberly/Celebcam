@@ -55,13 +55,11 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Calendar;
 
-import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
-import twitter4j.conf.ConfigurationBuilder;
 
 public class DataAcquisitionActivity extends Activity implements SurfaceHolder.Callback, TextWatcher,OnSharedPreferenceChangeListener,
  CCMemoryWatcher {
@@ -93,7 +91,8 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
     private SurfaceHolder mSurfaceHolder;
     private SurfaceView   mSurfaceView;
     
-    private static int PERFORM_COLOR_TRANSFORM = 2;
+    private static final int PERFORM_COLOR_TRANSFORM = 2;
+    private static final int TWITTER_AUTHENTICATION = 3;
     
     private Button        mDebug;
 	
@@ -135,16 +134,10 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 	
 	//private static final String TAG = "PersistOptions";
 
-	private static final String callbackURL = "app://twitter";
-	private static final String consumerKEY = "8JlWrU08QfMLG3SwVUU4LQ";
-	private static final String consumerSECRET = "NrHaVm2My0t2wf2nUaMt2Vno98mPHzg8YOgHBxlt1M";
-	
-	private static final String userAccessTOKEN = "accessToken";
-	private static final String userAccessTokenSECRET = "accessTokenSecret";
 	private SharedPreferences mPrefs;
 
 	
-	private Twitter twitter;
+	
 	private RequestToken reqTOKEN;
 	
 	EditText textField;
@@ -233,13 +226,7 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
     	textField.setText("Check out this picture I took with " + ". " + ". #CelebCam" , TextView.BufferType.NORMAL );
 
 		
-        //Create new twitter item using 4jtwitter
-      	twitter = new TwitterFactory().getInstance();
-      	Log.i(TAG, "Got Twitter4j");
-      		
-      	// Tell twitter4j that we want to use it with our app
-      	// Use twitter4j to authenticate
-      	twitter.setOAuthConsumer(consumerKEY, consumerSECRET);
+
       		
         prefs = PreferenceManager.getDefaultSharedPreferences(this); //
         prefs.registerOnSharedPreferenceChangeListener(this);
@@ -636,7 +623,8 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 //			
 //			strFunction = "addImage";
 //			
-			CelebCamEffectsLibrary.addImage( mCelebView.getBitmap(), mCelebView.getMatrix() );
+			if( mCelebView.getBitmap() != null )
+				CelebCamEffectsLibrary.addImage( mCelebView.getBitmap(), mCelebView.getMatrix() );
 //			
 //			strFunction = "addText";
 //			
@@ -785,33 +773,17 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 
 	
     public void pressTweet(View button) {
-      //  String fieldContents = textField.getText().toString();
-    	
-	//	Toast.makeText(this, textField.getText().toString(), Toast.LENGTH_SHORT).show();
-//    	textField.invalidate();
+
 		if ( textField.getText().toString().equals("") ){
 			Toast.makeText(this, "type something", Toast.LENGTH_SHORT).show();
 		}
-		else{
-
-			
-			if (mPrefs.contains(userAccessTOKEN)) {
-				Log.i(TAG, "Repeat User");
-				loginAuthorisedUser();
-			} else {
-				Log.i(TAG, "New User");
-				
-				Intent intent = new Intent( this, TwitterLauncherActivity.class );
-				
-				startActivityForResult( intent, RESULT_OK );
-			}
-
+		else
+		{
+			CelebCamApplication.getApplication().postToTwitter(textField.getText().toString());
 		}
-
     }
 	
-    
-    
+     
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -826,104 +798,20 @@ public class DataAcquisitionActivity extends Activity implements SurfaceHolder.C
 		}
 		
 		}
-	}
-
-
-	private void loginAuthorisedUser() {
-		String token = mPrefs.getString(userAccessTOKEN, null);
-		String secret = mPrefs.getString(userAccessTokenSECRET, null);
-
-		// Create the twitter access token from the credentials we got previously
-		AccessToken at = new AccessToken(token, secret);
-
-		twitter.setOAuthAccessToken(at);
-		
-		Toast.makeText(this, "Welcome back", Toast.LENGTH_SHORT).show();
-		
-		sendTweet();
-		Log.i(TAG, "Old User tweet sent");
-		
-	}
-	
-	
-	private void sendTweet(){ 
-		//Testing sending tweets after authenticated
-	//	Toast.makeText(this, textField.getText().toString(), Toast.LENGTH_SHORT).show();
-		
-		
-		try {
-			twitter.updateStatus( textField.getText().toString() );
-
-			Toast.makeText(this, "Tweet Successful!", Toast.LENGTH_SHORT).show();
-			Log.i(TAG, "Post Sent");
-
-		} catch (TwitterException e) {
-			Toast.makeText(this, "Tweet error, try again later", Toast.LENGTH_SHORT).show();
-			Log.i(TAG,  textField.getText().toString());
-			Log.i(TAG, "Post NOT Sent");
-			Log.e(TAG, "Post NOT Sent", e);
-
-
-		}
-		
-	}
-	
-	
-	@Override
-	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-		Log.i(TAG, "STARTED - onNewIntent");
-		Uri uri = intent.getData();
-		Log.i(TAG, "Returned to Program"); 
-
-		if (uri !=null && uri.toString().startsWith(callbackURL)){
-			String oauthVerifier = uri.getQueryParameter("oauth_verifier");
-			Log.i(TAG, "string verifier created"); 
-			try {
-				Log.i(TAG, "trying access token"); 
-				AccessToken at = twitter.getOAuthAccessToken(reqTOKEN, oauthVerifier);
-				Log.i(TAG, "trying to set token"); 
-				twitter.setOAuthAccessToken(at);
-				Log.e("Login", "Twitter Initialised");
-				
-
-
-				saveAccessToken(at);
-				Log.i(TAG, "Access token saved");
-				
-				// Set the content view back after we changed from browser 
-				setContentView(R.layout.persist_options);
-				
-				sendTweet();
-				Log.i(TAG, "New User tweet sent");
-				
-		    	textField = (EditText)findViewById(R.id.theTextField);
-				
-
-				} catch (Exception e) {
-					Log.e(TAG, "OAuth - Access Token Retrieval Error", e);
-					
-				}
+		else if (requestCode == TWITTER_AUTHENTICATION) {
 			
-
+			if( resultCode == RESULT_OK )
+			{
+				Log.d(TAG, "RESULT_OK");
+				mEditView.setBitmap( ((CelebCamApplication) getApplication()).getCurrentBitmap());
+			}
+			
 		}
-		else{
-			Log.i(TAG, "Intent from something other that twitter website");
-		}
-	}
 	
+	}
 
 	
 	
-	private void saveAccessToken(AccessToken at) {
-		mPrefs =  getSharedPreferences("LOGIN_DETAILS", MODE_PRIVATE);
-		String token = at.getToken();
-		String secret = at.getTokenSecret();
-		SharedPreferences.Editor editor = mPrefs.edit();
-		editor.putString(userAccessTOKEN, token);
-		editor.putString(userAccessTokenSECRET, secret);
-		editor.commit();
-	}
 	
 	
 	public void sendEmail (View button) {

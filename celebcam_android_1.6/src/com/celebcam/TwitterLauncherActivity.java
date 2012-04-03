@@ -41,6 +41,8 @@ public class TwitterLauncherActivity extends Activity {
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 
+			twitter = CelebCamApplication.getApplication().getTwitter();
+
 			
 			mPrefs = getSharedPreferences("twitterPrefs", MODE_PRIVATE);
 			Log.i(TAG, "Got Preferences");
@@ -186,6 +188,7 @@ public class TwitterLauncherActivity extends Activity {
 				Log.i(TAG, "Intent from something other that twitter website");
 			}
 			
+			setResult(RESULT_OK );
 			finish();
 		}
 		

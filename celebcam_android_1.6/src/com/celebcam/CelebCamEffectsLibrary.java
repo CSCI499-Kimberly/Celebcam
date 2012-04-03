@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.os.AsyncTask;
 
 class Size
@@ -1252,6 +1254,7 @@ class CelebCamEffectsProcessor extends AsyncTask<CelebCamBitmap, Integer, Bitmap
 	private int   mChannel;
 	private float mAmount;
 	private float[] mAmounts;
+	private static ProgressBar mProgressBar;
 	
 	static Queue waitQueue = new Queue();
 	
@@ -1270,7 +1273,7 @@ class CelebCamEffectsProcessor extends AsyncTask<CelebCamBitmap, Integer, Bitmap
 		mCelebCamEditView = viewToPostUpdates;
 	}
 	
-	CelebCamEffectsProcessor(CelebCamEditView viewToPostUpdates, byte type, int channel, float amount )
+	CelebCamEffectsProcessor(CelebCamEditView viewToPostUpdates, ProgressBar progressBar, byte type, int channel, float amount )
 	{
 		super();
 
@@ -1281,6 +1284,7 @@ class CelebCamEffectsProcessor extends AsyncTask<CelebCamBitmap, Integer, Bitmap
 		waitQueue.enQueue( this );
 				
 		mCelebCamEditView = viewToPostUpdates;
+		mProgressBar = progressBar;
 		mType     = type;
 		mChannel  = channel;
 		mAmount   = amount;
@@ -1325,6 +1329,7 @@ class CelebCamEffectsProcessor extends AsyncTask<CelebCamBitmap, Integer, Bitmap
 	public Bitmap doInBackground(CelebCamBitmap... bitmap )
 	{
 		setup();
+		
 		Bitmap processedBitmap = null;
 		
 		if( mType == CelebCamEffectsLibrary.ADJUST_COLOR )
@@ -1351,6 +1356,7 @@ class CelebCamEffectsProcessor extends AsyncTask<CelebCamBitmap, Integer, Bitmap
 		if( mCelebCamEditView != null && bitmap != null )
 		{
 			Log.d("DataAcquisitionActivity", "posting update");
+			mProgressBar.setVisibility( View.INVISIBLE);
 			mCelebCamEditView.setBitmap( bitmap );			
 			
 		}
