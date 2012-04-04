@@ -8,6 +8,9 @@ public class CelebCamGlobals {
 
 	static  Context sContext;
 	
+	static byte LAUNCH_TWITTER = 0;
+	static byte NOT_LAUNCH_TWITTER = 1;
+	
 	static Bitmap DOWN_DRAWER_HANDLE; 
 	static Bitmap RIGHT_DRAWER_HANDLE;
 	static Bitmap RIGHT_DRAWER_HANDLE_BACK;
