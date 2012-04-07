@@ -1,20 +1,28 @@
 package com.celebcam;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
 
+class ViewClass
+{
+	byte mType;
+	
+}
 class ViewList
 {
 	class ViewNode
 	{
-		public ViewNode( View view, ViewNode next )
+		public ViewNode( byte id, View view, ViewNode next )
 		{
+			this.id   = id;
 			this.view = view;
 			this.next = next;
 		}
 		
+		byte id;
 		View view;
 		ViewNode next;
 	}
@@ -26,17 +34,31 @@ class ViewList
 	{
 		
 	}
+
+	public void add( byte id, View view)
+	{
+		if( mBottom == null )
+		{
+			mBottom = new ViewNode(id, view, null );
+			mTop    = mBottom;
+		}
+		else
+		{
+			mTop.next = new ViewNode( id, view, null );
+			mTop = mTop.next;
+		}
+	}
 	
 	public void add( View view)
 	{
 		if( mBottom == null )
 		{
-			mBottom = new ViewNode( view, null );
+			mBottom = new ViewNode((byte) -1, view, null );
 			mTop    = mBottom;
 		}
 		else
 		{
-			mTop.next = new ViewNode(view, null );
+			mTop.next = new ViewNode((byte) -1, view, null );
 			mTop = mTop.next;
 		}
 	}
@@ -106,12 +128,56 @@ public class LayerManager extends View {
 	private AttributeSet mAttributeSet;
 	private ViewList     mViews;
 	
+	private byte         mAvailableId;
+	
 	public LayerManager(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		
 		mContext      = context;
 		mAttributeSet = attrs;
+		mAvailableId  = -1;
 	}
+	
+	private byte getAvailableId()
+	{
+		mAvailableId++;
+		
+		return mAvailableId;
+	}
+	
+	public void addTextViewWithText( String textToAdd )
+	{
+		CelebCamTextView tmp = new CelebCamTextView( mContext, mAttributeSet);
+		tmp.addText( new CelebCamText( textToAdd ));
+		
+		mViews.add(getAvailableId(), tmp);
+	}
+	
+	public void addTextViewWithText(String nameOfView, String textToAdd )
+	{
+		
+	}
+	
+	public void addOverlaidViewWithBitmap( String nameOfView, Bitmap bitmapToAdd )
+	{
+		
+	}
+	
+	public void addSparklesViewWithSparkles( String nameOfView, SparklesEmitter emitter )
+	{
+		
+	}
+	
+	public void addBorderViewWithBorder( String nameOfView, CelebCamBorder border )
+	{
+		
+	}
+	
+	public void removeViewByName( String nameOfView )
+	{
+		
+		
+	}	
 	
 	public void addView( View view )
 	{
@@ -122,6 +188,9 @@ public class LayerManager extends View {
 	{
 		mViews.remove( view );
 	}
+	
+
+	
 	
 	public void increaseZOrder( View view )
 	{

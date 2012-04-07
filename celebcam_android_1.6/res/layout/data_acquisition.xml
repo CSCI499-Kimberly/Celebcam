@@ -6,10 +6,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
- 
-<!--CRITICAL SECTION : DO NO ALTER, These Views are required for the camera and effects -->
-<!--CRITICAL SECTION : DO NO ALTER, These Views are required for the camera and effects -->
-<!--CRITICAL SECTION : DO NO ALTER, These Views are required for the camera and effects -->
 
   	<SurfaceView
     	android:id="@+id/camera_surface"
@@ -18,44 +14,14 @@
     	android:layout_height="fill_parent"
      />
  	
-   	<com.celebcam.GreenScreen
-    	android:id="@+id/green_screen"
-    	android:layout_width="fill_parent"
-    	android:layout_height="fill_parent"
-     />
-   	 	
-    <com.celebcam.CelebCamOverlaidView
-    	android:id="@+id/celeb_surface"
+
+    <com.celebcam.LayerManager
+    	android:id="@+id/layerManager"
     	android:layout_gravity="center"
     	android:layout_width="fill_parent"
     	android:layout_height="fill_parent"
     />
-    
-    
-    <com.celebcam.CelebCamTextView
-    	android:id="@+id/text_surface"
-    	android:layout_gravity="center"
-    	android:layout_width="fill_parent"
-    	android:layout_height="fill_parent"
-    	android:visibility="gone"
-    />
-  
-    <com.celebcam.CelebCamSparklesView
-        android:id ="@+id/sparkles_view"
-    	android:layout_gravity="center"
-    	android:layout_width="fill_parent"
-    	android:layout_height="fill_parent"
-    	android:visibility="invisible"
-    />
-    
-    <com.celebcam.CelebCamBorderView
-        android:id ="@+id/border_view"
-    	android:layout_gravity="center"
-    	android:layout_width="fill_parent"
-    	android:layout_height="fill_parent"
-    	android:visibility="gone"
-    />
-    
+ 
     <com.celebcam.CelebCamController
     android:id="@+id/zoom_snap_button"
     android:background = "#00000000"
@@ -71,9 +37,6 @@
     	android:layout_height="fill_parent"
     /> 
     
-<!--  END OF CRITICAL SECTION, END OF CRITICAL SECTION, END OF CRITICAL SECTION -->
-<!--  END OF CRITICAL SECTION, END OF CRITICAL SECTION, END OF CRITICAL SECTION -->
-<!--  END OF CRITICAL SECTION, END OF CRITICAL SECTION, END OF CRITICAL SECTION -->
    	
    	<com.celebcam.CelebCamEditView 
    	    android:id="@+id/editing_view"   	
@@ -83,37 +46,7 @@
     	
      />
    	    
-   	<LinearLayout
-   	    android:id="@+id/sliders"
-   	    android:layout_height ="fill_parent"
-   	    android:layout_width  = "300dp"
-   	    android:visibility="gone"
-   	    >
-   	    
-  <com.celebcam.CelebCamSlider
-      android:id="@+id/red_controller"
-      android:layout_width ="100dp"
-      android:layout_height="fill_parent"
-      />
-  
-    <com.celebcam.CelebCamSlider
-      android:id="@+id/green_controller"
-      android:layout_width="100dp"
-      android:layout_height="fill_parent"
-      />
-    
-      <com.celebcam.CelebCamSlider
-      android:id="@+id/blue_controller"
-      android:layout_width="100dp"
-      android:layout_height="fill_parent"
-      />
-  </LinearLayout>
-  
 	 <include layout="@layout/slidemenu" />
   
-  <com.celebcam.CCDebugView
-      	     android:id="@+id/debug_view"
-	        android:layout_width="fill_parent"
-	        android:layout_height="fill_parent"/>
   
 </FrameLayout>

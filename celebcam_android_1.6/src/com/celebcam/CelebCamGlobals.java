@@ -15,6 +15,9 @@ public class CelebCamGlobals {
 	
 	static Size MAX_PICTURE_SIZE;
 	
+	static byte LAUNCH_TWITTER = 0;
+	static byte NOT_LAUNCH_TWITTER = 1;
+	
 	static void setContext( Context context )
 	{
 		sContext = context;

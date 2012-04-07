@@ -12,157 +12,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 
-class Tile implements CCMemoryWatcher {
-
-	public int getSizeInBytes() {
-
-		int m = 0;
-		if( bitmap != null )
-		{
-			m += bitmap.getHeight()*bitmap.getWidth()*4;
-		}
-		return (3*4) + m;
-	}
-
-
-	public int getStaticBytes() {
-
-		return 0;
-	}
-	
-	Bitmap  bitmap;
-	int     position;
-	Tile    next;
-	
-	public Tile( Bitmap bitmap, int position, Tile next )
-	{
-		this.bitmap   = bitmap;
-		this.position = position;
-		this.next     = next;
-		
-		CCDebug.registerMemoryWatcher( this );
-	}
-
-}
-
-class TileLayer implements CCMemoryWatcher {
-
-	public int getSizeInBytes() {
-
-		return (2*4);
-	}
-
-
-	public int getStaticBytes() {
-
-		return 0;
-	}
-	
-	Tile mFirstTile;
-	
-	Tile currentTile;
-	
-	public TileLayer()
-	{
-		CCDebug.registerMemoryWatcher( this );
-	}
-	
-	public void addTile( Tile tile )
-	{
-		if( mFirstTile == null )
-		{
-			mFirstTile = tile;
-			currentTile = mFirstTile;
-		}
-		else
-		{
-			Tile tmp = mFirstTile;
-			
-			while( tmp.next != null )
-			{
-				tmp = tmp.next;
-			}
-			
-			tmp = tile;
-		}
-	}
-	
-	public Tile next()
-	{
-		Tile tmp = currentTile;
-
-		currentTile = currentTile.next;
-		
-		return tmp;
-	}
-	
-	public boolean peek()
-	{
-		boolean status = false;
-		
-		if( currentTile != null )
-		{
-			status = true;
-		}
-		else if( currentTile == null )
-		{
-			currentTile = mFirstTile;
-		}
-		
-		return status;
-	}
-}
-
-class Border implements CCMemoryWatcher {
-
-	public int getSizeInBytes() {
-
-		return (1*4);
-	}
-
-
-	public int getStaticBytes() {
-
-		return (9*4) + 3;
-	}
-	
-	static final int LEFT   = 16;
-	static final int RIGHT  = 4;
-	static final int TOP    = 2;
-	static final int BOTTOM = 8;
-	static final int CENTER = 32;
-	
-	static final int LEFT_TILED   = 0;
-	static final int RIGHT_TILED  = 1;
-	static final int TOP_TILED    = 2;
-	static final int BOTTOM_TILED = 3;
-	
-	static final byte BACKGROUND = 0;
-	static final byte GROUND     = 1;
-	static final byte FOREGROUND = 2;
-	
-	TileLayer[] layers;
-	
-	String name;
-	
-	public Border( String name )
-	{
-		this.name = name;
-		layers = new TileLayer[3];
-		
-		layers[0] = new TileLayer();
-		layers[1] = new TileLayer();
-		layers[2] = new TileLayer();
-		
-		CCDebug.registerMemoryWatcher( this );
-	}
-	
-	public void addTile( Tile tile, int layer )
-	{
-		layers[layer].addTile(tile);
-	}
-}
-
 public class CelebCamBorderView extends View implements CCMemoryWatcher {
 
 	public int getSizeInBytes() {
@@ -176,9 +25,9 @@ public class CelebCamBorderView extends View implements CCMemoryWatcher {
 		return 0;
 	}
 	
-	private ArrayList<Border> mBorder;
+	private ArrayList<CelebCamBorder> mCelebCamBorder;
 	
-	private String mSelectedBorder;
+	private String mSelectedCelebCamBorder;
 	private int mNumberOfTilesHorizontally;
 	private int mNumberOfTilesVertically;
 	
@@ -186,36 +35,36 @@ public class CelebCamBorderView extends View implements CCMemoryWatcher {
 	{
 		super( context, attributeSet );
 		
-		mBorder = new ArrayList<Border>();
+		mCelebCamBorder = new ArrayList<CelebCamBorder>();
 		Tile tile = 
-				new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.metal_plate), Border.TOP_TILED,
-				new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.green_iguana), Border.BOTTOM_TILED,
-				new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.giraffe), Border.LEFT_TILED,
-				new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.jeans), Border.RIGHT_TILED, null ) ) ) );
+				new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.metal_plate), CelebCamBorder.TOP_TILED,
+				new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.green_iguana), CelebCamBorder.BOTTOM_TILED,
+				new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.giraffe), CelebCamBorder.LEFT_TILED,
+				new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.jeans), CelebCamBorder.RIGHT_TILED, null ) ) ) );
 
 		
-		Border tmp = new Border("Psychadelic");
+		CelebCamBorder tmp = new CelebCamBorder("Psychadelic");
 		tmp.layers[0].addTile( tile );
 		
-		mBorder.add(tmp);
+		mCelebCamBorder.add(tmp);
 		
 		tile = 
-			new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.ny_tile), Border.TOP_TILED,
-		new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.ny_tile), Border.BOTTOM_TILED,
-		new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.ny_tile),  Border.LEFT_TILED ,
-		new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.ny_tile),  Border.RIGHT_TILED, null ) ) ) );
+			new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.ny_tile), CelebCamBorder.TOP_TILED,
+		new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.ny_tile), CelebCamBorder.BOTTOM_TILED,
+		new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.ny_tile),  CelebCamBorder.LEFT_TILED ,
+		new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.ny_tile),  CelebCamBorder.RIGHT_TILED, null ) ) ) );
 
 		Tile tile2 = 
-			new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.ny), Border.BOTTOM | Border.CENTER, null  );
+			new Tile(BitmapFactory.decodeResource( context.getResources(), R.drawable.ny), CelebCamBorder.BOTTOM | CelebCamBorder.CENTER, null  );
 
-	tmp = new Border("New York");
+	tmp = new CelebCamBorder("New York");
 	tmp.layers[0].addTile( tile );
 	tmp.layers[1].addTile( tile2 );
 	
-	mBorder.add(tmp);
+	mCelebCamBorder.add(tmp);
 		
-	tmp = new Border("None");
-	mBorder.add(tmp);
+	tmp = new CelebCamBorder("None");
+	mCelebCamBorder.add(tmp);
 	
 		CCDebug.registerMemoryWatcher( this );
 
@@ -231,19 +80,19 @@ public class CelebCamBorderView extends View implements CCMemoryWatcher {
 
 	}
 	
-//	public void setBorder( Border border )
+//	public void setCelebCamBorder( CelebCamBorder CelebCamBorder )
 //	{
-//		mBorder = border;
+//		mCelebCamBorder = CelebCamBorder;
 //	}
 //	
-//	public Border getBorder()
+//	public CelebCamBorder getCelebCamBorder()
 //	{
-//		return mBorder;
+//		return mCelebCamBorder;
 //	}
 	
 	public void selectBorderByName( String name )
 	{
-		mSelectedBorder = name;
+		mSelectedCelebCamBorder = name;
 		invalidate();
 	}
 	
@@ -262,27 +111,27 @@ public class CelebCamBorderView extends View implements CCMemoryWatcher {
 		
 		Tile tmpTile;
 		
-		Iterator<Border> it = mBorder.iterator();
+		Iterator<CelebCamBorder> it = mCelebCamBorder.iterator();
 		
-		Border border = new Border("NONE");
+		CelebCamBorder CelebCamBorder = new CelebCamBorder("NONE");
 		
 		while( it.hasNext() )
 		{
-			border = it.next();
-			if(border.name.equals(mSelectedBorder))
+			CelebCamBorder = it.next();
+			if(CelebCamBorder.name.equals(mSelectedCelebCamBorder))
 			{
 				break;
 			}
 		}
 		for( int i = 0; i < 3; i++ )
 		{
-			currentLayer = border.layers[i];
+			currentLayer = CelebCamBorder.layers[i];
 			
 			while( currentLayer.peek() )
 			{
 				tmpTile = currentLayer.next();
 
-				if( tmpTile.position == Border.LEFT_TILED )
+				if( tmpTile.position == CelebCamBorder.LEFT_TILED )
 				{
 					  
 					mNumberOfTilesVertically   = getHeight()/tmpTile.bitmap.getHeight();
@@ -295,7 +144,7 @@ public class CelebCamBorderView extends View implements CCMemoryWatcher {
 						canvas.drawBitmap(tmpTile.bitmap, 0, k*tmpTile.bitmap.getHeight(), null);
 					}
 				}
-				else if( tmpTile.position == Border.RIGHT_TILED )
+				else if( tmpTile.position == CelebCamBorder.RIGHT_TILED )
 				{
 					
 					mNumberOfTilesVertically  = getHeight()/tmpTile.bitmap.getHeight();
@@ -308,7 +157,7 @@ public class CelebCamBorderView extends View implements CCMemoryWatcher {
 						canvas.drawBitmap(tmpTile.bitmap , width - tmpTile.bitmap.getWidth(), k*tmpTile.bitmap.getHeight(), null);
 					}
 				}
-				else if( tmpTile.position == Border.TOP_TILED )
+				else if( tmpTile.position == CelebCamBorder.TOP_TILED )
 				{
 					mNumberOfTilesHorizontally = getWidth()/tmpTile.bitmap.getWidth();
 					
@@ -320,7 +169,7 @@ public class CelebCamBorderView extends View implements CCMemoryWatcher {
 						canvas.drawBitmap(tmpTile.bitmap, k*tmpTile.bitmap.getWidth(), 0, null);
 					}
 				}
-				else if( tmpTile.position == Border.BOTTOM_TILED )
+				else if( tmpTile.position == CelebCamBorder.BOTTOM_TILED )
 				{
 					mNumberOfTilesHorizontally = getWidth()/tmpTile.bitmap.getWidth();
 					
@@ -339,36 +188,36 @@ public class CelebCamBorderView extends View implements CCMemoryWatcher {
 					
 					int firstPosition = -1;
 					
-					if( (tmpTile.position & Border.LEFT) > 0 )
+					if( (tmpTile.position & CelebCamBorder.LEFT) > 0 )
 					{
-						firstPosition = Border.LEFT;
+						firstPosition = CelebCamBorder.LEFT;
 						x = 0;
 					}
-					else if( (tmpTile.position & Border.RIGHT) > 0 )
+					else if( (tmpTile.position & CelebCamBorder.RIGHT) > 0 )
 					{
-						firstPosition = Border.RIGHT;
+						firstPosition = CelebCamBorder.RIGHT;
 						x = width - tmpTile.bitmap.getWidth();
 					}
 
 					
-					if( (tmpTile.position & Border.TOP) > 0 )
+					if( (tmpTile.position & CelebCamBorder.TOP) > 0 )
 					{
-						firstPosition = Border.TOP;
+						firstPosition = CelebCamBorder.TOP;
 						y = 0;
 					}
-					else if( (tmpTile.position & Border.BOTTOM) > 0 )
+					else if( (tmpTile.position & CelebCamBorder.BOTTOM) > 0 )
 					{
-						firstPosition = Border.BOTTOM;
+						firstPosition = CelebCamBorder.BOTTOM;
 						y = super.getHeight() - tmpTile.bitmap.getHeight();
 					}
 					
-					if( (tmpTile.position & Border.CENTER) > 0 )
+					if( (tmpTile.position & CelebCamBorder.CENTER) > 0 )
 					{
-						if( ( firstPosition == Border.LEFT) || ( firstPosition == Border.RIGHT) )
+						if( ( firstPosition == CelebCamBorder.LEFT) || ( firstPosition == CelebCamBorder.RIGHT) )
 						{
 							y = (int)( 0.5*(super.getHeight() - tmpTile.bitmap.getHeight()));
 						}
-						else if( (firstPosition == Border.TOP) || ( firstPosition == Border.BOTTOM))
+						else if( (firstPosition == CelebCamBorder.TOP) || ( firstPosition == CelebCamBorder.BOTTOM))
 						{
 							x = (int)( 0.5*(width - tmpTile.bitmap.getWidth()));
 						}
@@ -391,14 +240,14 @@ public class CelebCamBorderView extends View implements CCMemoryWatcher {
 		TileLayer currentLayer;
 		
 		Tile tmpTile;
-		Border border = new Border("NONE");
+		CelebCamBorder CelebCamBorder = new CelebCamBorder("NONE");
 		
-		Iterator<Border> it = mBorder.iterator();
+		Iterator<CelebCamBorder> it = mCelebCamBorder.iterator();
 		
 		while( it.hasNext() )
 		{
-			border = it.next();
-			if(border.name.equals(mSelectedBorder))
+			CelebCamBorder = it.next();
+			if(CelebCamBorder.name.equals(mSelectedCelebCamBorder))
 			{
 				break;
 			}
@@ -409,13 +258,13 @@ public class CelebCamBorderView extends View implements CCMemoryWatcher {
 			for( int i = 0; i < 3; i++ )
 			{
 				
-				currentLayer = border.layers[i];
+				currentLayer = CelebCamBorder.layers[i];
 				
 				while( currentLayer.peek() )
 				{
 					tmpTile = currentLayer.next();
 	
-					if( tmpTile.position == Border.LEFT_TILED )
+					if( tmpTile.position == CelebCamBorder.LEFT_TILED )
 					{
 						
 						mNumberOfTilesVertically = publishSize.height/tmpTile.bitmap.getHeight();
@@ -429,7 +278,7 @@ public class CelebCamBorderView extends View implements CCMemoryWatcher {
 							canvas.drawBitmap(tmpTile.bitmap, 0, k*tmpTile.bitmap.getHeight(), null);
 						}
 					}
-					else if( tmpTile.position == Border.RIGHT_TILED )
+					else if( tmpTile.position == CelebCamBorder.RIGHT_TILED )
 					{
 						
 						mNumberOfTilesVertically   = publishSize.height/tmpTile.bitmap.getHeight();
@@ -442,7 +291,7 @@ public class CelebCamBorderView extends View implements CCMemoryWatcher {
 							canvas.drawBitmap(tmpTile.bitmap , publishSize.width  - tmpTile.bitmap.getWidth(), k*tmpTile.bitmap.getHeight(), null);
 						}
 					}
-					else if( tmpTile.position == Border.TOP_TILED )
+					else if( tmpTile.position == CelebCamBorder.TOP_TILED )
 					{
 						mNumberOfTilesHorizontally = publishSize.width /tmpTile.bitmap.getWidth();
 						
@@ -454,7 +303,7 @@ public class CelebCamBorderView extends View implements CCMemoryWatcher {
 							canvas.drawBitmap(tmpTile.bitmap, k*tmpTile.bitmap.getWidth(), 0, null);
 						}
 					}
-					else if( tmpTile.position == Border.BOTTOM_TILED )
+					else if( tmpTile.position == CelebCamBorder.BOTTOM_TILED )
 					{
 						mNumberOfTilesHorizontally = publishSize.width /tmpTile.bitmap.getWidth();
 						
@@ -474,35 +323,35 @@ public class CelebCamBorderView extends View implements CCMemoryWatcher {
 						
 						int firstPosition = -1;
 						
-						if( (tmpTile.position & Border.LEFT) > 0 )
+						if( (tmpTile.position & CelebCamBorder.LEFT) > 0 )
 						{
-							firstPosition = Border.LEFT;
+							firstPosition = CelebCamBorder.LEFT;
 							x = 0;
 						}
-						else if( (tmpTile.position & Border.RIGHT) > 0 )
+						else if( (tmpTile.position & CelebCamBorder.RIGHT) > 0 )
 						{
-							firstPosition = Border.RIGHT;
+							firstPosition = CelebCamBorder.RIGHT;
 							x = publishSize.width - tmpTile.bitmap.getWidth();
 						}
 	
-						if( (tmpTile.position & Border.TOP) > 0 )
+						if( (tmpTile.position & CelebCamBorder.TOP) > 0 )
 						{
-							firstPosition = Border.TOP;
+							firstPosition = CelebCamBorder.TOP;
 							y = 0;
 						}
-						else if( (tmpTile.position & Border.BOTTOM) > 0 )
+						else if( (tmpTile.position & CelebCamBorder.BOTTOM) > 0 )
 						{
-							firstPosition = Border.BOTTOM;
+							firstPosition = CelebCamBorder.BOTTOM;
 							y = publishSize.height - tmpTile.bitmap.getHeight();
 						}
 						
-						if( (tmpTile.position & Border.CENTER) > 0 )
+						if( (tmpTile.position & CelebCamBorder.CENTER) > 0 )
 						{
-							if( ( firstPosition == Border.LEFT) || ( firstPosition == Border.RIGHT) )
+							if( ( firstPosition == CelebCamBorder.LEFT) || ( firstPosition == CelebCamBorder.RIGHT) )
 							{
 								y = (int)( 0.5*(publishSize.height - tmpTile.bitmap.getHeight()));
 							}
-							else if( (firstPosition == Border.TOP) || ( firstPosition == Border.BOTTOM))
+							else if( (firstPosition == CelebCamBorder.TOP) || ( firstPosition == CelebCamBorder.BOTTOM))
 							{
 								x = (int)( 0.5*(publishSize.width - tmpTile.bitmap.getWidth()));
 							}

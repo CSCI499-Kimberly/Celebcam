@@ -9,11 +9,13 @@ import java.io.OutputStream;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
+import twitter4j.auth.AccessToken;
 
 
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
@@ -75,6 +77,7 @@ public class CelebCamApplication extends Application {
         }
 	}
 	
+    
     static public CelebCamApplication getApplication()
     {
     	return mCurrent;
@@ -366,6 +369,16 @@ public class CelebCamApplication extends Application {
 	        // not currently mounted.
 	        Log.w("ExternalStorage", "Error writing " + file, e);
 	    }
+	}
+	
+	private void saveAccessToken(AccessToken at) {
+		SharedPreferences mPrefs =  getSharedPreferences("LOGIN_DETAILS", MODE_PRIVATE);
+		String token = at.getToken();
+		String secret = at.getTokenSecret();
+		SharedPreferences.Editor editor = mPrefs.edit();
+		editor.putString(userAccessTOKEN, token);
+		editor.putString(userAccessTokenSECRET, secret);
+		editor.commit();
 	}
 	
 }
